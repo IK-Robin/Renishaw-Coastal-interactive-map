@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hover Stroke Animation – White Highlight</title>
+<style>
+  /* ---- Page layout ---- */
+  body, html { margin:0; height:100%; display:flex; align-items:center; justify-content:center; background:#000; }
+  svg { width:320px; height:auto; }
+
+  /* ---- Base rectangle ---- */
+  #animation_id {
+    fill: #50b848;
+    stroke: #f8a580;
+    stroke-width: 2;
+    stroke-miterlimit: 10;
+  }
+
+  /* ---- The moving white highlight (drawn with a <path>) ---- */
+  #highlight {
+    fill: none;
+    stroke: #ffffff;               /* bright white – change if you want another colour */
+    stroke-width: 7;               /* a bit thicker so it’s obvious */
+    stroke-linecap: round;
+    stroke-dasharray: 1006;        /* exact perimeter: 2*(264+239) = 1006 */
+    stroke-dashoffset: 1006;
+    opacity: 0;
+    transition: opacity 0.02s ease;
+    pointer-events: none;          /* let the rect underneath receive the hover */
+  }
+
+  /* Show + animate only while the rectangle is hovered */
+  #animation_id:hover ~ #highlight,
+  #animation_id:hover + #highlight {   /* works for both possible DOM orders */
+    opacity: 1;
+    animation: dash .2s linear forwards;
+  }
+
+  @keyframes dash {
+    to { stroke-dashoffset: 0; }
+  }
+</style>
+</head>
+<body>
+
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 265 240">
+  <defs>
+    <!-- Original style class (kept for clarity) -->
+    <style>
+      .cls-1{fill:#50b848;stroke:#f8a580;stroke-miterlimit:10;}
+    </style>
+  </defs>
+
+  <!-- The rectangle that receives the hover -->
+  <rect id="animation_id" class="cls-1" x=".5" y=".5" width="264" height="239"/>
+
+  <!-- A <path> that traces the *exact* same rectangle – this is what we animate -->
+  <path id="highlight"
+        d="M0.5,0.5 h264 v239 h-264 z"/>
+</svg>
+
+</body>
+</html>
