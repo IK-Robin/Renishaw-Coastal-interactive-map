@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Development Nodes Filter</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+    <div class="container-dd"></div>
+  <div class="rhill-serchMenu">
+    <div class="menuInner">
+      <button class="mobileSearchNav" id="mobileToggle">Filter by:</button>
+
+      <div class="searchandfilter" id="searchForm">
+        <ul id="filterList">
+
+          <!-- Node Filter -->
+          <li data-sf-field-name="_sfm_node">
+            <label>
+              <select name="_sfm_node[]" class="sf-input-select" id="nodeSelect">
+                <option value="">Node</option>
+                <option value="node_1">Node 1 - Renshaw Estate & Heritage Village</option>
+                <option value="node_2">Node 2 - Clansthal & Craigieburn</option>
+                <option value="node_3">Node 3 - Interchange and Waterfront</option>
+                <option value="node_4">Node 4 - Crocworld Development</option>
+                <option value="node_5">Node 5 - Scottburgh South</option>
+              </select>
+            </label>
+          </li>
+
+          <!-- Development Type (Block) -->
+          <li data-sf-field-name="_sfm_block">
+            <label>
+              <select name="_sfm_block[]" class="sf-input-select" id="blockSelect">
+                <option value="">Development Type</option>
+                <!-- Filled by JS based on Node -->
+              </select>
+            </label>
+          </li>
+
+          <!-- Price Range -->
+          <li data-sf-field-name="_sfm_price-field">
+            <label>
+              <select name="_sfm_price-field[]" class="sf-input-select" id="priceSelect">
+                <option value="">Price Range</option>
+                <!-- Filled by JS based on Node -->
+              </select>
+            </label>
+          </li>
+
+          <!-- Reset -->
+          <li class="sf-field-reset" id="resetLi">
+            <a href="#" class="search-filter-reset" id="resetBtn">Reset</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-content">
+    <h2>Development Nodes & Pricing</h2>
+    <p>Select a Node to see available development types and price ranges.</p>
+  </div>
+
+script src="../assets/js/filter-top-menu.js"></script>
+</body>
+</html>
