@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Node-Based Development Filter</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+/* ────────────────────────────────────────
+   BASIC RESET & LAYOUT
+   ──────────────────────────────────────── */
+
+/* ────────────────────────────────────────
+   MENU BAR
+   ──────────────────────────────────────── */
+.rhill-serchMenu{
+  position:fixed;top:0;left:0;width:100%;
+  background:#828282;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
+  z-index:1000;transition:all .4s ease;box-shadow:0 2px 10px rgba(0,0,0,.1);
+}
+@media(max-width:768px){.rhill-serchMenu{background:#969fa7}}
+.menuInner{max-width:1200px;margin:auto;padding:0 15px}
+
+/* ────────────────────────────────────────
+   MOBILE TOGGLE
+   ──────────────────────────────────────── */
+.mobileSearchNav{
+  display:none;width:100%;padding:14px 20px;background:transparent;
+  border:none;color:#fff;font-size:16px;font-weight:500;text-align:left;
+  position:relative;cursor:pointer;outline:none;
+}
+@media(max-width:767px){.mobileSearchNav{display:block}}
+.mobileSearchNav::after{
+  content:"";position:absolute;right:20px;top:50%;
+  transform:translateY(-50%) rotate(90deg);
+  width:12px;height:12px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' viewBox='0 0 320 512'%3E%3Cpath d='M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 224 34.484 70.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z'/%3E%3C/svg%3E") center/contain no-repeat;
+  transition:transform .4s ease;
+}
+.mobileSearchNav.active::after{transform:translateY(-50%) rotate(270deg)}
+
+/* ────────────────────────────────────────
+   FILTER LIST
+   ──────────────────────────────────────── */
+.searchandfilter{width:100%}
+.searchandfilter ul{
+  list-style:none;display:flex;justify-content:center;flex-wrap:wrap;
+  gap:10px;padding:15px 10px;transition:all .4s ease;
+}
+@media(max-width:767px){
+  .searchandfilter ul{
+    display:block;max-height:0;padding:0 10px;overflow:hidden;opacity:0;
+    background:#fff;border-radius:0 0 10px 10px;
+    box-shadow:0 4px 10px rgba(0,0,0,.1);
+  }
+  .searchandfilter.active ul{
+    max-height:600px;padding:15px 10px;opacity:1;
+  }
+}
+
+/* ────────────────────────────────────────
+   FILTER ITEM (select)
+   ──────────────────────────────────────── */
+.searchandfilter li{
+  position:relative;background:rgba(255,255,255,.9);
+  border-radius:8px;margin:0;min-width:140px;flex:1;max-width:200px;
+}
+@media(max-width:767px){.searchandfilter li{margin-bottom:8px;max-width:none}}
+.searchandfilter select{
+  width:100%;padding:10px 40px 10px 12px;border:none;background:transparent;
+  font-size:14px;color:#000;appearance:none;-webkit-appearance:none;
+  cursor:pointer;outline:none;border-radius:8px;
+}
+
+/* dropdown arrow – only for selects */
+.searchandfilter li::after{
+  content:"";position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  width:10px;height:10px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23333' viewBox='0 0 320 512'%3E%3Cpath d='M151.5 347.8L3.5 201c-4.7-4.7-4.7-12.3 0-17l19.8-19.8c4.7-4.7 12.3-4.7 17 0L160 282.7l119.7-118.5c4.7-4.7 12.3-4.7 17 0l19.8 19.8c4.7 4.7 4.7 12.3 0 17l-148 146.8c-4.7 4.7-12.3 4.7-17 0z'/%3E%3C/svg%3E") center/contain no-repeat;
+  pointer-events:none;
+}
+.searchandfilter li.active::after{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' viewBox='0 0 320 512'%3E%3Cpath d='M151.5 347.8L3.5 201c-4.7-4.7-4.7-12.3 0-17l19.8-19.8c4.7-4.7 12.3-4.7 17 0L160 282.7l119.7-118.5c4.7-4.7 12.3-4.7 17 0l19.8 19.8c4.7 4.7 4.7 12.3 0 17l-148 146.8c-4.7 4.7-12.3 4.7-17 0z'/%3E%3C/svg%3E");
+}
+
+/* active state */
+.searchandfilter li.active,
+.searchandfilter li.active select{
+  background:#000!important;color:#fff!important;
+}
+
+/* ────────────────────────────────────────
+   RESET BUTTON – NO ARROW
+   ──────────────────────────────────────── */
+.sf-field-reset{
+  background:#e6e6e6!important;border-radius:30px;
+  pointer-events:none;opacity:.7;
+}
+.sf-field-reset.active{
+  background:#3a3a3a!important;pointer-events:auto;opacity:1;
+}
+.search-filter-reset{
+  display:block;width:100%;padding:10px 20px;color:#fff;
+  text-decoration:none;font-weight:500;font-size:14px;
+  text-align:center;border-radius:30px;
+}
+@media(max-width:768px){.search-filter-reset{padding:12px 20px}}
+
+/* hide the arrow on the reset li */
+.sf-field-reset::after{display:none}
+
+/* ────────────────────────────────────────
+   DEMO CONTENT
+   ──────────────────────────────────────── */
+.demo-content{padding:20px;text-align:center;color:#555}
+</style>
+</head>
+<body>
+
+<div class="rhill-serchMenu">
+  <div class="menuInner">
+    <button class="mobileSearchNav" id="mobileToggle">Filter by:</button>
+
+    <div class="searchandfilter" id="searchForm">
+      <ul id="filterList">
+
+        <!-- NODE -->
+        <li data-sf-field-name="_sfm_node">
+          <label>
+            <select name="_sfm_node[]" class="sf-input-select" id="nodeSelect">
+              <option value="">Node</option>
+              <option value="node_1">Node 1 – Renshaw Estate & Heritage Village</option>
+              <option value="node_2">Node 2 – Clansthal & Craigieburn</option>
+              <option value="node_3">Node 3 – Interchange & Waterfront</option>
+              <option value="node_4">Node 4 – Crocworld Development</option>
+              <option value="node_5">Node 5 – Scottburgh South</option>
+            </select>
+          </label>
+        </li>
+
+        <!-- DEVELOPMENT TYPE (filled by JS) -->
+        <li data-sf-field-name="_sfm_block">
+          <label>
+            <select name="_sfm_block[]" class="sf-input-select" id="blockSelect">
+              <option value="">Development Type</option>
+            </select>
+          </label>
+        </li>
+
+        <!-- PRICE RANGE (filled by JS) -->
+        <li data-sf-field-name="_sfm_price-field">
+          <label>
+            <select name="_sfm_price-field[]" class="sf-input-select" id="priceSelect">
+              <option value="">Price Range</option>
+            </select>
+          </label>
+        </li>
+
+        <!-- RESET -->
+        <li class="sf-field-reset" id="resetLi">
+          <a href="#" class="search-filter-reset" id="resetBtn">Reset</a>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="demo-content">
+  <h2>Node-Based Development Filter</h2>
+  <p>Select a Node → Development Type & Price Range update automatically.</p>
+</div>
+
+<script>
+/* -------------------------------------------------
+   DATA (taken from the table you supplied)
+   ------------------------------------------------- */
+const nodeData = {
+  node_1: {
+    types: [
+      "Medium Density Residential","High Density Residential",
+      "Business Zone 1 & 2","Business and Government","Education",
+      "Urban Agriculture Zone 1 & 2"
+    ],
+    prices: [
+      {label:"R 1,27M – R 1,50M", min:1270000, max:1500000},
+      {label:"R 1,50M – R 2,00M", min:1500000, max:2000000},
+      {label:"R 2,00M – R 3,00M", min:2000000, max:3000000}
+    ]
+  },
+  node_2: {
+    types: ["Medium Density Residential","High Density Residential","Business Zone 1","Business Zone 2","Education"],
+    prices: [
+      {label:"R 1,83M – R 2,00M", min:1830000, max:2000000},
+      {label:"R 2,00M – R 2,50M", min:2000000, max:2500000},
+      {label:"R 2,50M – R 3,07M", min:2500000, max:3070000}
+    ]
+  },
+  node_3: {
+    types: ["Light Industry","Business Zone 1","Business Zone 2","High Density Residential","Education","Health and Welfare"],
+    prices: [
+      {label:"R 1,10M – R 1,50M", min:1100000, max:1500000},
+      {label:"R 1,50M – R 2,00M", min:1500000, max:2000000},
+      {label:"R 2,00M – R 2,87M", min:2000000, max:2870000}
+    ]
+  },
+  node_4: {
+    types: ["Medium Density Residential","Business Zone 1","Business Zone 2","Education","Health and Welfare"],
+    prices: [
+      {label:"R 2,13M – R 2,50M", min:2130000, max:2500000},
+      {label:"R 2,50M – R 3,00M", min:2500000, max:3000000},
+      {label:"R 3,00M – R 4,23M", min:3000000, max:4230000}
+    ]
+  },
+  node_5: {
+    types: ["Light Industry","Medium Density Residential","High Density Residential","Business Zone 1","Business Zone 2","Education","Urban Agriculture Zone 1"],
+    prices: [
+      {label:"R 1,79M – R 2,00M", min:1790000, max:2000000},
+      {label:"R 2,00M – R 2,50M", min:2000000, max:2500000},
+      {label:"R 2,50M – R 3,22M", min:2500000, max:3220000}
+    ]
+  }
+};
+
+/* -------------------------------------------------
+   ELEMENTS
+   ------------------------------------------------- */
+const nodeSelect   = document.getElementById('nodeSelect');
+const blockSelect  = document.getElementById('blockSelect');
+const priceSelect  = document.getElementById('priceSelect');
+const resetBtn     = document.getElementById('resetBtn');
+const resetLi      = document.getElementById('resetLi');
+const selects      = document.querySelectorAll('.sf-input-select');
+const mobileToggle = document.getElementById('mobileToggle');
+const searchForm   = document.getElementById('searchForm');
+
+/* -------------------------------------------------
+   POPULATE TYPE & PRICE WHEN NODE CHANGES
+   ------------------------------------------------- */
+nodeSelect.addEventListener('change', () => {
+  const node = nodeSelect.value;
+  const data = nodeData[node] || {types:[], prices:[]};
+
+  // ---- Development Type ----
+  blockSelect.innerHTML = '<option value="">Development Type</option>';
+  data.types.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.toLowerCase().replace(/[^a-z0-9]/g,'_');
+    opt.textContent = t;
+    blockSelect.appendChild(opt);
+  });
+
+  // ---- Price Range ----
+  priceSelect.innerHTML = '<option value="">Price Range</option>';
+  data.prices.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = `${p.min}+${p.max}`;
+    opt.textContent = p.label;
+    priceSelect.appendChild(opt);
+  });
+
+  // reset dependent selects
+  blockSelect.value = "";
+  priceSelect.value = "";
+  updateActiveStates();
+});
+
+/* -------------------------------------------------
+   ACTIVE STATE & RESET BUTTON
+   ------------------------------------------------- */
+function updateActiveStates(){
+  selects.forEach(sel => {
+    const li = sel.closest('li');
+    li.classList.toggle('active', sel.value !== '');
+  });
+  const any = Array.from(selects).some(s => s.value !== '');
+  resetLi.classList.toggle('active', any);
+}
+selects.forEach(sel => sel.addEventListener('change', updateActiveStates));
+
+resetBtn.addEventListener('click', e => {
+  e.preventDefault();
+  selects.forEach(sel => {
+    sel.value = "";
+    sel.closest('li').classList.remove('active');
+  });
+  blockSelect.innerHTML = '<option value="">Development Type</option>';
+  priceSelect.innerHTML = '<option value="">Price Range</option>';
+  updateActiveStates();
+});
+
+/* -------------------------------------------------
+   MOBILE TOGGLE
+   ------------------------------------------------- */
+mobileToggle.addEventListener('click', () => {
+  const active = searchForm.classList.toggle('active');
+  mobileToggle.classList.toggle('active', active);
+});
+
+/* -------------------------------------------------
+   CLOSE ON OUTSIDE CLICK
+   ------------------------------------------------- */
+document.addEventListener('click', e => {
+  if (!e.target.closest('.rhill-serchMenu') && searchForm.classList.contains('active')) {
+    searchForm.classList.remove('active');
+    mobileToggle.classList.remove('active');
+  }
+});
+document.getElementById('filterList').addEventListener('click', e => e.stopPropagation());
+</script>
+</body>
+</html>
