@@ -1,0 +1,1 @@
+1. add click event and create 5 new html to link the svg ok 
