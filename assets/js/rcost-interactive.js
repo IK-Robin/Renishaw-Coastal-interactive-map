@@ -1,37 +1,77 @@
 
   const avalible_color = "green";
   const sold_color = "red";
-  const mapData = [
-   
-    {
-      id: "_17986",
-      lotNumber: "210",
-      PriceBZD: 298000.0,
-      PriceUSD: 149000.0,
-      availability: "Available",
-      status: "Available",
-      link: "https://google.com",
-      use: "Residential",
-      source: "Residential",
-      size: "617.79 S.M.",
-    },
-    {
-      id: "_17987",
-      lotNumber: "211",
-      PriceBZD: 600000.0,
-      PriceUSD: 300000.0,
-      availability: "Available",
-      status: "Available",
-      link: "https://google.com",
-      use: "Oversized Mixed Use",
-      source: "Residential",
-      size: "1125.82 S.M.",
-    },
-  ];
+ const mapData = [
+  {
+    id: "node_2-2",
+    lotNumber: "210",
+    PriceBZD: 298000.0,
+    PriceUSD: 149000.0,
+    availability: "Available",
+    status: "Available",
+    link: "https://google.com",
+    use: "Residential",
+    source: "Residential",
+    size: "617.79 S.M.",
+  },
+  {
+    id: "node_3-2",
+    lotNumber: "210",
+    PriceBZD: 298000.0,
+    PriceUSD: 149000.0,
+    availability: "Available",
+    status: "Available",
+    link: "https://google.com",
+    use: "Residential",
+    source: "Residential",
+    size: "617.79 S.M.",
+  },
+  {
+    id: "node_1-2",
+    lotNumber: "210",
+    PriceBZD: 298000.0,
+    PriceUSD: 149000.0,
+    availability: "Available",
+    status: "Available",
+    link: "https://google.com",
+    use: "Residential",
+    source: "Residential",
+    size: "617.79 S.M.",
+  },
+  {
+    id: "node_5-2",
+    lotNumber: "210",
+    PriceBZD: 298000.0,
+    PriceUSD: 149000.0,
+    availability: "Available",
+    status: "Available",
+    link: "https://google.com",
+    use: "Residential",
+    source: "Residential",
+    size: "617.79 S.M.",
+  },
+  {
+    id: "node_4-2",
+    lotNumber: "210",
+    PriceBZD: 298000.0,
+    PriceUSD: 149000.0,
+    availability: "Available",
+    status: "Available",
+    link: "https://google.com",
+    use: "Residential",
+    source: "Residential",
+    size: "617.79 S.M.",
+  }
+];
 
   let mapId = [
-  
-    "_4815",
+
+  "node_2-2",
+  "node_3-2",
+  "node_1-2",
+  "node_5-2",
+  "node_4-2"
+
  
   ];
 
