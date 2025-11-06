@@ -38,7 +38,7 @@
   const ikr_btnTxt = document.getElementById("ikr_btnTxt");
   // get the map id
   const ikr_svg = document.getElementById("ikr_svg");
-  const Shape = ikr_svg.getElementById("Shape");
+  const Shape = ikr_svg.getElementById("only_stroke");
 
   function getAllChildNodeIds(svgElement) {
     const childNodeIds = [];
@@ -56,7 +56,7 @@
 
     return childNodeIds;
   }
-  // console.log(getAllChildNodeIds(Shape));
+  console.log(getAllChildNodeIds(Shape));
 
   // map data
 

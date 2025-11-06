@@ -1,5 +1,5 @@
 // select the main svg to avoid any othe unwanted svg selections
-const ikr_svg= document.getElementById('ikr_svg');
+
 // create hover animation function 
 
 function hoverStrokeAnimation(ikr_svg_id) {
@@ -38,4 +38,6 @@ const selectAll_anim_paths = ikr_svg.querySelectorAll('.anim-path');
     );
 }
 
+
+// call the hover animation function with the id of the svg 
 hoverStrokeAnimation('ikr_svg');
