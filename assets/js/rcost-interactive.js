@@ -214,12 +214,7 @@
   function handleShow(ev, ct, mapD) {
     if (!mapD) return;
 
-    ct.classList.remove("availableLot", "soldLot");
-    if (mapD.status && mapD.status.toLowerCase() === "available") {
-      ct.classList.add("availableLot");
-    } else if (mapD.status && mapD.status.toLowerCase() === "sold") {
-      ct.classList.add("soldLot");
-    }
+  
 
     tooltipMove.innerHTML = renderTooltipContent(mapD);
     tooltipMove.style.display = "block";
@@ -227,11 +222,7 @@
   }
 
   function handleHideOnMobile(ct) {
-    if (ct) {
-      setTimeout(() => {
-        ct.classList.remove("availableLot", "soldLot");
-      }, 500);
-    }
+
     // tooltipMove.style.display = "none";
     // tooltipMove.innerHTML = "";
   }

@@ -15,7 +15,10 @@ const selectAll_anim_paths = ikr_svg.querySelectorAll('.anim-path');
             path.style.strokeDasharray = len;
             // path.style.strokeDashoffset = len;    // start hidden
 
-            path.addEventListener('mouseenter', () => {
+            path.addEventListener('mouseenter', (ev) => {
+                const ct = ev.currentTarget;
+                ct.style.fill ='#ffffff';
+                ct.style.fillOpacity = '.3';
                 // Reset any previous state
                 path.classList.remove('draw', 'highlight');
                 // Trigger reflow so animation restarts
@@ -27,6 +30,8 @@ const selectAll_anim_paths = ikr_svg.querySelectorAll('.anim-path');
                 // Keep the highlight visible until next hover
                 // (no reverse, no class removal)
                 const ct = ev.currentTarget;
+                
+                ct.style.fillOpacity = '0';
                 ct.classList.remove('draw');
                 ct.classList.remove('highlight');
 
