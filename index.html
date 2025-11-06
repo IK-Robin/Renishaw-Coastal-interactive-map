@@ -122,8 +122,14 @@
 </div>
 
 <!--  main top filter  -->
-    <div class="ikr_svg_container">
-        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  
+
+
+<!-- main map container  -->
+ <div class="ikr_svg_container">
+      <div class="ikr_map5">
+        
+        <svg id="ikr_svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
             viewBox="0 0 1105.28 1545.45">
             <defs>
                 <style>
@@ -206,35 +212,50 @@
                     points="901.47 638.74 897.17 646.41 882.02 663.85 864.4 676.86 849.91 692.48 820.67 736.81 800.31 767.68 711.29 876.33 668.08 920.18 656.07 938.01 650.46 947.37 648.5 945.68 647.59 940.61 648.89 937.49 645.89 935.4 645.5 927.6 647.59 914.06 671.21 889.21 680.61 887.26 691.06 882.58 700.85 881.27 707.63 876.72 711.68 869.3 712.59 862.54 707.89 852.26 700.19 842.11 696.67 833.78 696.8 821.81 686.62 813.61 680.35 820.51 686.09 825.98 690.01 832.09 692.75 840.29 696.8 847.7 703.59 856.29 706.98 865.14 701.5 874.25 696.15 876.2 690.79 873.6 681.53 875.94 676.04 877.63 669.91 876.72 639.89 895.98 630.75 899.75 615.35 918.36 611.43 908.47 606.73 904.57 593.81 904.83 590.68 907.17 582.84 913.93 577.62 915.63 555.04 947.37 553.74 943.7 557.19 938.07 553.34 942.56 544.94 917.62 544.99 917.58 536.74 893.16 535.33 888.95 535.04 888.15 475.42 711.73 702.7 663.63 702.86 663.6 704.32 663.3 792.88 645.27 782.43 647.72 781.39 648.42 792.88 645.27 823.14 638.19 840.25 634.57 855.4 635.61 853.96 645.63 854.18 645.67 853.83 647.46 866.75 647.72 867.6 643.21 869.36 636.53 901.47 638.74" />
             </g>
         </svg>
+   
+
+        <div id="ikr_toltipMove">
+          <div id="mapTitle"></div>
+        </div>
+      </div>
+
+      <div class="ikr_rv_detail" id="ikr_rv_detail">
+        <div style="position: relative">
+          <div id="detail_img" class="ikr_detail_img">
+            <img src="" alt="" id="map_img" />
+          </div>
+          <div class="map_details">
+            <p id="plotId" class="map_title"></p>
+
+            <div id="detail_des" class="detail_des"></div>
+
+            <a
+              id="ikr_btnTxt"
+              style="display: none"
+              class="ikr_map_tooltip_button"
+              target="_blank"
+              href=""
+            >
+              Details</a
+            >
+          </div>
+        </div>
+      </div>
+      <div class="ikr_map_tooltip" id="ikr_map_tooltip"></div>
     </div>
-    <script>
-        // ==== ADD/REMOVE CLASSES ONLY – works EVERY time ====
-        document.querySelectorAll('.anim-path').forEach(path => {
-            // Compute length once
-            const len = path.getTotalLength();
-            path.style.setProperty('--len', len);
-            path.style.strokeDasharray = len;
-            // path.style.strokeDashoffset = len;    // start hidden
+    <!-- end  main map container  -->
 
-            path.addEventListener('mouseenter', () => {
-                // Reset any previous state
-                path.classList.remove('draw', 'highlight');
-                // Trigger reflow so animation restarts
-                void path.offsetWidth;
-                path.classList.add('highlight', 'draw');
-            });
 
-            path.addEventListener('mouseleave', (ev) => {
-                // Keep the highlight visible until next hover
-                // (no reverse, no class removal)
-                const ct = ev.currentTarget;
-                ct.classList.remove('draw');
-                ct.classList.remove('highlight');
 
-            });
-        });
-    </script>
+
+
+
+
+
+
+<script src="./assets/js/rcost-component.js"></script>
 <script src="./assets/js/filter-top-menu.js"></script>
+<script src="./assets/js/rcost-min.js"></script>
 
 </body>
 </html>
