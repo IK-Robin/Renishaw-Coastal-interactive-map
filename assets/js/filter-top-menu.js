@@ -1,4 +1,3 @@
-
 /* -------------------------------------------------
    DATA (taken from the table you supplied)
    ------------------------------------------------- */
@@ -14,6 +13,7 @@ const nodeData = {
       {label:"R 1,50M – R 2,00M", min:1500000, max:2000000},
       {label:"R 2,00M – R 3,00M", min:2000000, max:3000000}
     ]
+    
   },
   node_2: {
     types: ["Medium Density Residential","High Density Residential","Business Zone 1","Business Zone 2","Education"],
@@ -55,6 +55,7 @@ const nodeData = {
 const nodeSelect   = document.getElementById('nodeSelect');
 const blockSelect  = document.getElementById('blockSelect');
 const priceSelect  = document.getElementById('priceSelect');
+const statusSelect = document.getElementById('statusSelect');
 const resetBtn     = document.getElementById('resetBtn');
 const resetLi      = document.getElementById('resetLi');
 const selects      = document.querySelectorAll('.sf-input-select');
