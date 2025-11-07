@@ -72,6 +72,7 @@
 <body>
   
  <!--  main top filter  -->
+ <!--  main top filter  -->
 <div class="rhill-serchMenu">
   <div class="menuInner">
     <button class="mobileSearchNav" id="mobileToggle">Filter by:</button>
@@ -107,6 +108,17 @@
           <label>
             <select name="_sfm_price-field[]" class="sf-input-select" id="priceSelect">
               <option value="">Price Range</option>
+            </select>
+          </label>
+        </li>
+
+        <!-- STATUS (Sold and Available) -->
+        <li data-sf-field-name="_sfm_status">
+          <label>
+            <select name="_sfm_status[]" class="sf-input-select" id="statusSelect">
+              <option value="">Status</option>
+              <option value="available">Available</option>
+              <option value="sold">Sold</option>
             </select>
           </label>
         </li>
