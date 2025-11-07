@@ -6,10 +6,10 @@ const mapData = [
     id: "node_1-2",
     node_number: "Node 1 RENSHAW CENTRAL",
     lotNumber: "210",
-    link: "../../all nodes/node-1.html",
-   use: "Residen",
+    link: "../../all nods/node-1.html",
+   use: "Residential",
     size: "714 000 m²",
-    discription: "Renshaw Central is the largest residential property development node."
+    description: "Renshaw Central is the largest residential property development node."
     
 
   },
@@ -18,7 +18,7 @@ const mapData = [
     id: "node_2-2",
     node_number: "Node 2 CLANSTHAL",
     lotNumber: "143",
-    link: "../../all nodes/node-2.html",
+    link: "../../all nods/node-2.html",
     use: "Residential",
     size: "402 000 m²",
     description: "Planned for Clansthal, is a luxury housing development featuring contemporary aesthetics."
@@ -29,7 +29,7 @@ const mapData = [
     id: "node_3-2",
     node_number: "Node 3 INTERCHANGE",
     lotNumber: "85",
-    link: "../../all nodes/node-3.html",
+    link: "../../all nods/node-3.html",
     use: "Commercial",
     size: "535 000 m²",
     description: "The Renshaw Coastal Precinct Interchange will be the nucleus of the development – as the social and business hub. The area’s first private hospital. Office parks. Light commercial zones. A shopping centre. The area’s first private school."
@@ -39,7 +39,7 @@ const mapData = [
     id: "node_4-2",
     node_number: "Node 4 RENSHAW NORTH",
     lotNumber: "7",
-    link: "../../all nodes/node-4.html",
+    link: "../../all nods/node-4.html",
     use: "Residential",
     size: "527 000 m²",
     description: "Renshaw North will boast luxury villas, seated within indigenous forest overlooking the ocean. An equestrian centre, indigenous nursery and a resort village are also included within the envisaged infrastructure."
@@ -49,7 +49,7 @@ const mapData = [
     id: "node_5-2",
     node_number: "Node 5 RENSHAW SOUTH",
     lotNumber: "111",
-    link: "../../all nodes/node-5.html",
+    link: "../../all nods/node-5.html",
     use: "Residential",
     size: "457 000 m²",
     description: "Renshaw South is to feature a special residential development. Group housing and small-holding plots will also be available. While some land is reserved for conservation, a community facility and light commercial opportunities are planned."
@@ -149,8 +149,8 @@ function placeSmartInContainer(el, ev, pad = 8) {
   if (top + h > contentH) top = relY - h - pad;
   top = Math.max(0, Math.min(top, contentH - h));
 
-  el.style.left = left + padL + "px";
-  el.style.top = top + padT + "px";
+  el.style.left = left + padL + 10+ "px";
+  el.style.top = top + padT + 10+"px";
 
   el.style.visibility = prevVis || "visible";
   el.style.display = prevDisp || "block";
@@ -185,19 +185,16 @@ function renderTooltipContent(mapD) {
 
   return `
     <div style="font-family: Arial, sans-serif; line-height: 1.4;">
-      <p><strong>Lot type:</strong> ${mapD.use ?? ""}</p>
-      <p><strong>Lot number:</strong> ${String(mapD.id || "").replace(
+      <p><strong> ${mapD.node_number ?? ""} </strong></p>
+      <p><strong>Development type:</strong> ${mapD.use ?? ""}</p>
+      <p><strong>Sites:</strong> ${String(mapD.lotNumber || "").replace(
     /_/g,
     ""
-  )}</p>
+  )} Sites</p>
       <p><strong>Size:</strong> ${mapD.size ?? ""}</p>
-      <p><strong>Price USD:</strong> <span style="font-weight:bold;">$${mapD.PriceUSD ?? ""
+      <p><strong></strong> <span style="font-weight:bold;">${mapD.description ?? ""
     }</span></p>
-      <p><strong>Status:</strong> <span style="${statusStyle}">${(
-      mapD.status ?? ""
-    )
-      .toString()
-      .toUpperCase()}</span></p>
+     
     </div>
   `;
 }
