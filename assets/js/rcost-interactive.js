@@ -9,7 +9,7 @@
     PriceUSD: 149000.0,
     availability: "Available",
     status: "Available",
-    link: "https://google.com",
+    link: "../../all nods/node-2.html",
     use: "Residential",
     source: "Residential",
     size: "617.79 S.M.",
@@ -21,7 +21,7 @@
     PriceUSD: 149000.0,
     availability: "Available",
     status: "Available",
-    link: "https://google.com",
+    link: "../../all nods/node-3.html",
     use: "Residential",
     source: "Residential",
     size: "617.79 S.M.",
@@ -33,7 +33,7 @@
     PriceUSD: 149000.0,
     availability: "Available",
     status: "Available",
-    link: "https://google.com",
+    link: "../../all nods/node-1.html",
     use: "Residential",
     source: "Residential",
     size: "617.79 S.M.",
@@ -45,7 +45,7 @@
     PriceUSD: 149000.0,
     availability: "Available",
     status: "Available",
-    link: "https://google.com",
+    link: "../../all nods/node-5.html",
     use: "Residential",
     source: "Residential",
     size: "617.79 S.M.",
@@ -57,7 +57,7 @@
     PriceUSD: 149000.0,
     availability: "Available",
     status: "Available",
-    link: "https://google.com",
+    link: "../../all nods/node-4.html",
     use: "Residential",
     source: "Residential",
     size: "617.79 S.M.",
@@ -78,25 +78,25 @@
   const ikr_btnTxt = document.getElementById("ikr_btnTxt");
   // get the map id
   const ikr_svg = document.getElementById("ikr_svg");
-  const Shape = ikr_svg.getElementById("only_stroke");
+  const Shape = ikr_svg.getElementById("shape");
 
-  function getAllChildNodeIds(svgElement) {
-    const childNodeIds = [];
+  // function getAllChildNodeIds(svgElement) {
+  //   const childNodeIds = [];
 
-    // Iterate through all child elements of the SVG
-    for (const childElement of svgElement.children) {
-      // Check if the child element has an ID attribute
-      if (childElement.id) {
-        childNodeIds.push(childElement.id);
-      }
+  //   // Iterate through all child elements of the SVG
+  //   for (const childElement of svgElement.children) {
+  //     // Check if the child element has an ID attribute
+  //     if (childElement.id) {
+  //       childNodeIds.push(childElement.id);
+  //     }
 
-      // Recursively process child elements
-      childNodeIds.push(...getAllChildNodeIds(childElement));
-    }
+  //     // Recursively process child elements
+  //     childNodeIds.push(...getAllChildNodeIds(childElement));
+  //   }
 
-    return childNodeIds;
-  }
-  console.log(getAllChildNodeIds(Shape));
+  //   return childNodeIds;
+  // }
+  // console.log(getAllChildNodeIds(Shape));
 
   // map data
 
@@ -233,7 +233,14 @@
     tooltipMove.style.display = "none";
     tooltipMove.innerHTML = "";
   }
+// add the click function 
+  function rcostClick_func(ev,ct, mapD){
 
+
+    if (!mapD) return;
+    window.location.href = mapD.link;
+
+  }
   // ====== BIND LISTENERS ======
   mapId.forEach((id) => {
     const el = document.querySelector(`#${id}`);
@@ -265,6 +272,10 @@
       el.addEventListener("mouseenter", (ev) => handleShow(ev, el, mapD));
       el.addEventListener("mousemove", (ev) => handleShow(ev, el, mapD));
       el.addEventListener("mouseleave", () => handleHide(el));
+      el.addEventListener("click", (ev) => {
+        rcostClick_func(ev,el, mapD);
+        
+      });
     }
   });
 
