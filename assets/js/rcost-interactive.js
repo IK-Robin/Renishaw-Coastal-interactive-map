@@ -276,29 +276,34 @@ let mapId = [
 // });
 
 
-initNodeMap(mapData,mapId,'ikr_toltipMove','ikr_svg',renderTooltipContent);
-
+console.log(mapData)
+initNodeMap({
+    mapData, mapId, tooltipElementId: "ikr_toltipMove", // same as before
+    svgElementId: "ikr_svg",           // same as before
+    renderTooltipContent: renderTooltipContent,
+});
 // // ====== TOOLTIP RENDER ======
 function renderTooltipContent(mapD) {
-  let statusStyle = "font-weight: bold;";
-  if (mapD.status && mapD.status.toLowerCase() === "available") {
-    statusStyle = "color: #d3b683; font-weight: bold;";
-  } else if (mapD.status && mapD.status.toLowerCase() === "sold") {
-    statusStyle = "color: red; font-weight: bold;";
-  }
+    let statusStyle = "font-weight: bold;";
+    if (mapD.status && mapD.status.toLowerCase() === "available") {
+        statusStyle = "color: #d3b683; font-weight: bold;";
+    } else if (mapD.status && mapD.status.toLowerCase() === "sold") {
+        statusStyle = "color: red; font-weight: bold;";
+    }
 
-  return `
+    return `
     <div style="font-family: Arial, sans-serif; line-height: 1.4;">
       <p><strong> ${mapD.node_number ?? ""} </strong></p>
       <p><strong>Development type:</strong> ${mapD.use ?? ""}</p>
       <p><strong>Sites:</strong> ${String(mapD.lotNumber || "").replace(
-    /_/g,
-    ""
-  )} Sites</p>
+        /_/g,
+        ""
+    )} Sites</p>
       <p><strong>Size:</strong> ${mapD.size ?? ""}</p>
       <p><strong></strong> <span style="font-weight:bold;">${mapD.description ?? ""
-    }</span></p>
+        }</span></p>
      
     </div>
   `;
 }
+
