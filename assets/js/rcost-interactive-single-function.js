@@ -5,7 +5,7 @@ function initNodeMap({
     svgElementId = "ikr_svg",
     renderTooltipContent, // (mapD) => string (HTML)
 }) {
-    
+    console.log(mapData)
     // ====== BASIC CONSTS (same as before) ======
     const avalible_color = "green";
     const sold_color = "red";
@@ -98,6 +98,7 @@ function initNodeMap({
 
     // ====== EVENT HANDLERS (same behaviour) ======
     function handleShow(ev, ct, mapD) {
+        console.log('hello')
         if (!mapD || !renderTooltipContent) return;
 
         // Use the page-specific tooltip renderer
