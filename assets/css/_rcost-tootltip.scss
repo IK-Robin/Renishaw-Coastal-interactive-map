@@ -1,77 +1,179 @@
+// =============================== main tooltip style   ================================================
 
-      #mapTitle {
-        width: max-content;
-        padding: 10px 15px;
-        margin: 0 auto;
-        max-width: 250px;
-      }
-      #ikr_toltipMove {
-        position: absolute;
-        display: none;
-        min-width: 158px;
-        max-width: 250px;
-        width: 100%;
-        height: auto;
-        padding: 10px;
-        margin: 0 auto;
-        font-size: 16px;
-        font-family: Arial, sans-serif;
-        text-align: center;
+#mapTitle {
+  width: max-content;
+  padding: 10px 15px;
+  margin: 0 auto;
+  max-width: 250px;
+}
+#ikr_toltipMove {
+  position: absolute;
+  display: none;
+  // min-width: 158px;
+  max-width: 250px;
+  width: max-content;
+  height: auto;
+  // padding: 10px;
+  margin: 0 auto;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  text-align: center;
 
-        line-height: 22px;
-        background-color: #113034;
-        z-index: 55;
-        pointer-events: none;
-        box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
-          rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
-        border-radius: 6px;
-        border: 6px solid #c1b09f;
-      }
+  line-height: 22px;
+  // background-color: #fff;
+  // background-color: #113034;
+  z-index: 55;
+  pointer-events: none;
+  // box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+  border-radius: 6px;
+  // border: 6px solid #c1b09f;
+}
 
-      /* Paragraph styles */
-      #ikr_toltipMove p {
-        margin: 4px 0;
-        font-size: 16px;
-        color: #d3b683;
-      }
+/* Paragraph styles */
+#ikr_toltipMove p {
+  margin: 4px 0;
+  font-size: 16px;
+  // color: #d3b683;
+  // color: #000;
+}
 
-      /* Responsive adjustments */
-      @media (max-width: 768px) {
-        #ikr_toltipMove {
-          font-size: 14px;
-          max-width: 200px;
-          padding: 8px;
-        }
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #ikr_toltipMove {
+    font-size: 14px;
+    max-width: 200px;
+    padding: 8px;
+  }
 
-        #ikr_toltipMove p {
-          font-size: 13px;
-          line-height: 20px;
-        }
-      }
+  #ikr_toltipMove p {
+    font-size: 13px;
+    line-height: 20px;
+  }
+}
 
-      @media (max-width: 480px) {
-        #ikr_toltipMove {
-          font-size: 13px;
-          max-width: 160px;
-          padding: 6px;
-        }
+@media (max-width: 480px) {
+  #ikr_toltipMove {
+    font-size: 13px;
+    max-width: 160px;
+    padding: 6px;
+  }
 
-        #ikr_toltipMove p {
-          font-size: 12px;
-          line-height: 18px;
-        }
-      }
+  #ikr_toltipMove p {
+    font-size: 12px;
+    line-height: 18px;
+  }
+}
 
-      .ikr_svg_container {
-        width: 80%;
-        height: auto;
+.ikr_svg_container {
+  width: 80%;
+  height: auto;
 
-        margin: 0 auto;
-      }
-      .availableLot {
-        fill: green !important;
-      }
-      .soldLot {
-        fill: red !important;
-      }
-   
+  margin: 0 auto;
+}
+.availableLot {
+  fill: green !important;
+}
+.soldLot {
+  fill: red !important;
+}
+// =============================== main tooltip style   ================================================
+
+// =============================== node page view scss  ================================================
+
+
+// Center container
+
+// clickable/hover marker
+
+// tooltip
+.rcost-plot-tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: 120%; // above the marker
+  transform: translateX(-50%);
+  width: 220px;
+  background: #ffffff;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  font-family: inherit;
+  
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 10;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -8px;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #ffffff;
+  }
+
+  .ploat-tooltip-container {
+    padding: 16px 18px 0;
+
+    .plot-label {
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      color: #a0a0a0;
+      margin-bottom: 6px;
+    }
+
+    .plot-price {
+      font-size: 22px;
+      font-weight: 600;
+      color: #b28b39; // gold-ish
+      margin-bottom: 8px;
+    }
+
+    .plot-size {
+      font-size: 11px;
+      color: #999999;
+      margin-bottom: 12px;
+    }
+  }
+
+  .plot-btn {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: #44484c;
+    color: #ffffff;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    padding: 10px 0;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+}
+
+
+
+// =============================== node page view scss  ================================================
+
+
+
+// =============================== node 1 tooltip style   ================================================
+
+
+.all_node_tooltip_style{
+ background-color: #113034;
+ border: 6px solid #c1b09f;
+ padding: 10px;
+ p{
+  color: #d3b683;
+ }
+}
+
+
+// ===============================  node 1 tooltip style  ================================================
+ 

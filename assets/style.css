@@ -208,29 +208,24 @@
 #ikr_toltipMove {
   position: absolute;
   display: none;
-  min-width: 158px;
   max-width: 250px;
-  width: 100%;
+  width: -moz-max-content;
+  width: max-content;
   height: auto;
-  padding: 10px;
   margin: 0 auto;
   font-size: 16px;
   font-family: Arial, sans-serif;
   text-align: center;
   line-height: 22px;
-  background-color: #113034;
   z-index: 55;
   pointer-events: none;
-  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
   border-radius: 6px;
-  border: 6px solid #c1b09f;
 }
 
 /* Paragraph styles */
 #ikr_toltipMove p {
   margin: 4px 0;
   font-size: 16px;
-  color: #d3b683;
 }
 
 /* Responsive adjustments */
@@ -268,4 +263,75 @@
 
 .soldLot {
   fill: red !important;
+}
+
+.rcost-plot-tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: 120%;
+  transform: translateX(-50%);
+  width: 220px;
+  background: #ffffff;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  font-family: inherit;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 10;
+}
+.rcost-plot-tooltip::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #ffffff;
+}
+.rcost-plot-tooltip .ploat-tooltip-container {
+  padding: 16px 18px 0;
+}
+.rcost-plot-tooltip .ploat-tooltip-container .plot-label {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: #a0a0a0;
+  margin-bottom: 6px;
+}
+.rcost-plot-tooltip .ploat-tooltip-container .plot-price {
+  font-size: 22px;
+  font-weight: 600;
+  color: #b28b39;
+  margin-bottom: 8px;
+}
+.rcost-plot-tooltip .ploat-tooltip-container .plot-size {
+  font-size: 11px;
+  color: #999999;
+  margin-bottom: 12px;
+}
+.rcost-plot-tooltip .plot-btn {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: #44484c;
+  color: #ffffff;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  padding: 10px 0;
+  cursor: pointer;
+}
+.rcost-plot-tooltip .plot-btn:hover {
+  opacity: 0.9;
+}
+
+.all_node_tooltip_style {
+  background-color: #113034;
+  border: 6px solid #c1b09f;
+  padding: 10px;
+}
+.all_node_tooltip_style p {
+  color: #d3b683;
 }/*# sourceMappingURL=style.css.map */
