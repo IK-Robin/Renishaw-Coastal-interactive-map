@@ -281,6 +281,8 @@ initNodeMap({
     mapData, mapId, tooltipElementId: "ikr_toltipMove", // same as before
     svgElementId: "ikr_svg",           // same as before
     renderTooltipContent: renderTooltipContent,
+    tooltipLeft:10,
+    tooltipTop:10,
 });
 // // ====== TOOLTIP RENDER ======
 function renderTooltipContent(mapD) {
@@ -292,7 +294,7 @@ function renderTooltipContent(mapD) {
     }
 
     return `
-    <div style="font-family: Arial, sans-serif; line-height: 1.4;">
+    <div  class="all_node_tooltip_style">
       <p><strong> ${mapD.node_number ?? ""} </strong></p>
       <p><strong>Development type:</strong> ${mapD.use ?? ""}</p>
       <p><strong>Sites:</strong> ${String(mapD.lotNumber || "").replace(
