@@ -139,7 +139,9 @@
 
         el.addEventListener("touchend", (ev) => {
           if (typeof onLotHoverOut === "function") {
-            onLotHoverOut(el, mapD, ev);
+           setTimeout(() => {
+             onLotHoverOut(el, mapD, ev);
+           }, 500);
           }
           handleHideOnMobile(el);
         });
