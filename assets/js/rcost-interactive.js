@@ -277,13 +277,13 @@ let mapId = [
 
 
 console.log(mapData)
-initNodeMap({
-    mapData, mapId, tooltipElementId: "ikr_toltipMove", // same as before
-    svgElementId: "ikr_svg",           // same as before
-    renderTooltipContent: renderTooltipContent,
-    tooltipLeft:10,
-    tooltipTop:10,
-});
+// initNodeMap({
+//     mapData, mapId, tooltipElementId: "ikr_toltipMove", // same as before
+//     svgElementId: "ikr_svg",           // same as before
+//     renderTooltipContent: renderTooltipContent,
+//     tooltipLeft:10,
+//     tooltipTop:10,
+// });
 // // ====== TOOLTIP RENDER ======
 function renderTooltipContent(mapD) {
     let statusStyle = "font-weight: bold;";
@@ -309,3 +309,69 @@ function renderTooltipContent(mapD) {
   `;
 }
 
+
+
+  function setupStrokeAnimation(svgId) {
+    const ikr_svg = document.getElementById(svgId);
+    if (!ikr_svg) return;
+
+    const paths = ikr_svg.querySelectorAll(".anim-path");
+    paths.forEach((path) => {
+      if (typeof path.getTotalLength === "function") {
+        const len = path.getTotalLength();
+        path.style.setProperty("--len", len);
+        path.style.strokeDasharray = len;
+      }
+    });
+  }
+
+  function applyStrokeHover(el) {
+    if (!el.classList.contains("anim-path")) return;
+
+    if (typeof el.getTotalLength === "function") {
+      const len = el.getTotalLength();
+      el.style.setProperty("--len", len);
+      el.style.strokeDasharray = len;
+    }
+
+    el.style.fill = "#ffffff";
+    el.style.fillOpacity = "0.3";
+
+    el.classList.remove("draw", "highlight");
+    // restart animation
+    void el.offsetWidth;
+    el.classList.add("highlight", "draw");
+  }
+
+  function clearStrokeHover(el) {
+    if (!el.classList.contains("anim-path")) return;
+
+    el.style.fillOpacity = "0";
+    el.classList.remove("draw", "highlight");
+    // Optionally revert fill color completely
+    // el.style.removeProperty("fill");
+  }
+
+
+   // =========================
+  // RUN SETUP
+  // =========================
+  // Prepare anim-path stroke lengths
+  setupStrokeAnimation("ikr_svg");
+
+  // Initialise map with tooltip + hover animation
+  initNodeMap({
+    mapData,
+    mapId,
+    tooltipElementId: "ikr_toltipMove",
+    svgElementId: "ikr_svg",
+    renderTooltipContent: renderTooltipContent,
+    tooltipLeft: 10,
+    tooltipTop: 10,
+    onLotHoverIn: (el, mapD, ev) => {
+      applyStrokeHover(el);
+    },
+    onLotHoverOut: (el, mapD, ev) => {
+      clearStrokeHover(el);
+    }
+  });
