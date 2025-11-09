@@ -45,4 +45,4 @@ const selectAll_anim_paths = ikr_svg.querySelectorAll('.anim-path');
 
 
 // call the hover animation function with the id of the svg 
-hoverStrokeAnimation('ikr_svg');
+// hoverStrokeAnimation('ikr_svg');
