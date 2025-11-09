@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Node Map + Tooltip + Hover Animation Demo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #2e5b3e;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+    }
+
+    /* Container for SVG + tooltip */
+    #map-container {
+      position: relative;
+      width: 600px;
+      height: 400px;
+      background: #ededed;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.3);
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Tooltip base styles */
+    #ikr_toltipMove {
+      position: absolute;
+      display: none;
+      background: #ffffff;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+      padding: 12px 14px;
+      z-index: 999;
+      max-width: 260px;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    #ikr_toltipMove::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -8px;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid #ffffff;
+    }
+
+    .all_node_tooltip_style p {
+      margin-bottom: 4px;
+    }
+
+    .all_node_tooltip_style p strong {
+      font-weight: 600;
+    }
+
+    /* Simple animation classes for anim-path */
+    .anim-path {
+      stroke: #333333;
+      stroke-width: 2;
+      fill: #f5d57b;
+      transition: fill 0.2s ease, fill-opacity 0.2s ease;
+      stroke-dasharray: var(--len, 0);
+      stroke-dashoffset: 0;
+    }
+
+    .anim-path.draw {
+      animation: dash-draw 0.5s ease-out forwards;
+    }
+
+    @keyframes dash-draw {
+      from {
+        stroke-dashoffset: var(--len, 0);
+      }
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    .anim-path.highlight {
+      stroke: #d3b683;
+    }
+  </style>
+</head>
+<body>
+
+<div id="map-container">
+  <!-- Tooltip -->
+  <div id="ikr_toltipMove"></div>
+
+  <!-- Simple SVG with 3 lots as example -->
+  <svg id="ikr_svg" viewBox="0 0 600 400">
+    <!-- Lot 1 -->
+    <path
+      id="lot_1"
+      class="anim-path"
+      d="M50 50 H200 V150 H50 Z"
+    />
+    <!-- Lot 2 -->
+    <path
+      id="lot_2"
+      class="anim-path"
+      d="M220 50 H370 V150 H220 Z"
+    />
+    <!-- Lot 3 -->
+    <path
+      id="lot_3"
+      class="anim-path"
+      d="M50 170 H200 V320 H50 Z"
+    />
+  </svg>
+</div>
+
+<script>
+  // =========================
+  // SAMPLE MAP DATA
+  // =========================
+  const mapData = [
+    {
+      id: "lot_1",
+      lotNumber: 1,
+      node_number: "Node 1",
+      use: "RESIDENTIAL ONLY 1",
+      size: "500m²",
+      description: "Lot 1 – nice residential plot",
+      status: "available",
+      link: "#lot1"
+    },
+    {
+      id: "lot_2",
+      lotNumber: 2,
+      node_number: "Node 2",
+      use: "RESIDENTIAL ONLY 1",
+      size: "650m²",
+      description: "Lot 2 – larger corner site",
+      status: "sold",
+      link: "#lot2"
+    },
+    {
+      id: "lot_3",
+      lotNumber: 3,
+      node_number: "Node 3",
+      use: "RESIDENTIAL ONLY 2",
+      size: "800m²",
+      description: "Lot 3 – premium site",
+      status: "available",
+      link: "#lot3"
+    }
+  ];
+
+  const mapId = mapData.map(d => d.id);
+
+  // =========================
+  // TOOLTIP RENDER FUNCTION
+  // =========================
+  function renderTooltipContent(mapD) {
+    let statusStyle = "font-weight: bold;";
+    if (mapD.status && mapD.status.toLowerCase() === "available") {
+      statusStyle = "color: #d3b683; font-weight: bold;";
+    } else if (mapD.status && mapD.status.toLowerCase() === "sold") {
+      statusStyle = "color: red; font-weight: bold;";
+    }
+
+    return `
+      <div class="all_node_tooltip_style">
+        <p><strong>${mapD.node_number ?? ""}</strong></p>
+        <p><strong>Development type:</strong> ${mapD.use ?? ""}</p>
+        <p><strong>Sites:</strong> ${String(mapD.lotNumber || "").replace(/_/g, "")} Sites</p>
+        <p><strong>Size:</strong> ${mapD.size ?? ""}</p>
+        <p><strong>Status:</strong> <span style="${statusStyle}">${mapD.status ?? ""}</span></p>
+        <p><span style="font-weight:bold;">${mapD.description ?? ""}</span></p>
+      </div>
+    `;
+  }
+
+  // =========================
+  // HOVER ANIMATION HELPERS
+  // =========================
+
+  // Prepare all anim-paths once (stroke length, etc.)
+  function setupStrokeAnimation(svgId) {
+    const ikr_svg = document.getElementById(svgId);
+    if (!ikr_svg) return;
+
+    const paths = ikr_svg.querySelectorAll(".anim-path");
+    paths.forEach((path) => {
+      if (typeof path.getTotalLength === "function") {
+        const len = path.getTotalLength();
+        path.style.setProperty("--len", len);
+        path.style.strokeDasharray = len;
+      }
+    });
+  }
+
+  function applyStrokeHover(el) {
+    if (!el.classList.contains("anim-path")) return;
+
+    if (typeof el.getTotalLength === "function") {
+      const len = el.getTotalLength();
+      el.style.setProperty("--len", len);
+      el.style.strokeDasharray = len;
+    }
+
+    el.style.fill = "#ffffff";
+    el.style.fillOpacity = "0.3";
+
+    el.classList.remove("draw", "highlight");
+    // restart animation
+    void el.offsetWidth;
+    el.classList.add("highlight", "draw");
+  }
+
+  function clearStrokeHover(el) {
+    if (!el.classList.contains("anim-path")) return;
+
+    el.style.fillOpacity = "0";
+    el.classList.remove("draw", "highlight");
+    // Optionally revert fill color completely
+    // el.style.removeProperty("fill");
+  }
+
+  // =========================
+  // MAIN INIT FUNCTION
+  // =========================
+  function initNodeMap({
+    mapData,
+    mapId,
+    tooltipElementId = "ikr_toltipMove",
+    svgElementId = "ikr_svg",
+    renderTooltipContent,
+    tooltipLeft = 0,
+    tooltipTop = 0,
+    onLotHoverIn,
+    onLotHoverOut
+  }) {
+    const ikr_svg = document.getElementById(svgElementId);
+    const tooltipMove = document.getElementById(tooltipElementId);
+
+    if (!tooltipMove) {
+      console.warn("Tooltip element not found:", tooltipElementId);
+      return;
+    }
+
+    function getClientPoint(ev) {
+      if (ev.touches && ev.touches[0]) {
+        return { x: ev.touches[0].clientX, y: ev.touches[0].clientY };
+      }
+      if (ev.changedTouches && ev.changedTouches[0]) {
+        return {
+          x: ev.changedTouches[0].clientX,
+          y: ev.changedTouches[0].clientY
+        };
+      }
+      return { x: ev.clientX, y: ev.clientY };
+    }
+
+    function placeSmartInContainer(el, ev, pad = 8) {
+      el.style.position = "absolute";
+
+      const parent = el.offsetParent || document.body;
+      const rect = parent.getBoundingClientRect();
+
+      const cs = getComputedStyle(parent);
+      const padL = parseFloat(cs.paddingLeft) || 0;
+      const padT = parseFloat(cs.paddingTop) || 0;
+      const padR = parseFloat(cs.paddingRight) || 0;
+      const padB = parseFloat(cs.paddingBottom) || 0;
+
+      const prevDisp = el.style.display;
+      const prevVis = el.style.visibility;
+      el.style.visibility = "hidden";
+      el.style.display = "block";
+
+      const w = el.offsetWidth;
+      const h = el.offsetHeight;
+
+      const pt = getClientPoint(ev);
+      const relX = pt.x - rect.left - padL;
+      const relY = pt.y - rect.top - padT;
+
+      const contentW = rect.width - padL - padR;
+      const contentH = rect.height - padT - padB;
+
+      let left = relX + pad;
+      let top = relY + pad;
+
+      if (left + w > contentW) left = relX - w - pad;
+      left = Math.max(0, Math.min(left, contentW - w));
+
+      if (top + h > contentH) top = relY - h - pad;
+      top = Math.max(0, Math.min(top, contentH - h));
+
+      el.style.left = left + padL + tooltipLeft + "px";
+      el.style.top = top + padT + tooltipTop + "px";
+
+      el.style.visibility = prevVis || "visible";
+      el.style.display = prevDisp || "block";
+    }
+
+    function isMobile() {
+      return /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+    }
+
+    function handleShow(ev, ct, mapD) {
+      if (!mapD || !renderTooltipContent) return;
+
+      tooltipMove.innerHTML = renderTooltipContent(mapD);
+      tooltipMove.style.display = "block";
+      placeSmartInContainer(tooltipMove, ev, 12);
+    }
+
+    function handleHide(ct) {
+      tooltipMove.style.display = "none";
+      tooltipMove.innerHTML = "";
+    }
+
+    function handleHideOnMobile(ct) {
+      // could call handleHide(ct) if you want
+    }
+
+    function rcostClick_func(ev, ct, mapD) {
+      if (!mapD || !mapD.link) return;
+      // example: just log instead of redirect
+      console.log("Clicked lot:", mapD.id, "->", mapD.link);
+      // window.location.href = mapD.link;
+    }
+
+    // Init default colors if provided
+    window.addEventListener("load", () => {
+      mapId.forEach((id) => {
+        const el = document.querySelector(`#${id}`);
+        if (!el) return;
+        const data = mapData.find((d) => d.id === id);
+        if (data && data.mapColor) {
+          el.style.fill = `#${data.mapColor}`;
+        }
+      });
+    });
+
+    // Bind events
+    mapId.forEach((id) => {
+      const el = document.querySelector(`#${id}`);
+      if (!el) return;
+
+      const mapD = mapData.find((d) => d.id === id);
+      if (!mapD) return;
+
+      if (isMobile()) {
+        el.addEventListener(
+          "touchstart",
+          (ev) => {
+            ev.preventDefault();
+            if (typeof onLotHoverIn === "function") {
+              onLotHoverIn(el, mapD, ev);
+            }
+            handleShow(ev, el, mapD);
+            rcostClick_func(ev, el, mapD);
+          },
+          { passive: false }
+        );
+
+        el.addEventListener("touchend", (ev) => {
+          if (typeof onLotHoverOut === "function") {
+            onLotHoverOut(el, mapD, ev);
+          }
+          handleHideOnMobile(el);
+        });
+
+        el.addEventListener("click", (ev) => {
+          handleShow(ev, el, mapD);
+        });
+      } else {
+        el.addEventListener("mouseenter", (ev) => {
+          if (typeof onLotHoverIn === "function") {
+            onLotHoverIn(el, mapD, ev);
+          }
+          handleShow(ev, el, mapD);
+        });
+
+        el.addEventListener("mousemove", (ev) => {
+          handleShow(ev, el, mapD);
+        });
+
+        el.addEventListener("mouseleave", (ev) => {
+          if (typeof onLotHoverOut === "function") {
+            onLotHoverOut(el, mapD, ev);
+          }
+          handleHide(el);
+        });
+
+        el.addEventListener("click", (ev) => {
+          rcostClick_func(ev, el, mapD);
+        });
+      }
+    });
+
+    // Hide tooltip when clicking outside paths
+    window.addEventListener("click", (ev) => {
+      if (ev.target && ev.target.tagName.toLowerCase() !== "path") {
+        tooltipMove.style.display = "none";
+      }
+    });
+  }
+
+  // =========================
+  // RUN SETUP
+  // =========================
+  // Prepare anim-path stroke lengths
+  setupStrokeAnimation("ikr_svg");
+
+  // Initialise map with tooltip + hover animation
+  initNodeMap({
+    mapData,
+    mapId,
+    tooltipElementId: "ikr_toltipMove",
+    svgElementId: "ikr_svg",
+    renderTooltipContent: renderTooltipContent,
+    tooltipLeft: 10,
+    tooltipTop: 10,
+    onLotHoverIn: (el, mapD, ev) => {
+      applyStrokeHover(el);
+    },
+    onLotHoverOut: (el, mapD, ev) => {
+      clearStrokeHover(el);
+    }
+  });
+</script>
+
+</body>
+</html>
