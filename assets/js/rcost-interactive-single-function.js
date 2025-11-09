@@ -4,8 +4,10 @@ function initNodeMap({
     tooltipElementId = "ikr_toltipMove",
     svgElementId = "ikr_svg",
     renderTooltipContent, // (mapD) => string (HTML)
+    tooltipLeft = 0,
+    tooltipTop = 0
 }) {
-    console.log(mapData)
+    
     // ====== BASIC CONSTS (same as before) ======
     const avalible_color = "green";
     const sold_color = "red";
@@ -71,8 +73,9 @@ function initNodeMap({
         if (top + h > contentH) top = relY - h - pad;
         top = Math.max(0, Math.min(top, contentH - h));
 
-        el.style.left = left + padL + 10 + "px";
-        el.style.top = top + padT + 10 + "px";
+        // use tooltipLeft / tooltipTop from outer scope
+        el.style.left = left + padL + tooltipLeft + "px";
+        el.style.top = top + padT + tooltipTop + "px";
 
         el.style.visibility = prevVis || "visible";
         el.style.display = prevDisp || "block";
@@ -98,17 +101,15 @@ function initNodeMap({
 
     // ====== EVENT HANDLERS (same behaviour) ======
     function handleShow(ev, ct, mapD) {
-        console.log('hello')
+        console.log("hello");
         if (!mapD || !renderTooltipContent) return;
 
-        // Use the page-specific tooltip renderer
         tooltipMove.innerHTML = renderTooltipContent(mapD);
         tooltipMove.style.display = "block";
         placeSmartInContainer(tooltipMove, ev, 12);
     }
 
     function handleHideOnMobile(ct) {
-        // You had this empty, so I keep same behaviour
         // tooltipMove.style.display = "none";
         // tooltipMove.innerHTML = "";
     }
@@ -121,7 +122,6 @@ function initNodeMap({
         tooltipMove.innerHTML = "";
     }
 
-    // click function (same)
     function rcostClick_func(ev, ct, mapD) {
         if (!mapD) return;
         window.location.href = mapD.link;
@@ -136,13 +136,12 @@ function initNodeMap({
         if (!mapD) return;
 
         if (isMobile()) {
-            // Mobile: show on touchstart/click, hide on touchend/outside
             el.addEventListener(
                 "touchstart",
                 (ev) => {
                     ev.preventDefault();
                     handleShow(ev, el, mapD);
-                    rcostClick_func(ev,el,mapD);
+                    rcostClick_func(ev, el, mapD);
                 },
                 { passive: false }
             );
@@ -155,21 +154,18 @@ function initNodeMap({
                 handleShow(ev, el, mapD);
             });
         } else {
-            // Desktop: normal hover
             el.addEventListener("mouseenter", (ev) => handleShow(ev, el, mapD));
             el.addEventListener("mousemove", (ev) => handleShow(ev, el, mapD));
-            el.addEventListener("mouseleave", () => handleHide(el));
+            // el.addEventListener("mouseleave", () => handleHide(el));
             el.addEventListener("click", (ev) => {
                 rcostClick_func(ev, el, mapD);
             });
         }
     });
 
-    // Hide tooltip when clicking outside lots (same)
     window.addEventListener("click", (ev) => {
         if (ev.target && ev.target.tagName.toLowerCase() !== "path") {
             tooltipMove.style.display = "none";
         }
     });
 }
-
