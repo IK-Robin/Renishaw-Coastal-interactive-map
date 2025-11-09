@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Centered Plot Tooltip Demo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #2e5b3e; /* just a background to simulate a map */
+      font-family: "Helvetica Neue", Arial, sans-serif;
+    }
+
+    /* Center container */
+    .plot-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    /* The clickable/hover marker */
+    .plot-marker {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #f26c4f;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.3);
+      user-select: none;
+    }
+
+    /* Tooltip box */
+    .plot-tooltip {
+      position: absolute;
+      left: 50%;
+      bottom: 120%;               /* above the marker */
+      transform: translateX(-50%);
+      width: 220px;
+
+      background: #ffffff;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+      text-align: center;
+      
+      font-family: inherit;
+
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 10;
+    }
+    .ploat-tooltip-container{
+        padding: 16px 18px 0;
+    }
+
+    /* little white triangle */
+    .plot-tooltip::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -8px;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid #ffffff;
+    }
+
+    /* Show tooltip on hover */
+    .plot-wrapper:hover .plot-tooltip {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(-4px);
+    }
+
+    /* Text styles inside tooltip */
+    .plot-label {
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      color: #a0a0a0;
+      margin-bottom: 6px;
+    }
+
+    .plot-price {
+      font-size: 22px;
+      font-weight: 600;
+      color: #b28b39;  /* gold-ish */
+      margin-bottom: 8px;
+    }
+
+    .plot-size {
+      font-size: 11px;
+      color: #999999;
+      margin-bottom: 12px;
+    }
+
+    /* Bottom bar button */
+    .plot-btn {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: #44484c;
+      color: #ffffff;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      padding: 10px 0;
+      cursor: pointer;
+    }
+
+    .plot-btn:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="plot-wrapper">
+    <!-- Marker in the center -->
+    <div class="plot-marker">2192</div>
+
+    <!-- Tooltip -->
+    <div class="rcost-plot-tooltip">
+    <div class="ploat-tooltip-container">
+          <div class="plot-label">PLOT NO. 2192</div>
+      <div class="plot-price">R 1 770 000</div>
+      <div class="plot-size">Plot Size: 1220m²</div>
+    </div>
+      <button class="plot-btn">CLICK TO VIEW</button>
+    </div>
+  </div>
+
+</body>
+</html>
