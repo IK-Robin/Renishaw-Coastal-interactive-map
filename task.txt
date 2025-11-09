@@ -1,3 +1,4 @@
 1. add click event and create 5 new html to link the svg ok
 2. add a tooltip button  for the mobile devices and add then animation on mobile device when a user click any lot 
 3. add a fullscreen button to show the map mobile full screen 
+4. create the filter option using the development type in nodelavel 
