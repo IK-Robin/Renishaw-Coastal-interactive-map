@@ -2156,12 +2156,13 @@ function renderTooltipContent(mapD) {
   //     statusStyle = "color: red; font-weight: bold;";
   // }
 
+
   return `
    <div class="rcost-plot-tooltip">
     <div class="ploat-tooltip-container">
-          <div class="plot-label">PLOT NO. 2192</div>
-      <div class="plot-price">R 1 770 000</div>
-      <div class="plot-size">Plot Size: 1220m²</div>
+          <div class="plot-label">PLOT NO. ${mapD.lotNumber}</div>
+      <div class="plot-price">${mapD.developmentType}</div>
+      <div class="plot-size">Plot Size: ${mapD.size}</div>
     </div>
       <button class="plot-btn">CLICK TO VIEW</button>
     </div>
