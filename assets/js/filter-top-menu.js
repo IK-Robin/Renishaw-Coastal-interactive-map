@@ -1,59 +1,34 @@
-/* -------------------------------------------------
-   DATA (taken from the table you supplied)
-   ------------------------------------------------- */
-const nodeData = {
-  node_1: {
-    types: [
-      "Medium Density Residential","High Density Residential",
-      "Business Zone 1 & 2","Business and Government","Education",
-      "Urban Agriculture Zone 1 & 2"
-    ],
-    prices: [
-      {label:"R 1,27M – R 1,50M", min:1270000, max:1500000},
-      {label:"R 1,50M – R 2,00M", min:1500000, max:2000000},
-      {label:"R 2,00M – R 3,00M", min:2000000, max:3000000}
-    ]
-    
-  },
-  node_2: {
-    types: ["Medium Density Residential","High Density Residential","Business Zone 1","Business Zone 2","Education"],
-    prices: [
-      {label:"R 1,83M – R 2,00M", min:1830000, max:2000000},
-      {label:"R 2,00M – R 2,50M", min:2000000, max:2500000},
-      {label:"R 2,50M – R 3,07M", min:2500000, max:3070000}
-    ]
-  },
-  node_3: {
-    types: ["Light Industry","Business Zone 1","Business Zone 2","High Density Residential","Education","Health and Welfare"],
-    prices: [
-      {label:"R 1,10M – R 1,50M", min:1100000, max:1500000},
-      {label:"R 1,50M – R 2,00M", min:1500000, max:2000000},
-      {label:"R 2,00M – R 2,87M", min:2000000, max:2870000}
-    ]
-  },
-  node_4: {
-    types: ["Medium Density Residential","Business Zone 1","Business Zone 2","Education","Health and Welfare"],
-    prices: [
-      {label:"R 2,13M – R 2,50M", min:2130000, max:2500000},
-      {label:"R 2,50M – R 3,00M", min:2500000, max:3000000},
-      {label:"R 3,00M – R 4,23M", min:3000000, max:4230000}
-    ]
-  },
-  node_5: {
-    types: ["Light Industry","Medium Density Residential","High Density Residential","Business Zone 1","Business Zone 2","Education","Urban Agriculture Zone 1"],
-    prices: [
-      {label:"R 1,79M – R 2,00M", min:1790000, max:2000000},
-      {label:"R 2,00M – R 2,50M", min:2000000, max:2500000},
-      {label:"R 2,50M – R 3,22M", min:2500000, max:3220000}
-    ]
-  }
-};
+// -------------------------------------------------
+// RAW DATA (your node_1_data – keep it as-is)
+// -------------------------------------------------
 
-/* -------------------------------------------------
-   ELEMENTS
-   ------------------------------------------------- */
+
+// -------------------------------------------------
+// 1. ENRICH DATA: add random price & status
+// -------------------------------------------------
+const allLots = node_1_data.map(lot => {
+  // random status
+  const status = Math.random() < 0.7 ? 'available' : 'sold';
+
+  // random price (in Rand)
+  const sizeMatch = typeof lot.size === 'string' ? lot.size.match(/([\d.]+)/) : null;
+  const sizeM2 = sizeMatch ? parseFloat(sizeMatch[1]) : 400; // default 400m²
+
+  const basePerM2 = 3000 + Math.random() * 4000; // roughly R3k–R7k / m²
+  const price = Math.round(sizeM2 * basePerM2);
+
+  return {
+    ...lot,
+    status,
+    price
+  };
+});
+
+// -------------------------------------------------
+// 2. DOM ELEMENTS
+// -------------------------------------------------
 const nodeSelect   = document.getElementById('nodeSelect');
-const blockSelect  = document.getElementById('blockSelect');
+const blockSelect  = document.getElementById('blockSelect');   // devType / landUse
 const priceSelect  = document.getElementById('priceSelect');
 const statusSelect = document.getElementById('statusSelect');
 const resetBtn     = document.getElementById('resetBtn');
@@ -62,72 +37,254 @@ const selects      = document.querySelectorAll('.sf-input-select');
 const mobileToggle = document.getElementById('mobileToggle');
 const searchForm   = document.getElementById('searchForm');
 
-/* -------------------------------------------------
-   POPULATE TYPE & PRICE WHEN NODE CHANGES
-   ------------------------------------------------- */
-nodeSelect.addEventListener('change', () => {
-  const node = nodeSelect.value;
-  const data = nodeData[node] || {types:[], prices:[]};
-
-  // ---- Development Type ----
-  blockSelect.innerHTML = '<option value="">Development Type</option>';
-  data.types.forEach(t => {
-    const opt = document.createElement('option');
-    opt.value = t.toLowerCase().replace(/[^a-z0-9]/g,'_');
-    opt.textContent = t;
-    blockSelect.appendChild(opt);
+// -------------------------------------------------
+// 3. BUILD UNIQUE DEVELOPMENT TYPES & LAND USES
+// -------------------------------------------------
+function getUniqueValues(key) {
+  const set = new Set();
+  allLots.forEach(lot => {
+    if (lot[key]) set.add(lot[key].trim());
   });
+  return Array.from(set).sort();
+}
 
-  // ---- Price Range ----
+const uniqueDevTypes = getUniqueValues('developmentType');
+const uniqueLandUses = getUniqueValues('landUse');
+
+// -------------------------------------------------
+// 4. POPULATE DEV/LAND DROPDOWN (blockSelect)
+// -------------------------------------------------
+function populateDevLandDropdown() {
+  blockSelect.innerHTML = '<option value="">Development Type / Land Use</option>';
+
+  // Development Types
+  if (uniqueDevTypes.length) {
+    const devGroup = document.createElement('optgroup');
+    devGroup.label = 'Development Type';
+    uniqueDevTypes.forEach(dt => {
+      const opt = document.createElement('option');
+      opt.value = 'dev::' + dt; // prefix to avoid collisions with land use
+      opt.textContent = dt;
+      devGroup.appendChild(opt);
+    });
+    blockSelect.appendChild(devGroup);
+  }
+
+  // Land Uses
+  if (uniqueLandUses.length) {
+    const landGroup = document.createElement('optgroup');
+    landGroup.label = 'Land Use';
+    uniqueLandUses.forEach(lu => {
+      const opt = document.createElement('option');
+      opt.value = 'land::' + lu;
+      opt.textContent = lu;
+      landGroup.appendChild(opt);
+    });
+    blockSelect.appendChild(landGroup);
+  }
+}
+
+// -------------------------------------------------
+// 5. BUILD DYNAMIC PRICE RANGES
+// -------------------------------------------------
+function buildPriceRanges(bucketCount = 5) {
+  const prices = allLots
+    .map(l => l.price)
+    .filter(p => typeof p === 'number' && !isNaN(p));
+
+  if (!prices.length) return [];
+
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  const step = Math.round((max - min) / bucketCount);
+
+  const ranges = [];
+  let start = min;
+  for (let i = 0; i < bucketCount; i++) {
+    const end = (i === bucketCount - 1) ? max : start + step;
+    ranges.push({ min: start, max: end });
+    start = end + 1;
+  }
+  return ranges;
+}
+
+function formatRand(n) {
+  return 'R ' + n.toLocaleString('en-ZA');
+}
+
+function populatePriceDropdown() {
   priceSelect.innerHTML = '<option value="">Price Range</option>';
-  data.prices.forEach(p => {
+
+  const ranges = buildPriceRanges(5);
+  ranges.forEach(r => {
     const opt = document.createElement('option');
-    opt.value = `${p.min}+${p.max}`;
-    opt.textContent = p.label;
+    opt.value = `${r.min}-${r.max}`;
+    opt.textContent = `${formatRand(r.min)} – ${formatRand(r.max)}`;
     priceSelect.appendChild(opt);
   });
+}
 
-  // reset dependent selects
-  blockSelect.value = "";
-  priceSelect.value = "";
-  updateActiveStates();
-});
+// -------------------------------------------------
+// 6. COLOR MAPPING FOR DEV / LAND (for highlights)
+// -------------------------------------------------
+const colorPalette = [
+  '#f94144','#f3722c','#f8961e','#f9844a','#f9c74f',
+  '#90be6d','#43aa8b','#577590','#277da1','#8e44ad'
+];
+const colorMap = {};
 
-/* -------------------------------------------------
-   ACTIVE STATE & RESET BUTTON
-   ------------------------------------------------- */
-function updateActiveStates(){
+function getKeyForLot(lot) {
+  // priority: developmentType, then landUse
+  return lot.developmentType || lot.landUse || 'default';
+}
+
+function getColorForKey(key) {
+  if (!colorMap[key]) {
+    const index = Object.keys(colorMap).length % colorPalette.length;
+    colorMap[key] = colorPalette[index];
+  }
+  return colorMap[key];
+}
+
+// -------------------------------------------------
+// 7. FILTER LOGIC – MATCH & HIGHLIGHT SVG BY ID
+// -------------------------------------------------
+function parsePriceRange(value) {
+  if (!value) return null;
+  const parts = value.split('-');
+  if (parts.length !== 2) return null;
+  const min = parseInt(parts[0], 10);
+  const max = parseInt(parts[1], 10);
+  if (isNaN(min) || isNaN(max)) return null;
+  return { min, max };
+}
+
+function matchesFilters(lot) {
+  // Node filter: deduce node from id prefix, e.g. "node_1_2"
+  const nodeValue = nodeSelect.value;
+  if (nodeValue) {
+    if (!lot.id || !lot.id.startsWith(nodeValue + '_')) {
+      return false;
+    }
+  }
+
+  // DevType / LandUse filter
+  const blockValue = blockSelect.value;
+  if (blockValue) {
+    const [type, raw] = blockValue.split('::');
+    if (type === 'dev') {
+      if (lot.developmentType !== raw) return false;
+    } else if (type === 'land') {
+      if (lot.landUse !== raw) return false;
+    }
+  }
+
+  // Status filter
+  const statusValue = statusSelect.value;
+  if (statusValue && lot.status !== statusValue) {
+    return false;
+  }
+
+  // Price filter
+  const priceValue = priceSelect.value;
+  if (priceValue) {
+    const range = parsePriceRange(priceValue);
+    if (range) {
+      if (lot.price < range.min || lot.price > range.max) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+// Restore original look of an SVG element (no highlight)
+function restoreOriginalAppearance(el) {
+  if (!el) return;
+  el.classList.remove('highlight', 'dimmed');
+  el.style.fill = '';   // clears inline style, falls back to CSS / attribute
+  el.style.stroke = '';
+  el.style.opacity = ''; // in case you tweak opacity via style
+}
+
+function applyFilters() {
+  const anyFilterActive = Array.from(selects).some(sel => sel.value !== '');
+
+  allLots.forEach(lot => {
+    if (!lot.id) return;
+    const el = document.getElementById(lot.id);
+    if (!el) return;
+
+    // Always start from clean state
+    restoreOriginalAppearance(el);
+
+    if (!anyFilterActive) {
+      // no filters: keep original styles
+      return;
+    }
+
+    if (matchesFilters(lot)) {
+      // highlight MATCHING lots ONLY
+      const key = getKeyForLot(lot);
+      const color = getColorForKey(key);
+
+      el.classList.add('highlight');
+      el.style.fill = color;
+      el.style.stroke = '#000000';
+      el.style.opacity = '1';
+    } else {
+      // non-matching lots: just dim them, do NOT change fill
+      el.classList.add('dimmed');
+      el.style.opacity = '0.2';
+    }
+  });
+}
+
+// -------------------------------------------------
+// 8. ACTIVE STATE & RESET BUTTON
+// -------------------------------------------------
+function updateActiveStates() {
   selects.forEach(sel => {
     const li = sel.closest('li');
+    if (!li) return;
     li.classList.toggle('active', sel.value !== '');
   });
   const any = Array.from(selects).some(s => s.value !== '');
   resetLi.classList.toggle('active', any);
 }
-selects.forEach(sel => sel.addEventListener('change', updateActiveStates));
+
+selects.forEach(sel => {
+  sel.addEventListener('change', () => {
+    updateActiveStates();
+    applyFilters();
+  });
+});
 
 resetBtn.addEventListener('click', e => {
   e.preventDefault();
   selects.forEach(sel => {
     sel.value = "";
-    sel.closest('li').classList.remove('active');
+    const li = sel.closest('li');
+    if (li) li.classList.remove('active');
   });
-  blockSelect.innerHTML = '<option value="">Development Type</option>';
-  priceSelect.innerHTML = '<option value="">Price Range</option>';
+
+  // repopulate dropdowns
+  populateDevLandDropdown();
+  populatePriceDropdown();
+
   updateActiveStates();
+  applyFilters(); // clears highlight/dim state + restores original fill
 });
 
-/* -------------------------------------------------
-   MOBILE TOGGLE
-   ------------------------------------------------- */
+// -------------------------------------------------
+// 9. MOBILE TOGGLE + CLOSE ON OUTSIDE CLICK
+// -------------------------------------------------
 mobileToggle.addEventListener('click', () => {
   const active = searchForm.classList.toggle('active');
   mobileToggle.classList.toggle('active', active);
 });
 
-/* -------------------------------------------------
-   CLOSE ON OUTSIDE CLICK
-   ------------------------------------------------- */
 document.addEventListener('click', e => {
   if (!e.target.closest('.rhill-serchMenu') && searchForm.classList.contains('active')) {
     searchForm.classList.remove('active');
@@ -135,3 +292,20 @@ document.addEventListener('click', e => {
   }
 });
 document.getElementById('filterList').addEventListener('click', e => e.stopPropagation());
+
+// -------------------------------------------------
+// 10. INITIALISE EVERYTHING
+// -------------------------------------------------
+function initFilters() {
+  populateDevLandDropdown();
+  populatePriceDropdown();
+  updateActiveStates();
+  applyFilters(); // will NOT change colours because no filters yet
+}
+
+// Run init once DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initFilters);
+} else {
+  initFilters();
+}

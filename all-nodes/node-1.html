@@ -70,92 +70,79 @@
   </head>
   <body>
     <!--  main top filter  -->
-    <div class="rhill-serchMenu">
-      <div class="menuInner">
-        <button class="mobileSearchNav" id="mobileToggle">Filter by:</button>
+ <!-- main top filter  -->
 
-        <div class="searchandfilter" id="searchForm">
-          <ul id="filterList">
-            <!-- NODE -->
-            <li data-sf-field-name="_sfm_node">
-              <label>
-                <select
-                  name="_sfm_node[]"
-                  class="sf-input-select"
-                  id="nodeSelect"
-                >
-                  <option value="">Node</option>
-                  <option value="node_1">
-                    Node 1 – Renshaw Estate & Heritage Village
-                  </option>
-                  <option value="node_2">
-                    Node 2 – Clansthal & Craigieburn
-                  </option>
-                  <option value="node_3">
-                    Node 3 – Interchange & Waterfront
-                  </option>
-                  <option value="node_4">Node 4 – Crocworld Development</option>
-                  <option value="node_5">Node 5 – Scottburgh South</option>
-                </select>
-              </label>
-            </li>
+<!-- main top filter  -->
+<div class="rhill-serchMenu">
+  <div class="menuInner">
+    <button class="mobileSearchNav" id="mobileToggle">Filter by:</button>
 
-            <!-- DEVELOPMENT TYPE (filled by JS) -->
-            <li data-sf-field-name="_sfm_block">
-              <label>
-                <select
-                  name="_sfm_block[]"
-                  class="sf-input-select"
-                  id="blockSelect"
-                >
-                  <option value="">Development Type</option>
-                </select>
-              </label>
-            </li>
+    <div class="searchandfilter" id="searchForm">
+      <ul id="filterList">
 
-            <!-- PRICE RANGE (filled by JS) -->
-            <li data-sf-field-name="_sfm_price-field">
-              <label>
-                <select
-                  name="_sfm_price-field[]"
-                  class="sf-input-select"
-                  id="priceSelect"
-                >
-                  <option value="">Price Range</option>
-                </select>
-              </label>
-            </li>
+        <!-- NODE -->
+        <li data-sf-field-name="_sfm_node">
+          <label>
+            <select name="_sfm_node[]" class="sf-input-select" id="nodeSelect">
+              <option value="">Node</option>
+              <option value="node_1">Node 1 – Renshaw Estate & Heritage Village</option>
+              <option value="node_2">Node 2 – Clansthal & Craigieburn</option>
+              <option value="node_3">Node 3 – Interchange & Waterfront</option>
+              <option value="node_4">Node 4 – Crocworld Development</option>
+              <option value="node_5">Node 5 – Scottburgh South</option>
+            </select>
+          </label>
+        </li>
 
-            <!-- STATUS (Sold and Available) -->
-            <li data-sf-field-name="_sfm_status">
-              <label>
-                <select
-                  name="_sfm_status[]"
-                  class="sf-input-select"
-                  id="statusSelect"
-                >
-                  <option value="">Status</option>
-                  <option value="available">Available</option>
-                  <option value="sold">Sold</option>
-                </select>
-              </label>
-            </li>
+        <!-- DEVELOPMENT TYPE / LAND USE (filled by JS) -->
+        <li data-sf-field-name="_sfm_block">
+          <label>
+            <select name="_sfm_block[]" class="sf-input-select" id="blockSelect">
+              <option value="">Development Type / Land Use</option>
+            </select>
+          </label>
+        </li>
 
-            <!-- RESET -->
-            <li class="sf-field-reset" id="resetLi">
-              <a href="#" class="search-filter-reset" id="resetBtn">Reset</a>
-            </li>
-          </ul>
-        </div>
-      </div>
+        <!-- PRICE RANGE (filled by JS) -->
+        <li data-sf-field-name="_sfm_price-field">
+          <label>
+            <select name="_sfm_price-field[]" class="sf-input-select" id="priceSelect">
+              <option value="">Price Range</option>
+            </select>
+          </label>
+        </li>
+
+        <!-- STATUS (Sold and Available) -->
+        <li data-sf-field-name="_sfm_status">
+          <label>
+            <select name="_sfm_status[]" class="sf-input-select" id="statusSelect">
+              <option value="">Status</option>
+              <option value="available">Available</option>
+              <option value="sold">Sold</option>
+            </select>
+          </label>
+        </li>
+
+        <!-- RESET -->
+        <li class="sf-field-reset" id="resetLi">
+          <a href="#" class="search-filter-reset" id="resetBtn">Reset</a>
+        </li>
+
+      </ul>
     </div>
+  </div>
+</div>
+
+
 
     <!--  main top filter  -->
 
     <!-- main map container  -->
     <div class="ikr_svg_container">
       <div class="ikr_map5">
-        <?xml version="1.0" encoding="UTF-8"?><svg
+        <?xml version="1.0" encoding="UTF-8"?>
+        
+        <svg
           id="ikr_svg"
           xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -5488,9 +5475,9 @@
 
     <script src="../assets/js/rcost-interactive-single-function.js"></script>
     <script src="../assets/js/rcost-component.js"></script>
-    <script src="../assets/js/filter-top-menu.js"></script>
     <!-- <script src="../assets/js/node-1-.js"></script> -->
     <script src="../assets/js/rcost-min.js"></script>
     <script src="../assets/js/rcost-node-1-data.js"></script>
+    <script src="../assets/js/filter-top-menu.js"></script>
   </body>
 </html>
