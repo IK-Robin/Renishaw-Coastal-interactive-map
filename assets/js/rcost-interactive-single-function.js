@@ -101,7 +101,11 @@
       // example: just log instead of redirect
       console.log("Clicked lot:", mapD.id, "->", mapD.link);
       // window.location.href = mapD.link;
-      window.location.href = '../all nods/node-1.html';
+     window.location.href = 'all-nodes/node-1.html';  // No ../ needed
+      // get the home url  
+
+       
+
     }
 
     // Init default colors if provided
