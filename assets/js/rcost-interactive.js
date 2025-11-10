@@ -311,53 +311,6 @@ function renderTooltipContent(mapD) {
 
 
 
-  function setupStrokeAnimation(svgId) {
-    const ikr_svg = document.getElementById(svgId);
-    if (!ikr_svg) return;
-
-    const paths = ikr_svg.querySelectorAll(".anim-path");
-    paths.forEach((path) => {
-      if (typeof path.getTotalLength === "function") {
-        const len = path.getTotalLength();
-        path.style.setProperty("--len", len);
-        path.style.strokeDasharray = len;
-      }
-    });
-  }
-
-  function applyStrokeHover(el) {
-    if (!el.classList.contains("anim-path")) return;
-
-    if (typeof el.getTotalLength === "function") {
-      const len = el.getTotalLength();
-      el.style.setProperty("--len", len);
-      el.style.strokeDasharray = len;
-    }
-
-    el.style.fill = "#ffffff";
-    el.style.fillOpacity = "0.3";
-
-    el.classList.remove("draw", "highlight");
-    // restart animation
-    void el.offsetWidth;
-    el.classList.add("highlight", "draw");
-  }
-
-  function clearStrokeHover(el) {
-    if (!el.classList.contains("anim-path")) return;
-
-    el.style.fillOpacity = "0";
-    el.classList.remove("draw", "highlight");
-    // Optionally revert fill color completely
-    // el.style.removeProperty("fill");
-  }
-
-
-   // =========================
-  // RUN SETUP
-  // =========================
-  // Prepare anim-path stroke lengths
-  setupStrokeAnimation("ikr_svg");
 
   // Initialise map with tooltip + hover animation
   initNodeMap({
