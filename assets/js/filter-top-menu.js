@@ -199,13 +199,13 @@ function matchesFilters(lot) {
   return true;
 }
 
-// Restore original look of an SVG element (no highlight)
+// Restore original look of an SVG element (no highlight, no dim)
 function restoreOriginalAppearance(el) {
   if (!el) return;
   el.classList.remove('highlight', 'dimmed');
-  el.style.fill = '';   // clears inline style, falls back to CSS / attribute
+  el.style.fill = '';     // clears inline style, falls back to CSS / attribute
   el.style.stroke = '';
-  el.style.opacity = ''; // in case you tweak opacity via style
+  el.style.opacity = '';
 }
 
 function applyFilters() {
@@ -216,11 +216,11 @@ function applyFilters() {
     const el = document.getElementById(lot.id);
     if (!el) return;
 
-    // Always start from clean state
+    // Always start from clean/original state
     restoreOriginalAppearance(el);
 
     if (!anyFilterActive) {
-      // no filters: keep original styles
+      // no filters: everything stays as originally drawn
       return;
     }
 
@@ -230,14 +230,13 @@ function applyFilters() {
       const color = getColorForKey(key);
 
       el.classList.add('highlight');
-      el.style.fill = color;
-      el.style.stroke = '#000000';
+      el.style.fill = color;         // highlight fill
+      el.style.stroke = '#000000';   // thicker outline color
+      el.style.strokeWidth = 3;
       el.style.opacity = '1';
-    } else {
-      // non-matching lots: just dim them, do NOT change fill
-      el.classList.add('dimmed');
-      el.style.opacity = '0.2';
     }
+    // IMPORTANT: non-matching lots are left in their restored/original state
+    // (no dimming, no hiding, no opacity change)
   });
 }
 
@@ -274,7 +273,7 @@ resetBtn.addEventListener('click', e => {
   populatePriceDropdown();
 
   updateActiveStates();
-  applyFilters(); // clears highlight/dim state + restores original fill
+  applyFilters(); // clears all inline styles & classes, original SVG styles show
 });
 
 // -------------------------------------------------
@@ -300,7 +299,7 @@ function initFilters() {
   populateDevLandDropdown();
   populatePriceDropdown();
   updateActiveStates();
-  applyFilters(); // will NOT change colours because no filters yet
+  applyFilters(); // with no filters, just restores everything = no visual change
 }
 
 // Run init once DOM is ready
