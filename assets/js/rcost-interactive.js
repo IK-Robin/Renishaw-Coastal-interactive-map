@@ -384,7 +384,7 @@ init_interactive_map({
   tooltipElementId: "ikr_toltipMove",
   svgElementId: "ikr_svg",
   renderTooltipContent: renderTooltipContent,
-  tooltipLeft: 10,
+  tooltipLeft: 20,
   tooltipTop: 10,
   onLotHoverIn: (el, mapD, ev) => {
     applyStrokeHover(el);
@@ -393,3 +393,5 @@ init_interactive_map({
     clearStrokeHover(el);
   }
 });
+// apply zoom
+ikrZoom(ikr_svg);
