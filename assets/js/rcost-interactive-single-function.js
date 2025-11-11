@@ -1,4 +1,4 @@
- function initNodeMap({
+ function init_interactive_map({
     mapData,
     mapId,
     tooltipElementId = "ikr_toltipMove",
@@ -17,61 +17,61 @@
       return;
     }
 
-    function getClientPoint(ev) {
-      if (ev.touches && ev.touches[0]) {
+    // ====== Utilities ======
+function getClientPoint(ev) {
+    if (ev.touches && ev.touches[0]) {
         return { x: ev.touches[0].clientX, y: ev.touches[0].clientY };
-      }
-      if (ev.changedTouches && ev.changedTouches[0]) {
-        return {
-          x: ev.changedTouches[0].clientX,
-          y: ev.changedTouches[0].clientY
-        };
-      }
-      return { x: ev.clientX, y: ev.clientY };
     }
-
-    function placeSmartInContainer(el, ev, pad = 8) {
-      el.style.position = "absolute";
-
-      const parent = el.offsetParent || document.body;
-      const rect = parent.getBoundingClientRect();
-
-      const cs = getComputedStyle(parent);
-      const padL = parseFloat(cs.paddingLeft) || 0;
-      const padT = parseFloat(cs.paddingTop) || 0;
-      const padR = parseFloat(cs.paddingRight) || 0;
-      const padB = parseFloat(cs.paddingBottom) || 0;
-
-      const prevDisp = el.style.display;
-      const prevVis = el.style.visibility;
-      el.style.visibility = "hidden";
-      el.style.display = "block";
-
-      const w = el.offsetWidth;
-      const h = el.offsetHeight;
-
-      const pt = getClientPoint(ev);
-      const relX = pt.x - rect.left - padL;
-      const relY = pt.y - rect.top - padT;
-
-      const contentW = rect.width - padL - padR;
-      const contentH = rect.height - padT - padB;
-
-      let left = relX + pad;
-      let top = relY + pad;
-
-      if (left + w > contentW) left = relX - w - pad;
-      left = Math.max(0, Math.min(left, contentW - w));
-
-      if (top + h > contentH) top = relY - h - pad;
-      top = Math.max(0, Math.min(top, contentH - h));
-
-      el.style.left = left + padL + tooltipLeft + "px";
-      el.style.top = top + padT + tooltipTop + "px";
-
-      el.style.visibility = prevVis || "visible";
-      el.style.display = prevDisp || "block";
+    if (ev.changedTouches && ev.changedTouches[0]) {
+        return { x: ev.changedTouches[0].clientX, y: ev.changedTouches[0].clientY };
     }
+    return { x: ev.clientX, y: ev.clientY };
+}
+
+// Smart positioning inside tooltip's offsetParent
+function placeSmartInContainer(el, ev, pad = 8) {
+    el.style.position = "absolute";
+
+    const parent = el.offsetParent || document.body;
+    const rect = parent.getBoundingClientRect();
+
+    const cs = getComputedStyle(parent);
+    const padL = parseFloat(cs.paddingLeft) || 0;
+    const padT = parseFloat(cs.paddingTop) || 0;
+    const padR = parseFloat(cs.paddingRight) || 0;
+    const padB = parseFloat(cs.paddingBottom) || 0;
+
+    const prevDisp = el.style.display;
+    const prevVis = el.style.visibility;
+    el.style.visibility = "hidden";
+    el.style.display = "block";
+
+    const w = el.offsetWidth;
+    const h = el.offsetHeight;
+
+    const pt = getClientPoint(ev);
+    const relX = pt.x - rect.left - padL;
+    const relY = pt.y - rect.top - padT;
+
+    const contentW = rect.width - padL - padR;
+    const contentH = rect.height - padT - padB;
+
+    let left = relX + pad;
+    let top = relY + pad;
+
+    if (left + w > contentW) left = relX - w - pad;
+    left = Math.max(0, Math.min(left, contentW - w));
+
+    if (top + h > contentH) top = relY - h - pad;
+    top = Math.max(0, Math.min(top, contentH - h));
+
+    el.style.left = (left + padL) + "px";
+    el.style.top = (top + padT) + "px";
+
+    el.style.visibility = prevVis || "visible";
+    el.style.display = prevDisp || "block";
+}
+
 
     function isMobile() {
       return /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
