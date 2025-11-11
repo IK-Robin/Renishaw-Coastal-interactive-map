@@ -6,28 +6,29 @@
 // -------------------------------------------------
 // 1. ENRICH DATA: add random price & status
 // -------------------------------------------------
-const allLots = node_1_data.map(lot => {
-  // random status
-  const status = Math.random() < 0.7 ? 'available' : 'sold';
+// const allLots = node_1_data.map(lot => {
+//   // random status
+//   const status = Math.random() < 0.7 ? 'available' : 'sold';
 
-  // random price (in Rand)
-  const sizeMatch = typeof lot.size === 'string' ? lot.size.match(/([\d.]+)/) : null;
-  const sizeM2 = sizeMatch ? parseFloat(sizeMatch[1]) : 400; // default 400m²
+//   // random price (in Rand)
+//   const sizeMatch = typeof lot.size === 'string' ? lot.size.match(/([\d.]+)/) : null;
+//   const sizeM2 = sizeMatch ? parseFloat(sizeMatch[1]) : 400; // default 400m²
 
-  const basePerM2 = 3000 + Math.random() * 4000; // roughly R3k–R7k / m²
-  const price = Math.round(sizeM2 * basePerM2);
+//   const basePerM2 = 3000 + Math.random() * 4000; // roughly R3k–R7k / m²
+//   const price = Math.round(sizeM2 * basePerM2);
 
-  return {
-    ...lot,
-    status,
-    price
-  };
-});
+//   return {
+//     ...lot,
+//     status,
+//     price
+//   };
+// });
 
+// console.log(allLots)
 // -------------------------------------------------
 // 2. DOM ELEMENTS
 // -------------------------------------------------
-const nodeSelect   = document.getElementById('nodeSelect');
+// const nodeSelect   = document.getElementById('nodeSelect');
 const blockSelect  = document.getElementById('blockSelect');   // devType / landUse
 const priceSelect  = document.getElementById('priceSelect');
 const statusSelect = document.getElementById('statusSelect');
@@ -42,7 +43,7 @@ const searchForm   = document.getElementById('searchForm');
 // -------------------------------------------------
 function getUniqueValues(key) {
   const set = new Set();
-  allLots.forEach(lot => {
+  node_1_data.forEach(lot => {
     if (lot[key]) set.add(lot[key].trim());
   });
   return Array.from(set).sort();
@@ -88,7 +89,7 @@ function populateDevLandDropdown() {
 // 5. BUILD DYNAMIC PRICE RANGES
 // -------------------------------------------------
 function buildPriceRanges(bucketCount = 5) {
-  const prices = allLots
+  const prices = node_1_data
     .map(l => l.price)
     .filter(p => typeof p === 'number' && !isNaN(p));
 
@@ -161,12 +162,7 @@ function parsePriceRange(value) {
 
 function matchesFilters(lot) {
   // Node filter: deduce node from id prefix, e.g. "node_1_2"
-  const nodeValue = nodeSelect.value;
-  if (nodeValue) {
-    if (!lot.id || !lot.id.startsWith(nodeValue + '_')) {
-      return false;
-    }
-  }
+  
 
   // DevType / LandUse filter
   const blockValue = blockSelect.value;
@@ -199,28 +195,28 @@ function matchesFilters(lot) {
   return true;
 }
 
-// Restore original look of an SVG element (no highlight)
+// Restore original look of an SVG element (no highlight, no dim)
 function restoreOriginalAppearance(el) {
   if (!el) return;
   el.classList.remove('highlight', 'dimmed');
-  el.style.fill = '';   // clears inline style, falls back to CSS / attribute
+  el.style.fill = '';     // clears inline style, falls back to CSS / attribute
   el.style.stroke = '';
-  el.style.opacity = ''; // in case you tweak opacity via style
+  el.style.opacity = '';
 }
 
 function applyFilters() {
   const anyFilterActive = Array.from(selects).some(sel => sel.value !== '');
 
-  allLots.forEach(lot => {
+  node_1_data.forEach(lot => {
     if (!lot.id) return;
     const el = document.getElementById(lot.id);
     if (!el) return;
 
-    // Always start from clean state
+    // Always start from clean/original state
     restoreOriginalAppearance(el);
 
     if (!anyFilterActive) {
-      // no filters: keep original styles
+      // no filters: everything stays as originally drawn
       return;
     }
 
@@ -230,14 +226,13 @@ function applyFilters() {
       const color = getColorForKey(key);
 
       el.classList.add('highlight');
-      el.style.fill = color;
-      el.style.stroke = '#000000';
+      el.style.fill = color;         // highlight fill
+      el.style.stroke = '#000000';   // thicker outline color
+      el.style.strokeWidth = 3;
       el.style.opacity = '1';
-    } else {
-      // non-matching lots: just dim them, do NOT change fill
-      el.classList.add('dimmed');
-      el.style.opacity = '0.2';
     }
+    // IMPORTANT: non-matching lots are left in their restored/original state
+    // (no dimming, no hiding, no opacity change)
   });
 }
 
@@ -274,7 +269,7 @@ resetBtn.addEventListener('click', e => {
   populatePriceDropdown();
 
   updateActiveStates();
-  applyFilters(); // clears highlight/dim state + restores original fill
+  applyFilters(); // clears all inline styles & classes, original SVG styles show
 });
 
 // -------------------------------------------------
@@ -300,7 +295,7 @@ function initFilters() {
   populateDevLandDropdown();
   populatePriceDropdown();
   updateActiveStates();
-  applyFilters(); // will NOT change colours because no filters yet
+  applyFilters(); // with no filters, just restores everything = no visual change
 }
 
 // Run init once DOM is ready
