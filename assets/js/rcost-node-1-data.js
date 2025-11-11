@@ -3987,8 +3987,8 @@ init_interactive_map({
   tooltipElementId: "ikr_toltipMove",
   svgElementId: "ikr_svg",
   renderTooltipContent: renderTooltipContent,
-  tooltipLeft: -10,
-  tooltipTop: -50,
+  tooltipLeft: 20,
+  tooltipTop: 10,
 
   // Hover IN: Animate stroke + change fill
   onLotHoverIn: (el, mapD, ev) => {
