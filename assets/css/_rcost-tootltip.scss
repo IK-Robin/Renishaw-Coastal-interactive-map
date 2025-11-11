@@ -91,6 +91,7 @@
   // left: 50%;
   // bottom: 120%; // above the marker
   // transform: translateX(-50%);
+  max-width: 250px;
   max-width: max-content;
   background: #ffffff;
   // box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
@@ -191,11 +192,7 @@ $font-family-base: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
   sans-serif;
 
 // Outer tooltip wrapper you already use
-.rcost-plot-tooltip {
-  max-width: 100%;
-  box-sizing: border-box;
-  padding: 4px; // optional, keeps it off the very edge of screen
-}
+
 
 // Core node tooltip
 .node-tooltip {
@@ -283,11 +280,13 @@ $font-family-base: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     }
   }
 
-  &__divider {
-    width: 1px;
+    &__divider {
+    flex: 0 0 1px;       // make it a 1px wide column
+    align-self: stretch; // stretch from top to bottom of the flex row
     background: #222;
-    opacity: 0.5;
+    opacity: 0.5;        // or 1 if you prefer
   }
+
 
   &__text {
     flex: 1 1 auto;
@@ -357,12 +356,15 @@ $font-family-base: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
       width: 100%;
       height: 1px;
       margin: 8px 0;
+      flex: 0 0 auto;    // horizontal rule in stacked layout
+      align-self: auto;
     }
 
     &__text {
       margin-left: 0;
     }
   }
+
 }
 
 
