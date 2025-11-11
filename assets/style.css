@@ -266,30 +266,13 @@
 }
 
 .rcost-plot-tooltip {
-  position: absolute;
-  left: 50%;
-  bottom: 120%;
-  transform: translateX(-50%);
-  width: 220px;
+  max-width: -moz-max-content;
+  max-width: max-content;
   background: #ffffff;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
   text-align: center;
-  font-family: inherit;
   pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
   z-index: 10;
-}
-.rcost-plot-tooltip::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -8px;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-top: 8px solid #ffffff;
 }
 .rcost-plot-tooltip .ploat-tooltip-container {
   padding: 16px 18px 0;
@@ -300,8 +283,8 @@
   color: #a0a0a0;
   margin-bottom: 6px;
 }
-.rcost-plot-tooltip .ploat-tooltip-container .plot-price {
-  font-size: 22px;
+.rcost-plot-tooltip .ploat-tooltip-container .development_type {
+  font-size: 16px;
   font-weight: 600;
   color: #b28b39;
   margin-bottom: 8px;
