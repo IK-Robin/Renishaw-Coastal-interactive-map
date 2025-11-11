@@ -277,7 +277,7 @@ let mapId = [
 
 
 console.log(mapData)
-// initNodeMap({
+// init_interactive_map({
 //     mapData, mapId, tooltipElementId: "ikr_toltipMove", // same as before
 //     svgElementId: "ikr_svg",           // same as before
 //     renderTooltipContent: renderTooltipContent,
@@ -313,7 +313,7 @@ function renderTooltipContent(mapD) {
 
 
   // Initialise map with tooltip + hover animation
-  initNodeMap({
+  init_interactive_map({
     mapData,
     mapId,
     tooltipElementId: "ikr_toltipMove",
