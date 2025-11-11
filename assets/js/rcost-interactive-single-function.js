@@ -65,8 +65,8 @@ function placeSmartInContainer(el, ev, pad = 8) {
     if (top + h > contentH) top = relY - h - pad;
     top = Math.max(0, Math.min(top, contentH - h));
 
-    el.style.left = (left + padL) + "px";
-    el.style.top = (top + padT) + "px";
+    el.style.left = (left + padL) + tooltipLeft+"px";
+    el.style.top = (top + padT) + tooltipTop+ "px";
 
     el.style.visibility = prevVis || "visible";
     el.style.display = prevDisp || "block";
