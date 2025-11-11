@@ -2,59 +2,70 @@
 const avalible_color = "green";
 const sold_color = "red";
 const mapData = [
-   {
+  {
     id: "node_1-2",
-    node_number: "Node 1 RENSHAW CENTRAL",
+    node_number: "Node 1 ",
     lotNumber: "210",
+    nodeSubtitle: 'RENSHAW CENTRAL',
+    imageUrl: 'assets/images/NODE 01-01.png',
+
     link: "../../all nods/node-1.html",
-   use: "Residential",
+    use: "Residential",
     size: "714 000 m²",
     description: "Renshaw Central is the largest residential property development node."
-    
+
 
   },
- 
+
   {
     id: "node_2-2",
-    node_number: "Node 2 CLANSTHAL",
+    node_number: " 2 ",
     lotNumber: "143",
+    nodeSubtitle: 'CLANSTHAL',
+    imageUrl: 'assets/images/NODE 01-01.png',
     link: "../../all nods/node-2.html",
     use: "Residential",
     size: "402 000 m²",
     description: "Planned for Clansthal, is a luxury housing development featuring contemporary aesthetics."
-},
- 
+  },
+
 
   {
     id: "node_3-2",
-    node_number: "Node 3 INTERCHANGE",
+    node_number: " 3 ",
     lotNumber: "85",
+    nodeSubtitle: 'INTERCHANGE',
+    imageUrl: 'assets/images/NODE 01-01.png',
     link: "../../all nods/node-3.html",
     use: "Commercial",
     size: "535 000 m²",
     description: "The Renshaw Coastal Precinct Interchange will be the nucleus of the development – as the social and business hub. The area’s first private hospital. Office parks. Light commercial zones. A shopping centre. The area’s first private school."
-},
+  },
 
-{
+  {
     id: "node_4-2",
-    node_number: "Node 4 RENSHAW NORTH",
+    node_number: " 4 ",
     lotNumber: "7",
+    nodeSubtitle: 'RENSHAW NORTH',
+    imageUrl: 'assets/images/NODE 01-01.png',
     link: "../../all nods/node-4.html",
     use: "Residential",
     size: "527 000 m²",
     description: "Renshaw North will boast luxury villas, seated within indigenous forest overlooking the ocean. An equestrian centre, indigenous nursery and a resort village are also included within the envisaged infrastructure."
-},
+  },
 
-{
+  {
     id: "node_5-2",
-    node_number: "Node 5 RENSHAW SOUTH",
+    node_number: " 5 ",
     lotNumber: "111",
+    nodeSubtitle: 'RENSHAW SOUTH',
+    imageUrl: 'assets/images/NODE 01-01.png',
     link: "../../all nods/node-5.html",
     use: "Residential",
     size: "457 000 m²",
     description: "Renshaw South is to feature a special residential development. Group housing and small-holding plots will also be available. While some land is reserved for conservation, a community facility and light commercial opportunities are planned."
-},
- 
+  },
+
 ];
 
 let mapId = [
@@ -194,7 +205,7 @@ let mapId = [
 //       <p><strong>Size:</strong> ${mapD.size ?? ""}</p>
 //       <p><strong></strong> <span style="font-weight:bold;">${mapD.description ?? ""
 //     }</span></p>
-     
+
 //     </div>
 //   `;
 // }
@@ -285,46 +296,100 @@ console.log(mapData)
 //     tooltipTop:10,
 // });
 // // ====== TOOLTIP RENDER ======
-function renderTooltipContent(mapD) {
-    let statusStyle = "font-weight: bold;";
-    if (mapD.status && mapD.status.toLowerCase() === "available") {
-        statusStyle = "color: #d3b683; font-weight: bold;";
-    } else if (mapD.status && mapD.status.toLowerCase() === "sold") {
-        statusStyle = "color: red; font-weight: bold;";
-    }
+// function renderTooltipContent(mapD) {
+//     let statusStyle = "font-weight: bold;";
+//     if (mapD.status && mapD.status.toLowerCase() === "available") {
+//         statusStyle = "color: #d3b683; font-weight: bold;";
+//     } else if (mapD.status && mapD.status.toLowerCase() === "sold") {
+//         statusStyle = "color: red; font-weight: bold;";
+//     }
 
-    return `
-    <div  class="all_node_tooltip_style">
-      <p><strong> ${mapD.node_number ?? ""} </strong></p>
-      <p><strong>Development type:</strong> ${mapD.use ?? ""}</p>
-      <p><strong>Sites:</strong> ${String(mapD.lotNumber || "").replace(
-        /_/g,
-        ""
-    )} Sites</p>
-      <p><strong>Size:</strong> ${mapD.size ?? ""}</p>
-      <p><strong></strong> <span style="font-weight:bold;">${mapD.description ?? ""
-        }</span></p>
-     
+//     return `
+//     <div  class="all_node_tooltip_style">
+//       <p><strong> ${mapD.node_number ?? ""} </strong></p>
+//       <p><strong>Development type:</strong> ${mapD.use ?? ""}</p>
+//       <p><strong>Sites:</strong> ${String(mapD.lotNumber || "").replace(
+//         /_/g,
+//         ""
+//     )} Sites</p>
+//       <p><strong>Size:</strong> ${mapD.size ?? ""}</p>
+//       <p><strong></strong> <span style="font-weight:bold;">${mapD.description ?? ""
+//         }</span></p>
+
+//     </div>
+//   `;
+// }
+
+
+function renderTooltipContent(mapD) {
+  // mapD is expected to have:
+  // mapD.nodeName, mapD.nodeSubtitle, mapD.imageUrl,
+  // mapD.area, mapD.sites, mapD.desc1, mapD.desc2, mapD.desc3
+
+  const nodeName = mapD.nodeName || `Node ${mapD.lotNumber || ""}`.trim();
+  const nodeSubtitle = mapD.nodeSubtitle || (mapD.developmentType || "");
+  const area = mapD.area || mapD.size || "";
+  const sites = mapD.lotNumber || "";
+  const img = mapD.imageUrl || "https://via.placeholder.com/600x300";
+
+  return `
+    <div class="rcost-plot-tooltip">
+      <div class="node-tooltip">
+        <div class="node-tooltip__image-wrapper">
+          <img
+            src="${img}"
+            alt="${nodeName}"
+            class="node-tooltip__image"
+          />
+          <div class="node-tooltip__badge">
+            <div class="node-tooltip__badge-title">${nodeName}</div>
+            <div class="node-tooltip__badge-subtitle">
+              ${nodeSubtitle}
+            </div>
+          </div>
+        </div>
+
+        <div class="node-tooltip__body">
+          <div class="node-tooltip__metrics">
+            <div class="node-tooltip__metric-main">
+              <span class="node-tooltip__metric-value">${area}</span>
+            </div>
+            ${sites
+      ? `<div class="node-tooltip__metric-sub">${sites} Sites</div>`
+      : ""
+    }
+          </div>
+
+          <div class="node-tooltip__divider"></div>
+
+          <div class="node-tooltip__text">
+            ${mapD.description
+      ? `<p><strong>${mapD.description}</strong></p>`
+      : ""
+    }
+           
+          </div>
+        </div>
+      </div>
     </div>
   `;
 }
 
 
 
-
-  // Initialise map with tooltip + hover animation
-  init_interactive_map({
-    mapData,
-    mapId,
-    tooltipElementId: "ikr_toltipMove",
-    svgElementId: "ikr_svg",
-    renderTooltipContent: renderTooltipContent,
-    tooltipLeft: 10,
-    tooltipTop: 10,
-    onLotHoverIn: (el, mapD, ev) => {
-      applyStrokeHover(el);
-    },
-    onLotHoverOut: (el, mapD, ev) => {
-      clearStrokeHover(el);
-    }
-  });
+// Initialise map with tooltip + hover animation
+init_interactive_map({
+  mapData,
+  mapId,
+  tooltipElementId: "ikr_toltipMove",
+  svgElementId: "ikr_svg",
+  renderTooltipContent: renderTooltipContent,
+  tooltipLeft: 10,
+  tooltipTop: 10,
+  onLotHoverIn: (el, mapD, ev) => {
+    applyStrokeHover(el);
+  },
+  onLotHoverOut: (el, mapD, ev) => {
+    clearStrokeHover(el);
+  }
+});
