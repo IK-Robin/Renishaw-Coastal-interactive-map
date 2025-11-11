@@ -264,6 +264,7 @@
 }
 
 .rcost-plot-tooltip {
+  max-width: 250px;
   max-width: -moz-max-content;
   max-width: max-content;
   background: #ffffff;
@@ -315,12 +316,6 @@
 }
 .all_node_tooltip_style p {
   color: #d3b683;
-}
-
-.rcost-plot-tooltip {
-  max-width: 100%;
-  box-sizing: border-box;
-  padding: 4px;
 }
 
 .node-tooltip {
@@ -399,7 +394,8 @@
   margin-top: 4px;
 }
 .node-tooltip__divider {
-  width: 1px;
+  flex: 0 0 1px;
+  align-self: stretch;
   background: #222;
   opacity: 0.5;
 }
@@ -459,6 +455,8 @@
     width: 100%;
     height: 1px;
     margin: 8px 0;
+    flex: 0 0 auto;
+    align-self: auto;
   }
   .node-tooltip__text {
     margin-left: 0;

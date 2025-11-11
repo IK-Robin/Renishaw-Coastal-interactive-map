@@ -7,7 +7,7 @@ const mapData = [
     node_number: "Node 1 ",
     lotNumber: "210",
     nodeSubtitle: 'RENSHAW CENTRAL',
-    imageUrl: 'assets/images/NODE 01-01.png',
+    imageUrl: 'assets/images/node-tooltip-images/node-1.png',
 
     link: "../../all nods/node-1.html",
     use: "Residential",
@@ -22,7 +22,7 @@ const mapData = [
     node_number: " 2 ",
     lotNumber: "143",
     nodeSubtitle: 'CLANSTHAL',
-    imageUrl: 'assets/images/NODE 01-01.png',
+    imageUrl: 'assets/images/node-tooltip-images/node-2.png',
     link: "../../all nods/node-2.html",
     use: "Residential",
     size: "402 000 m²",
@@ -35,7 +35,7 @@ const mapData = [
     node_number: " 3 ",
     lotNumber: "85",
     nodeSubtitle: 'INTERCHANGE',
-    imageUrl: 'assets/images/NODE 01-01.png',
+    imageUrl: 'assets/images/node-tooltip-images/node-3-01.png',
     link: "../../all nods/node-3.html",
     use: "Commercial",
     size: "535 000 m²",
@@ -47,7 +47,7 @@ const mapData = [
     node_number: " 4 ",
     lotNumber: "7",
     nodeSubtitle: 'RENSHAW NORTH',
-    imageUrl: 'assets/images/NODE 01-01.png',
+    imageUrl: 'assets/images/node-tooltip-images/node-4.png',
     link: "../../all nods/node-4.html",
     use: "Residential",
     size: "527 000 m²",
@@ -59,7 +59,7 @@ const mapData = [
     node_number: " 5 ",
     lotNumber: "111",
     nodeSubtitle: 'RENSHAW SOUTH',
-    imageUrl: 'assets/images/NODE 01-01.png',
+    imageUrl: 'assets/images/node-tooltip-images/node-5.png',
     link: "../../all nods/node-5.html",
     use: "Residential",
     size: "457 000 m²",
@@ -326,7 +326,7 @@ function renderTooltipContent(mapD) {
   // mapD.nodeName, mapD.nodeSubtitle, mapD.imageUrl,
   // mapD.area, mapD.sites, mapD.desc1, mapD.desc2, mapD.desc3
 
-  const nodeName = mapD.nodeName || `Node ${mapD.lotNumber || ""}`.trim();
+  const nodeName = mapD.node_number;
   const nodeSubtitle = mapD.nodeSubtitle || (mapD.developmentType || "");
   const area = mapD.area || mapD.size || "";
   const sites = mapD.lotNumber || "";
@@ -342,7 +342,7 @@ function renderTooltipContent(mapD) {
             class="node-tooltip__image"
           />
           <div class="node-tooltip__badge">
-            <div class="node-tooltip__badge-title">${nodeName}</div>
+            <div class="node-tooltip__badge-title"> Node ${nodeName}</div>
             <div class="node-tooltip__badge-subtitle">
               ${nodeSubtitle}
             </div>
