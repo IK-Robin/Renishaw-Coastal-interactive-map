@@ -88,8 +88,8 @@ function placeSmartInContainer(el, ev, pad = 8) {
     }
 
     function handleHide(ct) {
-      // tooltipMove.style.display = "none";
-      // tooltipMove.innerHTML = "";
+      tooltipMove.style.display = "none";
+      tooltipMove.innerHTML = "";
     }
 
     function handleHideOnMobile(ct) {
