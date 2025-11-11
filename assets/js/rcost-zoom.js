@@ -33,9 +33,7 @@ function ikrZoom(ikrsvg) {
   const baseW = baseRect.width;
   const baseH = baseRect.height;
 
-  // We treat ts.translate as offset from TOP-LEFT of container.
-  // At scale 1, we start with whatever position you want:
-  // align left/top = 0,0; or center if you prefer.
+  // Start aligned top-left (you can change to center if you want)
   ts.translate.x = 0;
   ts.translate.y = 0;
 
@@ -84,14 +82,22 @@ function ikrZoom(ikrsvg) {
     ikrsvg.addEventListener(
       "wheel",
       (e) => {
-        e.preventDefault();
-
         const delta = e.deltaY;
         const direction = delta < 0 ? 1 : -1; // up = zoom in
+
         let newScale = currentScale + STEP * direction;
         newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
 
-        if (newScale === currentScale) return;
+        // If trying to zoom out at min scale -> let page scroll
+        const tryingToZoomOutAtMin =
+          currentScale === MIN_SCALE && direction === -1;
+
+        if (tryingToZoomOutAtMin || newScale === currentScale) {
+          return; // no preventDefault -> page scrolls
+        }
+
+        // Now we are going to zoom -> block page scroll
+        e.preventDefault();
 
         // Zoom into the mouse position
         const rect = container.getBoundingClientRect();
@@ -194,8 +200,8 @@ function ikrZoom(ikrsvg) {
           );
           if (!t) return;
           e.preventDefault();
-          const dx = (t.clientX - startX);
-          const dy = (t.clientY - startY);
+          const dx = t.clientX - startX;
+          const dy = t.clientY - startY;
           ts.translate.x = startTX + dx;
           ts.translate.y = startTY + dy;
           applyTransform();
@@ -205,11 +211,19 @@ function ikrZoom(ikrsvg) {
 
       ikrsvg.addEventListener("touchend", () => (panId = null));
     } else {
+      // ===== DESKTOP PANNING + CLICK SUPPRESSION =====
       let panning = false;
+      let isPointerDown = false;
+      let hasMoved = false;
+      let suppressClick = false;
+      const DRAG_THRESHOLD = 5; // px
 
       ikrsvg.addEventListener("mousedown", (e) => {
         if (!panEnabled || e.button !== 0) return;
         panning = true;
+        isPointerDown = true;
+        hasMoved = false;
+
         ikrsvg.style.cursor = "grabbing";
         startX = e.clientX;
         startY = e.clientY;
@@ -218,21 +232,59 @@ function ikrZoom(ikrsvg) {
       });
 
       ikrsvg.addEventListener("mousemove", (e) => {
-        if (!panning) return;
+        if (!panning || !isPointerDown) return;
+
         const dx = e.clientX - startX;
         const dy = e.clientY - startY;
+
+        // Mark as "moved" if beyond threshold
+        if (
+          !hasMoved &&
+          (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD)
+        ) {
+          hasMoved = true;
+        }
+
+        if (!hasMoved) return; // don't pan for tiny movements (clicks)
+
         ts.translate.x = startTX + dx;
         ts.translate.y = startTY + dy;
         applyTransform();
       });
 
       const stop = () => {
+        if (!isPointerDown) return;
+
         panning = false;
+        isPointerDown = false;
+
+        if (hasMoved) {
+          // We dragged → suppress the subsequent synthetic click
+          suppressClick = true;
+          // Reset suppression on next tick
+          setTimeout(() => {
+            suppressClick = false;
+          }, 0);
+        }
+
         if (panEnabled) ikrsvg.style.cursor = "grab";
       };
 
       ikrsvg.addEventListener("mouseup", stop);
       ikrsvg.addEventListener("mouseleave", stop);
+
+      // Capture-phase click handler to cancel click after a drag
+      ikrsvg.addEventListener(
+        "click",
+        (e) => {
+          if (suppressClick) {
+            e.preventDefault();
+            e.stopPropagation();
+            suppressClick = false;
+          }
+        },
+        true // capture
+      );
     }
   }
 
