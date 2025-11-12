@@ -2,21 +2,18 @@ function ikrZoom(ikrsvg) {
   const container = ikrsvg.parentElement;
 
   // ================== CONFIG ==================
-  // If true → zoom happens only when holding CTRL + wheel.
-  // If false → zoom on plain wheel (current behaviour).
-  const REQUIRE_CTRL_FOR_WHEEL = false;
-
-  // If true → add a fullscreen button on the map.
-  // If false → no fullscreen button is created.
-  const ENABLE_FULLSCREEN_BUTTON = true;
+  const REQUIRE_CTRL_FOR_WHEEL = false;   // true => require Ctrl + wheel
+  const ENABLE_FULLSCREEN_BUTTON = true;  // false => disable fullscreen button
+  const PAN_PADDING = 0.18;               // extra pan beyond edges (normal mode)
   // ============================================
 
-  // ----- state -----
+  // ---------- state ----------
   const ts = {
     scale: 1,
     translate: { x: 0, y: 0 },
   };
   let currentScale = 1;
+  let isFullscreen = false; // <--- IMPORTANT
 
   const STEP = 0.2;
   const MAX_SCALE = 8;
@@ -24,7 +21,6 @@ function ikrZoom(ikrsvg) {
 
   let panEnabled = false;
 
-  // buttons (existing ones in your HTML)
   const zoomInBtn  = document.getElementById("zoom_in");
   const zoomOutBtn = document.getElementById("zoom_out");
   const resetBtn   = document.getElementById("reset");
@@ -37,17 +33,42 @@ function ikrZoom(ikrsvg) {
       navigator.userAgent
     );
 
-  // ----- measure base size of the SVG (at scale 1) -----
-  // IMPORTANT: call ikrZoom AFTER layout (e.g. on window load)
-  const baseRect = ikrsvg.getBoundingClientRect();
-  const baseW = baseRect.width;
-  const baseH = baseRect.height;
+  // ---------- intrinsic SVG size (fixed) ----------
+  let baseW, baseH;
 
-  // Start aligned top-left (you can change this if you want centering)
-  ts.translate.x = 0;
-  ts.translate.y = 0;
+  if (ikrsvg.viewBox && ikrsvg.viewBox.baseVal && ikrsvg.viewBox.baseVal.width) {
+    baseW = ikrsvg.viewBox.baseVal.width;
+    baseH = ikrsvg.viewBox.baseVal.height;
+  } else {
+    const rect = ikrsvg.getBoundingClientRect();
+    baseW = rect.width;
+    baseH = rect.height;
+  }
 
-  // ----- clamp translation so the svg never exposes whitespace -----
+  // ---------- center SVG in container (NORMAL MODE ONLY) ----------
+  function centerSvg() {
+    const cw = container.clientWidth;
+    const ch = container.clientHeight;
+
+    const scaledW = baseW * ts.scale;
+    const scaledH = baseH * ts.scale;
+
+    // horizontal: center if smaller, else left-aligned
+    if (scaledW < cw) {
+      ts.translate.x = (cw - scaledW) / 2;
+    } else {
+      ts.translate.x = 0;
+    }
+
+    // vertical: center if smaller, else top-aligned
+    if (scaledH < ch) {
+      ts.translate.y = (ch - scaledH) / 2;
+    } else {
+      ts.translate.y = 0;
+    }
+  }
+
+  // ---------- clamp translation ----------
   function clampTranslate() {
     const cw = container.clientWidth;
     const ch = container.clientHeight;
@@ -55,23 +76,48 @@ function ikrZoom(ikrsvg) {
     const scaledW = baseW * ts.scale;
     const scaledH = baseH * ts.scale;
 
-    // If SVG smaller than container in a direction, keep it centered in that axis.
     let minX, maxX, minY, maxY;
 
-    if (scaledW <= cw) {
-      const centerX = (cw - scaledW) / 2;
-      minX = maxX = centerX;
-    } else {
-      minX = cw - scaledW;
-      maxX = 0;
-    }
+    if (isFullscreen) {
+      // ===== FULLSCREEN CLAMPING =====
+      // No centering; we want (0,0) to be valid and top-left anchored.
 
-    if (scaledH <= ch) {
-      const centerY = (ch - scaledH) / 2;
-      minY = maxY = centerY;
+      // Horizontal
+      if (scaledW <= cw) {
+        // SVG is narrower than screen → just fix at x=0 (no centering)
+        minX = maxX = 0;
+      } else {
+        // SVG wider than screen → allow panning from fully left to fully right
+        minX = cw - scaledW;
+        maxX = 0;
+      }
+
+      // Vertical
+      if (scaledH <= ch) {
+        minY = maxY = 0; // top anchored
+      } else {
+        minY = ch - scaledH;
+        maxY = 0;
+      }
     } else {
-      minY = ch - scaledH;
-      maxY = 0;
+      // ===== NORMAL MODE CLAMPING (with padding, map-feel) =====
+      if (scaledW <= cw) {
+        const centerX = (cw - scaledW) / 2;
+        minX = maxX = centerX;
+      } else {
+        const extraX = scaledW * PAN_PADDING;
+        minX = cw - scaledW - extraX;
+        maxX = extraX;
+      }
+
+      if (scaledH <= ch) {
+        const centerY = (ch - scaledH) / 2;
+        minY = maxY = centerY;
+      } else {
+        const extraY = scaledH * PAN_PADDING;
+        minY = ch - scaledH - extraY;
+        maxY = extraY;
+      }
     }
 
     if (ts.translate.x < minX) ts.translate.x = minX;
@@ -80,23 +126,77 @@ function ikrZoom(ikrsvg) {
     if (ts.translate.y > maxY) ts.translate.y = maxY;
   }
 
-  // ----- apply transform -----
+  // ---------- apply transform ----------
   function applyTransform() {
     clampTranslate();
-    const t = `translate(${ts.translate.x}px, ${ts.translate.y}px) scale(${ts.scale})`;
-    ikrsvg.style.transform = t;
+    ikrsvg.style.transform =
+      `translate(${ts.translate.x}px, ${ts.translate.y}px) scale(${ts.scale})`;
   }
 
-  // ----- fullscreen button (optional) -----
+  // ---------- fit SVG completely into container (for fullscreen) ----------
+  function fitToContainer() {
+    const cw = container.clientWidth;
+    const ch = container.clientHeight;
+
+    const scaleX = cw / baseW;
+    const scaleY = ch / baseH;
+
+    const fitScale = Math.max(
+      MIN_SCALE,
+      Math.min(MAX_SCALE, Math.min(scaleX, scaleY))
+    );
+
+    ts.scale = fitScale;
+    currentScale = fitScale;
+  }
+
+  // ---------- fullscreen handling ----------
+  const originalWidth  = ikrsvg.style.width  || "";
+  const originalHeight = ikrsvg.style.height || "";
+
+  function enterFullscreenStyles() {
+    isFullscreen = true;
+
+    ikrsvg.style.width  = "100%";
+    ikrsvg.style.height = "100%";
+
+    // scale to fit screen, no centering translation
+    fitToContainer();
+    ts.translate.x = 0;
+    ts.translate.y = 0;
+
+    panEnabled = currentScale > 1;
+    ikrsvg.style.cursor = panEnabled ? "grab" : "default";
+
+    applyTransform();
+  }
+
+  function exitFullscreenStyles() {
+    isFullscreen = false;
+
+    ikrsvg.style.width  = originalWidth;
+    ikrsvg.style.height = originalHeight;
+
+    // back to normal view: base scale 1, centered
+    ts.scale = 1;
+    currentScale = 1;
+    panEnabled = false;
+    ikrsvg.style.cursor = "default";
+
+    centerSvg();
+    applyTransform();
+  }
+
   if (ENABLE_FULLSCREEN_BUTTON) {
     const fsBtn = document.createElement("button");
     fsBtn.type = "button";
     fsBtn.setAttribute("aria-label", "Toggle fullscreen");
 
-    // Simple icon: 4 arrows to corners
     fsBtn.innerHTML = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+           viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
         <polyline points="4 9 4 4 9 4"></polyline>
         <polyline points="15 4 20 4 20 9"></polyline>
         <polyline points="20 15 20 20 15 20"></polyline>
@@ -104,7 +204,6 @@ function ikrZoom(ikrsvg) {
       </svg>
     `;
 
-    // Basic styling via JS (you can override with CSS if you want)
     fsBtn.style.position = "absolute";
     fsBtn.style.right = "8px";
     fsBtn.style.top = "8px";
@@ -121,34 +220,35 @@ function ikrZoom(ikrsvg) {
     fsBtn.style.padding = "0";
     fsBtn.style.zIndex = "10";
 
-    // Place it inside the same container as the SVG
     container.style.position = container.style.position || "relative";
     container.appendChild(fsBtn);
 
     function toggleFullscreen() {
       if (!document.fullscreenElement) {
-        if (container.requestFullscreen) {
-          container.requestFullscreen();
-        }
+        container.requestFullscreen && container.requestFullscreen();
       } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        }
+        document.exitFullscreen && document.exitFullscreen();
       }
     }
 
     fsBtn.addEventListener("click", toggleFullscreen);
+
+    document.addEventListener("fullscreenchange", () => {
+      if (document.fullscreenElement === container) {
+        enterFullscreenStyles();
+      } else {
+        exitFullscreenStyles();
+      }
+    });
   }
 
-  // ----- wheel zoom (desktop) -----
+  // ---------- wheel zoom ----------
   function attachWheelZoom() {
     ikrsvg.addEventListener(
       "wheel",
       (e) => {
-        // Optional: require Ctrl + wheel to zoom (Google-map-style)
         if (REQUIRE_CTRL_FOR_WHEEL && !e.ctrlKey) {
-          // No zoom, no preventDefault -> normal page scrolling
-          return;
+          return; // no zoom, let page scroll
         }
 
         const delta = e.deltaY;
@@ -157,18 +257,15 @@ function ikrZoom(ikrsvg) {
         let newScale = currentScale + STEP * direction;
         newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
 
-        // If trying to zoom out at min scale -> let page scroll
         const tryingToZoomOutAtMin =
           currentScale === MIN_SCALE && direction === -1;
 
         if (tryingToZoomOutAtMin || newScale === currentScale) {
-          return; // no preventDefault -> page scrolls
+          return;
         }
 
-        // Now we are going to zoom -> block page scroll
-        e.preventDefault();
+        e.preventDefault(); // we are zooming → block page scroll
 
-        // Zoom into the mouse position
         const rect = container.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
@@ -176,7 +273,6 @@ function ikrZoom(ikrsvg) {
         const prevScale = currentScale;
         const scaleRatio = newScale / prevScale;
 
-        // adjust translation so point under cursor stays fixed
         ts.translate.x = mouseX - scaleRatio * (mouseX - ts.translate.x);
         ts.translate.y = mouseY - scaleRatio * (mouseY - ts.translate.y);
 
@@ -186,10 +282,9 @@ function ikrZoom(ikrsvg) {
           panEnabled = true;
           ikrsvg.style.cursor = "grab";
           initPanning();
-        } else if (currentScale === 1 && panEnabled === true) {
-          // auto-recentre when fully zoomed out
-          ts.translate.x = 0;
-          ts.translate.y = 0;
+        } else if (currentScale === 1 && panEnabled && !isFullscreen) {
+          // only re-center in NORMAL mode at base zoom
+          centerSvg();
           panEnabled = false;
           ikrsvg.style.cursor = "default";
         }
@@ -200,7 +295,7 @@ function ikrZoom(ikrsvg) {
     );
   }
 
-  // ----- button zoom -----
+  // ---------- button zoom ----------
   zoomInBtn.addEventListener("click", () => {
     let newScale = Math.min(MAX_SCALE, currentScale + STEP);
     if (newScale === currentScale) return;
@@ -219,9 +314,9 @@ function ikrZoom(ikrsvg) {
     let newScale = Math.max(MIN_SCALE, currentScale - STEP);
     currentScale = ts.scale = newScale;
 
-    if (currentScale === 1) {
-      ts.translate.x = 0;
-      ts.translate.y = 0;
+    if (currentScale === 1 && !isFullscreen) {
+      ts.scale = 1;
+      centerSvg();
       panEnabled = false;
       ikrsvg.style.cursor = "default";
     }
@@ -232,14 +327,23 @@ function ikrZoom(ikrsvg) {
   resetBtn.addEventListener("click", () => {
     currentScale = 1;
     ts.scale = 1;
-    ts.translate.x = 0;
-    ts.translate.y = 0;
-    panEnabled = false;
-    ikrsvg.style.cursor = "default";
+
+    if (!isFullscreen) {
+      centerSvg();
+      panEnabled = false;
+      ikrsvg.style.cursor = "default";
+    } else {
+      // in fullscreen, keep top-left at (0,0) on reset
+      ts.translate.x = 0;
+      ts.translate.y = 0;
+      panEnabled = false;
+      ikrsvg.style.cursor = "default";
+    }
+
     applyTransform();
   });
 
-  // ----- panning -----
+  // ---------- panning ----------
   let startX, startY, startTX, startTY;
 
   function initPanning() {
@@ -280,12 +384,11 @@ function ikrZoom(ikrsvg) {
 
       ikrsvg.addEventListener("touchend", () => (panId = null));
     } else {
-      // ===== DESKTOP PANNING + CLICK SUPPRESSION =====
       let panning = false;
       let isPointerDown = false;
       let hasMoved = false;
       let suppressClick = false;
-      const DRAG_THRESHOLD = 5; // px
+      const DRAG_THRESHOLD = 5;
 
       ikrsvg.addEventListener("mousedown", (e) => {
         if (!panEnabled || e.button !== 0) return;
@@ -306,7 +409,6 @@ function ikrZoom(ikrsvg) {
         const dx = e.clientX - startX;
         const dy = e.clientY - startY;
 
-        // Mark as "moved" if beyond threshold
         if (
           !hasMoved &&
           (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD)
@@ -314,7 +416,7 @@ function ikrZoom(ikrsvg) {
           hasMoved = true;
         }
 
-        if (!hasMoved) return; // don't pan for tiny movements (clicks)
+        if (!hasMoved) return;
 
         ts.translate.x = startTX + dx;
         ts.translate.y = startTY + dy;
@@ -328,9 +430,7 @@ function ikrZoom(ikrsvg) {
         isPointerDown = false;
 
         if (hasMoved) {
-          // We dragged → suppress the subsequent synthetic click
           suppressClick = true;
-          // Reset suppression on next tick
           setTimeout(() => {
             suppressClick = false;
           }, 0);
@@ -339,10 +439,9 @@ function ikrZoom(ikrsvg) {
         if (panEnabled) ikrsvg.style.cursor = "grab";
       };
 
-      ikrsvg.addEventListener("mouseup",   stop);
+      ikrsvg.addEventListener("mouseup", stop);
       ikrsvg.addEventListener("mouseleave", stop);
 
-      // Capture-phase click handler to cancel click after a drag
       ikrsvg.addEventListener(
         "click",
         (e) => {
@@ -352,12 +451,21 @@ function ikrZoom(ikrsvg) {
             suppressClick = false;
           }
         },
-        true // capture
+        true
       );
     }
   }
 
-  // ----- init -----
+  // ---------- init ----------
+  centerSvg();       // center only in normal mode
   attachWheelZoom();
   applyTransform();
+
+  // Optional: recenter on resize when at base zoom in normal mode
+  window.addEventListener("resize", () => {
+    if (currentScale === 1 && !panEnabled && !isFullscreen) {
+      centerSvg();
+      applyTransform();
+    }
+  });
 }
