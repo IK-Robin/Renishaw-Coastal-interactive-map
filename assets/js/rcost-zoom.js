@@ -2,9 +2,10 @@ function ikrZoom(ikrsvg) {
   const container = ikrsvg.parentElement;
 
   /* ---------- CONFIG ---------- */
-  const CTRL_WHEEL_ZOOM = true;             // Ctrl + wheel to zoom, plain wheel scrolls page
+  const CTRL_WHEEL_ZOOM = false             // Ctrl + wheel to zoom, plain wheel scrolls page
   const ENABLE_FULLSCREEN_BUTTON = true;    // toggle fullscreen button on/off
-  const WHEEL_ZOOM_FACTOR = 1.2;            // ~Google Maps feel: 1.1–1.3 is nice
+  const WHEEL_ZOOM_FACTOR = 1.04;         // ~Google Maps feel: 1.1–1.3 is nice
+  const BUTTON_ZOOM_FACTOR = 1.2;
   /* ---------------------------- */
 
   /* ---------- state ---------- */
@@ -164,42 +165,44 @@ function ikrZoom(ikrsvg) {
   }
 
   /* ---------- button zoom (same behaviour as wheel) ---------- */
-  zoomInBtn.addEventListener("click", () => {
-    let newScale = currentScale * WHEEL_ZOOM_FACTOR;
-    newScale = Math.min(MAX_SCALE, newScale);
-    if (newScale === currentScale) return;
+  // button zoom in
+zoomInBtn.addEventListener("click", () => {
+  let newScale = currentScale * BUTTON_ZOOM_FACTOR;
+  newScale = Math.min(MAX_SCALE, newScale);
+  if (newScale === currentScale) return;
 
-    currentScale = ts.scale = newScale;
+  currentScale = ts.scale = newScale;
 
-    if (currentScale > 1 && !panEnabled) {
-      panEnabled = true;
-      ikrsvg.style.cursor = "grab";
-      initPanning();
-    }
+  if (currentScale > 1 && !panEnabled) {
+    panEnabled = true;
+    ikrsvg.style.cursor = "grab";
+    initPanning();
+  }
 
-    applyTransform();
-  });
+  applyTransform();
+});
 
-  zoomOutBtn.addEventListener("click", () => {
-    let newScale = currentScale / WHEEL_ZOOM_FACTOR;
-    newScale = Math.max(MIN_SCALE, newScale);
+// button zoom out
+zoomOutBtn.addEventListener("click", () => {
+  let newScale = currentScale / BUTTON_ZOOM_FACTOR;
+  newScale = Math.max(MIN_SCALE, newScale);
 
-    // when zooming out via button, gently recenter too
-    if (newScale < currentScale) {
-      gentlyRecenterTranslation(newScale);
-    }
+  if (newScale < currentScale) {
+    gentlyRecenterTranslation(newScale);
+  }
 
-    currentScale = ts.scale = newScale;
+  currentScale = ts.scale = newScale;
 
-    if (currentScale === 1) {
-      ts.translate.x = 0;
-      ts.translate.y = 0;
-      panEnabled = false;
-      ikrsvg.style.cursor = "default";
-    }
+  if (currentScale === 1) {
+    ts.translate.x = 0;
+    ts.translate.y = 0;
+    panEnabled = false;
+    ikrsvg.style.cursor = "default";
+  }
 
-    applyTransform();
-  });
+  applyTransform();
+});
+
 
   resetBtn.addEventListener("click", () => {
     currentScale = 1;
