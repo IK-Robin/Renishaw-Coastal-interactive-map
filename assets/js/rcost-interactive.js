@@ -394,4 +394,4 @@ init_interactive_map({
   }
 });
 // apply zoom
-ikrZoom(ikr_svg);
+ikrZoom({ikrsvg:ikr_svg,tooltipElementId:'ikr_toltipMove',mapData,mapId});
