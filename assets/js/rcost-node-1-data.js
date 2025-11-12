@@ -4076,4 +4076,43 @@ function renderTooltipContent(mapD) {
 //   `;
 // }
 
-ikrZoom(ikr_svg);
+
+ikrZoom({ikrsvg: ikr_svg,tooltipElementId:'ikr_toltipMove',mapData: node_1_data,
+  mapId: node1_id, // Hover IN: Animate stroke + change fill
+  onLotHoverIn: (el, mapD, ev) => {
+    if (!el.classList.contains("anim-path")) return;
+
+    // Store original fill if not already
+    if (!el.dataset.originalFill) {
+      const computedFill = window.getComputedStyle(el).fill;
+      el.dataset.originalFill = computedFill !== 'none' ? computedFill : '#000000';
+    }
+
+    // Setup stroke length
+    if (typeof el.getTotalLength === "function") {
+      const len = el.getTotalLength();
+      el.style.setProperty("--len", len);
+      el.style.strokeDasharray = len;
+    }
+
+    // Apply hover styles
+    el.style.fill = "red";
+    el.style.fillOpacity = ".7";
+
+    // Trigger stroke animation
+    el.classList.remove("draw", "highlight");
+    void el.offsetWidth; // Force reflow
+    el.classList.add("highlight", "draw");
+  },
+
+  // Hover OUT: Restore original fill (do NOT hide)
+  onLotHoverOut: (el, mapD, ev) => {
+    if (!el.classList.contains("anim-path")) return;
+
+    // Restore original fill color
+    el.style.fill = el.dataset.originalFill || "#000000";
+    el.style.fillOpacity = "1"; // Keep visible
+
+    // Remove animation
+    el.classList.remove("draw", "highlight");
+  }});
