@@ -394,9 +394,11 @@ init_interactive_map({
   }
 });
 // apply zoom
-ikrZoom({ikrsvg:ikr_svg,tooltipElementId:'ikr_toltipMove',mapData,mapId, onLotHoverIn: (el, mapD, ev) => {
+ikrZoom({
+  ikrsvg: ikr_svg, tooltipElementId: 'ikr_toltipMove', mapData, mapId, onLotHoverIn: (el, mapD, ev) => {
     applyStrokeHover(el);
   },
   onLotHoverOut: (el, mapD, ev) => {
     clearStrokeHover(el);
-  }});
+  }
+});
