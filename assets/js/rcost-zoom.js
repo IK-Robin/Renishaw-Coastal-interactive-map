@@ -439,94 +439,97 @@ function ikrZoom({
     }
 
     applyTransform();
+
+
+    // tooltip related functions 
+
+    // ====== Utilities ======
+    function getClientPoint(ev) {
+      if (ev.touches && ev.touches[0]) {
+        return { x: ev.touches[0].clientX, y: ev.touches[0].clientY };
+      }
+      if (ev.changedTouches && ev.changedTouches[0]) {
+        return { x: ev.changedTouches[0].clientX, y: ev.changedTouches[0].clientY };
+      }
+      return { x: ev.clientX, y: ev.clientY };
+    }
+
+    // Smart positioning inside tooltip's offsetParent
+    function placeSmartInContainer(el, ev, pad = 8) {
+      el.style.position = "absolute";
+
+      const parent = el.offsetParent || document.body;
+      const rect = parent.getBoundingClientRect();
+
+      const cs = getComputedStyle(parent);
+      const padL = parseFloat(cs.paddingLeft) || 0;
+      const padT = parseFloat(cs.paddingTop) || 0;
+      const padR = parseFloat(cs.paddingRight) || 0;
+      const padB = parseFloat(cs.paddingBottom) || 0;
+
+      const prevDisp = el.style.display;
+      const prevVis = el.style.visibility;
+      el.style.visibility = "hidden";
+      el.style.display = "block";
+
+      const w = el.offsetWidth;
+      const h = el.offsetHeight;
+
+      const pt = getClientPoint(ev);
+      const relX = pt.x - rect.left - padL;
+      const relY = pt.y - rect.top - padT;
+
+      const contentW = rect.width - padL - padR;
+      const contentH = rect.height - padT - padB;
+
+      let left = relX + pad;
+      let top = relY + pad;
+
+      if (left + w > contentW) left = relX - w - pad;
+      left = Math.max(0, Math.min(left, contentW - w));
+
+      if (top + h > contentH) top = relY - h - pad;
+      top = Math.max(0, Math.min(top, contentH - h));
+
+      el.style.left = (left + padL) + "px";
+      el.style.top = (top + padT) + "px";
+
+      el.style.visibility = prevVis || "visible";
+      el.style.display = prevDisp || "block";
+    }
+    function handleShow(ev, ct, mapD) {
+      if (!mapD || !renderTooltipContent) return;
+
+      ikr_toltipMove_on_zoom.innerHTML = renderTooltipContent(mapD);
+      ikr_toltipMove_on_zoom.style.display = "block";
+      placeSmartInContainer(ikr_toltipMove_on_zoom, ev, 12);
+    }
+
+    function handleHide(ct) {
+      ikr_toltipMove_on_zoom.style.display = "none";
+      ikr_toltipMove_on_zoom.innerHTML = "";
+    }
+
+    function handleHideOnMobile(ct) {
+      // could call handleHide(ct) if you want
+    }
+
+    function rcostClick_func(ev, ct, mapD) {
+      if (!mapD || !mapD.link) return;
+      // example: just log instead of redirect
+      console.log("Clicked lot:", mapD.id, "->", mapD.link);
+      // window.location.href = mapD.link;
+      window.location.href = 'all-nodes/node-1.html';  // No ../ needed
+      // get the home url  
+
+
+
+    }
   }
 
   /* ---------- init ---------- */
   attachWheelZoom();
   applyTransform();
 
-  // tooltip related functions 
 
-  // ====== Utilities ======
-  function getClientPoint(ev) {
-    if (ev.touches && ev.touches[0]) {
-      return { x: ev.touches[0].clientX, y: ev.touches[0].clientY };
-    }
-    if (ev.changedTouches && ev.changedTouches[0]) {
-      return { x: ev.changedTouches[0].clientX, y: ev.changedTouches[0].clientY };
-    }
-    return { x: ev.clientX, y: ev.clientY };
-  }
-
-  // Smart positioning inside tooltip's offsetParent
-  function placeSmartInContainer(el, ev, pad = 8) {
-    el.style.position = "absolute";
-
-    const parent = el.offsetParent || document.body;
-    const rect = parent.getBoundingClientRect();
-
-    const cs = getComputedStyle(parent);
-    const padL = parseFloat(cs.paddingLeft) || 0;
-    const padT = parseFloat(cs.paddingTop) || 0;
-    const padR = parseFloat(cs.paddingRight) || 0;
-    const padB = parseFloat(cs.paddingBottom) || 0;
-
-    const prevDisp = el.style.display;
-    const prevVis = el.style.visibility;
-    el.style.visibility = "hidden";
-    el.style.display = "block";
-
-    const w = el.offsetWidth;
-    const h = el.offsetHeight;
-
-    const pt = getClientPoint(ev);
-    const relX = pt.x - rect.left - padL;
-    const relY = pt.y - rect.top - padT;
-
-    const contentW = rect.width - padL - padR;
-    const contentH = rect.height - padT - padB;
-
-    let left = relX + pad;
-    let top = relY + pad;
-
-    if (left + w > contentW) left = relX - w - pad;
-    left = Math.max(0, Math.min(left, contentW - w));
-
-    if (top + h > contentH) top = relY - h - pad;
-    top = Math.max(0, Math.min(top, contentH - h));
-
-    el.style.left = (left + padL) + "px";
-    el.style.top = (top + padT) + "px";
-
-    el.style.visibility = prevVis || "visible";
-    el.style.display = prevDisp || "block";
-  }
-  function handleShow(ev, ct, mapD) {
-    if (!mapD || !renderTooltipContent) return;
-
-    ikr_toltipMove_on_zoom.innerHTML = renderTooltipContent(mapD);
-    ikr_toltipMove_on_zoom.style.display = "block";
-    placeSmartInContainer(ikr_toltipMove_on_zoom, ev, 12);
-  }
-
-  function handleHide(ct) {
-    ikr_toltipMove_on_zoom.style.display = "none";
-    ikr_toltipMove_on_zoom.innerHTML = "";
-  }
-
-  function handleHideOnMobile(ct) {
-    // could call handleHide(ct) if you want
-  }
-
-  function rcostClick_func(ev, ct, mapD) {
-    if (!mapD || !mapD.link) return;
-    // example: just log instead of redirect
-    console.log("Clicked lot:", mapD.id, "->", mapD.link);
-    // window.location.href = mapD.link;
-    window.location.href = 'all-nodes/node-1.html';  // No ../ needed
-    // get the home url  
-
-
-
-  }
 }
