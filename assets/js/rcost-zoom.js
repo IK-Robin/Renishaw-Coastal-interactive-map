@@ -2,10 +2,10 @@ function ikrZoom(ikrsvg) {
   const container = ikrsvg.parentElement;
 
   /* ---------- CONFIG ---------- */
-  const CTRL_WHEEL_ZOOM = false             // Ctrl + wheel to zoom, plain wheel scrolls page
+  const CTRL_WHEEL_ZOOM = false;             // Ctrl + wheel to zoom, plain wheel scrolls page
   const ENABLE_FULLSCREEN_BUTTON = true;    // toggle fullscreen button on/off
-  const WHEEL_ZOOM_FACTOR = 1.04;         // ~Google Maps feel: 1.1–1.3 is nice
-  const BUTTON_ZOOM_FACTOR = 1.2;
+  const WHEEL_ZOOM_FACTOR = 1.02;            // ~Google Maps feel: 1.1–1.3 is nice
+  const button_ZOOM_FACTOR = 1.2;            // ~Google Maps feel: 1.1–1.3 is nice
   /* ---------------------------- */
 
   /* ---------- state ---------- */
@@ -17,15 +17,15 @@ function ikrZoom(ikrsvg) {
   let panEnabled = false;
 
   /* ---------- buttons ---------- */
-  const zoomInBtn = document.getElementById("zoom_in");
+  const zoomInBtn  = document.getElementById("zoom_in");
   const zoomOutBtn = document.getElementById("zoom_out");
-  const resetBtn = document.getElementById("reset");
+  const resetBtn   = document.getElementById("reset");
 
   ikrsvg.style.touchAction = "none";
   ikrsvg.style.cursor = "default";
 
   /* ---------- store original size for fullscreen restore ---------- */
-  const originalWidth = ikrsvg.style.width || "";
+  const originalWidth  = ikrsvg.style.width  || "";
   const originalHeight = ikrsvg.style.height || "";
 
   /* ---------- apply transform ---------- */
@@ -36,13 +36,13 @@ function ikrZoom(ikrsvg) {
 
   /* ---------- FULLSCREEN SUPPORT ---------- */
   function enterFullscreenStyles() {
-    ikrsvg.style.width = "100%";
+    ikrsvg.style.width  = "100%";
     ikrsvg.style.height = "100%";
     applyTransform();
   }
 
   function exitFullscreenStyles() {
-    ikrsvg.style.width = originalWidth;
+    ikrsvg.style.width  = originalWidth;
     ikrsvg.style.height = originalHeight;
     applyTransform();
   }
@@ -165,9 +165,8 @@ function ikrZoom(ikrsvg) {
   }
 
   /* ---------- button zoom (same behaviour as wheel) ---------- */
-  // button zoom in
   zoomInBtn.addEventListener("click", () => {
-    let newScale = currentScale * BUTTON_ZOOM_FACTOR;
+    let newScale = currentScale * button_ZOOM_FACTOR;
     newScale = Math.min(MAX_SCALE, newScale);
     if (newScale === currentScale) return;
 
@@ -182,11 +181,11 @@ function ikrZoom(ikrsvg) {
     applyTransform();
   });
 
-  // button zoom out
   zoomOutBtn.addEventListener("click", () => {
-    let newScale = currentScale / BUTTON_ZOOM_FACTOR;
+    let newScale = currentScale / button_ZOOM_FACTOR;
     newScale = Math.max(MIN_SCALE, newScale);
 
+    // when zooming out via button, gently recenter too
     if (newScale < currentScale) {
       gentlyRecenterTranslation(newScale);
     }
@@ -202,7 +201,6 @@ function ikrZoom(ikrsvg) {
 
     applyTransform();
   });
-
 
   resetBtn.addEventListener("click", () => {
     currentScale = 1;
@@ -350,134 +348,58 @@ function ikrZoom(ikrsvg) {
     ikrsvg.style.cursor = "default";
 
     if (isMobileDevice) {
-      // mapId.forEach((id) => {
-      //   const el = ikrsvg.querySelector(`#${id}`);
-      //   if (!el) return;
+      mapId.forEach((id) => {
+        const el = ikrsvg.querySelector(`#${id}`);
+        if (!el) return;
 
-      //   const mapD = mapData.find((d) => d.id === id);
-      //   if (!mapD) return;
+        const mapD = mapData.find((d) => d.id === id);
+        if (!mapD) return;
 
-      //   el.replaceWith(el.cloneNode(true));
-      //   const freshEl = ikrsvg.querySelector(`#${id}`);
+        el.replaceWith(el.cloneNode(true));
+        const freshEl = ikrsvg.querySelector(`#${id}`);
 
-      //   freshEl.addEventListener(
-      //     "touchstart",
-      //     (ev) => {
-      //       ev.preventDefault();
-      //       handleShow(ev, freshEl, mapD);
-      //     },
-      //     { passive: false }
-      //   );
+        freshEl.addEventListener(
+          "touchstart",
+          (ev) => {
+            ev.preventDefault();
+            handleShow(ev, freshEl, mapD);
+          },
+          { passive: false }
+        );
 
-      //   freshEl.addEventListener("touchend", (ev) => {
-      //     handleHideOnMobile(freshEl);
-      //   });
+        freshEl.addEventListener("touchend", (ev) => {
+          handleHideOnMobile(freshEl);
+        });
 
-      //   freshEl.addEventListener("click", (ev) => {
-      //     handleShow(ev, freshEl, mapD);
-      //   });
-      // });
-        init_interactive_map({
-        mapData,
-        mapId,
-        tooltipElementId: "ikr_toltipMove",
-        svgElementId: "ikr_svg",
-        renderTooltipContent: renderTooltipContent,
-        tooltipLeft: 20,
-        tooltipTop: 10,
-        onLotHoverIn: (el, mapD, ev) => {
-          applyStrokeHover(el);
-        },
-        onLotHoverOut: (el, mapD, ev) => {
-          clearStrokeHover(el);
-        }
+        freshEl.addEventListener("click", (ev) => {
+          handleShow(ev, freshEl, mapD);
+        });
       });
     } else {
-      // call the interactive map function to make the svg again interactive 
-      init_interactive_map({
-        mapData,
-        mapId,
-        tooltipElementId: "ikr_toltipMove",
-        svgElementId: "ikr_svg",
-        renderTooltipContent: renderTooltipContent,
-        tooltipLeft: 20,
-        tooltipTop: 10,
-        onLotHoverIn: (el, mapD, ev) => {
-          applyStrokeHover(el);
-        },
-        onLotHoverOut: (el, mapD, ev) => {
-          clearStrokeHover(el);
-        }
+      mapId.forEach((id) => {
+        const el = ikrsvg.querySelector(`#${id}`);
+        if (!el) return;
+
+        const mapD = mapData.find((d) => d.id === id);
+        if (!mapD) return;
+
+        el.replaceWith(el.cloneNode(true));
+        const freshEl = ikrsvg.querySelector(`#${id}`);
+        freshEl.addEventListener("mouseenter", (ev) =>
+          handleShow(ev, freshEl, mapD)
+        );
+        freshEl.addEventListener("mousemove", (ev) =>
+          handleShow(ev, freshEl, mapD)
+        );
+        freshEl.addEventListener("mouseleave", () =>
+          handleHide(freshEl)
+        );
       });
     }
 
     applyTransform();
   }
 
-
-  //    function removePanning() {
-  //   // Clone and replace SVG to remove pan listeners
-  //   const clone = ikrsvg.cloneNode(true);
-  //   ikrsvg.parentNode.replaceChild(clone, ikrsvg);
-
-  //   // Update reference
-  //   const newSvg = document.getElementById(ikrsvg.id);
-  //   ikrsvg = newSvg;
-  //   ikrsvg.style.touchAction = "none";
-  //   ikrsvg.style.cursor = "default";
-
-  //   // === CRITICAL: Rebind mobile tooltip listeners ===
-  //   if (isMobileDevice) {
-  //     mapId.forEach((id) => {
-  //       const el = ikrsvg.querySelector(`#${id}`);
-  //       if (!el) return;
-
-  //       const mapD = mapData.find((d) => d.id === id);
-  //       if (!mapD) return;
-
-  //       // Remove old listeners if any (just in case)
-  //       el.replaceWith(el.cloneNode(true));
-  //       const freshEl = ikrsvg.querySelector(`#${id}`);
-
-  //       freshEl.addEventListener(
-  //         "touchstart",
-  //         (ev) => {
-  //           ev.preventDefault();
-  //           handleShow(ev, freshEl, mapD);
-  //         },
-  //         { passive: false }
-  //       );
-
-  //       freshEl.addEventListener("touchend", (ev) => {
-  //         handleHideOnMobile(freshEl);
-  //       });
-
-  //       freshEl.addEventListener("click", (ev) => {
-  //         handleShow(ev, freshEl, mapD);
-  //       });
-  //     });
-  //   }else{
-  //       mapId.forEach((id) => {
-  //       console.log('hello')
-  //        const el = ikrsvg.querySelector(`#${id}`);
-  //       if (!el) return;
-
-  //       const mapD = mapData.find((d) => d.id === id);
-  //       if (!mapD) return;
-
-  //       // Remove old listeners if any (just in case)
-  //       el.replaceWith(el.cloneNode(true));
-  //       const freshEl = ikrsvg.querySelector(`#${id}`);
-  //        // Desktop: normal hover
-  //   freshEl.addEventListener("mouseenter", (ev) => handleShow(ev, freshEl, mapD));
-  //   freshEl.addEventListener("mousemove", (ev) => handleShow(ev, freshEl, mapD));
-  //   freshEl.addEventListener("mouseleave", () => handleHide(freshEl));
-  //   });
-  //   }
-  //   // === End of mobile rebind ===
-
-  //   applyTransform();
-  // }
   /* ---------- init ---------- */
   attachWheelZoom();
   applyTransform();
