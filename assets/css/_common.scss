@@ -76,6 +76,7 @@
     }
       .ikr_map5 {
         position: relative;
+        background-color: #fff;
   // width: 100%;
   // height: 100vh;      /* or whatever height you want */
   //  overflow: hidden; 
@@ -85,8 +86,30 @@
         
   display: block;
   width: 100%;        /* SVG scales with container width */
-  height: auto;
-  transform-origin: 0 0;   /* important for our math */
-  will-change: transform;
+  height: 100%;
+  // transform-origin: 0 0;   /* important for our math */
+  will-change: auto;
+  image-rendering: optimizeQuality;
+  shape-rendering: geometricPrecision;
+  text-rendering: geometricPrecision;
     }
+
+
+ 
+
+/* The raster image inside the SVG */
+#ikr_svg image {
+  /* Prefer quality in Chromium */
+  image-rendering: -webkit-optimize-contrast;
+  /* Fallbacks for other engines */
+  image-rendering: crisp-edges;
+  image-rendering: optimizeQuality;
+}
+.ikr_svg_container {
+  width: 70%;
+  // height: 600px;         /* or whatever you want */
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
 // ========== zoom control css ==============
