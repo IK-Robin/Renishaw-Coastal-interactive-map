@@ -3,16 +3,16 @@ function ikrZoom(ikrsvg) {
 
   /* ---------- CONFIG ---------- */
   const CTRL_WHEEL_ZOOM = false;             // Ctrl + wheel to zoom, plain wheel scrolls page
-  const ENABLE_FULLSCREEN_BUTTON = true;    // toggle fullscreen button on/off
-  const WHEEL_ZOOM_FACTOR = 1.02;            // ~Google Maps feel: 1.1–1.3 is nice
-  const button_ZOOM_FACTOR = 1.2;            // ~Google Maps feel: 1.1–1.3 is nice
+  const ENABLE_FULLSCREEN_BUTTON = true;     // toggle fullscreen button on/off
+  const WHEEL_ZOOM_FACTOR = 1.1;            // ~Google Maps feel: 1.1–1.3 is nice
+  const BUTTON_ZOOM_FACTOR = 1.2;
   /* ---------------------------- */
 
   /* ---------- state ---------- */
   const ts = { scale: 1, translate: { x: 0, y: 0 }, rotate: 0 };
   let currentScale = 1;
   const MIN_SCALE = 1;
-  const MAX_SCALE = 8;
+  const MAX_SCALE = 6;
 
   let panEnabled = false;
 
@@ -23,6 +23,9 @@ function ikrZoom(ikrsvg) {
 
   ikrsvg.style.touchAction = "none";
   ikrsvg.style.cursor = "default";
+
+  // ✅ IMPORTANT: make transforms predictable
+  ikrsvg.style.transformOrigin = "0 0";
 
   /* ---------- store original size for fullscreen restore ---------- */
   const originalWidth  = ikrsvg.style.width  || "";
@@ -104,23 +107,11 @@ function ikrZoom(ikrsvg) {
     });
   }
 
-  /* ---------- helper: blend translate toward origin on zoom-out ---------- */
-  function gentlyRecenterTranslation(newScale) {
-    // t = 1 at MAX_SCALE, 0 at MIN_SCALE
-    const t = (newScale - MIN_SCALE) / (MAX_SCALE - MIN_SCALE);
-    const clampT = Math.max(0, Math.min(1, t));
-
-    // The smaller the scale, the more we pull translation back toward (0,0)
-    ts.translate.x *= clampT;
-    ts.translate.y *= clampT;
-  }
-
-  /* ---------- WHEEL ZOOM (Google-map style) ---------- */
+  /* ---------- WHEEL ZOOM ---------- */
   function attachWheelZoom() {
     ikrsvg.addEventListener(
       "wheel",
       (e) => {
-        // Without Ctrl: let page scroll normally
         if (CTRL_WHEEL_ZOOM && !e.ctrlKey) return;
 
         e.preventDefault();
@@ -136,14 +127,20 @@ function ikrZoom(ikrsvg) {
 
         const scaleRatio = newScale / currentScale;
 
-        // Zoom relative to mouse position
-        ts.translate.x = mouseX - scaleRatio * (mouseX - ts.translate.x);
-        ts.translate.y = mouseY - scaleRatio * (mouseY - ts.translate.y);
-
-        // If we are zooming OUT, gently pull map back toward origin
-        if (!zoomIn) {
-          gentlyRecenterTranslation(newScale);
+        // ✅ anchor for zoom:
+        // - zoom IN  : around mouse
+        // - zoom OUT : around SVG center
+        let anchorX, anchorY;
+        if (zoomIn) {
+          anchorX = mouseX;
+          anchorY = mouseY;
+        } else {
+          anchorX = rect.width / 2;
+          anchorY = rect.height / 2;
         }
+
+        ts.translate.x = anchorX - scaleRatio * (anchorX - ts.translate.x);
+        ts.translate.y = anchorY - scaleRatio * (anchorY - ts.translate.y);
 
         currentScale = ts.scale = newScale;
 
@@ -164,13 +161,24 @@ function ikrZoom(ikrsvg) {
     );
   }
 
-  /* ---------- button zoom (same behaviour as wheel) ---------- */
-  zoomInBtn.addEventListener("click", () => {
-    let newScale = currentScale * button_ZOOM_FACTOR;
-    newScale = Math.min(MAX_SCALE, newScale);
-    if (newScale === currentScale) return;
+  /* ---------- BUTTON ZOOM (center-based) ---------- */
 
+  zoomInBtn.addEventListener("click", () => {
+    let newScale = currentScale * BUTTON_ZOOM_FACTOR;
+    newScale = Math.min(MAX_SCALE, newScale);
+
+    if (newScale === currentScale) return;
+    const rect = ikrsvg.getBoundingClientRect();
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    const scaleRatio = newScale / currentScale;
+    
+    // zoom around center
+    ts.translate.x = cx - scaleRatio * (cx - ts.translate.x);
+    ts.translate.y = cy - scaleRatio * (cy - ts.translate.y);
+    
     currentScale = ts.scale = newScale;
+    console.log(currentScale)
 
     if (currentScale > 1 && !panEnabled) {
       panEnabled = true;
@@ -182,13 +190,18 @@ function ikrZoom(ikrsvg) {
   });
 
   zoomOutBtn.addEventListener("click", () => {
-    let newScale = currentScale / button_ZOOM_FACTOR;
+    let newScale = currentScale / BUTTON_ZOOM_FACTOR;
     newScale = Math.max(MIN_SCALE, newScale);
+    if (newScale === currentScale) return;
 
-    // when zooming out via button, gently recenter too
-    if (newScale < currentScale) {
-      gentlyRecenterTranslation(newScale);
-    }
+    const rect = ikrsvg.getBoundingClientRect();
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    const scaleRatio = newScale / currentScale;
+
+    // ✅ zoom OUT around center too
+    ts.translate.x = cx - scaleRatio * (cx - ts.translate.x);
+    ts.translate.y = cy - scaleRatio * (cy - ts.translate.y);
 
     currentScale = ts.scale = newScale;
 
@@ -209,11 +222,11 @@ function ikrZoom(ikrsvg) {
     ts.translate.y = 0;
     panEnabled = false;
     ikrsvg.style.cursor = "default";
-    removePanning(); // your existing re-clone + tooltip rebind
+    removePanning();
     applyTransform();
   });
 
-  /* ---------- panning ---------- */
+  /* ---------- panning (unchanged) ---------- */
   let startX, startY, startTX, startTY;
   const isMobileDevice =
     /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -247,7 +260,6 @@ function ikrZoom(ikrsvg) {
           if (!t) return;
           e.preventDefault();
 
-          // ⚠️ CHANGE: no division by scale → pan speed feels same at all zoom levels
           const dx = t.clientX - startX;
           const dy = t.clientY - startY;
 
@@ -285,7 +297,6 @@ function ikrZoom(ikrsvg) {
       ikrsvg.addEventListener("mousemove", (e) => {
         if (!panning || !isPointerDown) return;
 
-        // ⚠️ CHANGE: no division by scale → same screen pan speed at any zoom
         const dx = e.clientX - startX;
         const dy = e.clientY - startY;
 
@@ -337,7 +348,7 @@ function ikrZoom(ikrsvg) {
     }
   }
 
-  /* ---------- removePanning (your original logic) ---------- */
+  /* ---------- removePanning (your version) ---------- */
   function removePanning() {
     const clone = ikrsvg.cloneNode(true);
     ikrsvg.parentNode.replaceChild(clone, ikrsvg);
@@ -346,6 +357,7 @@ function ikrZoom(ikrsvg) {
     ikrsvg = newSvg;
     ikrsvg.style.touchAction = "none";
     ikrsvg.style.cursor = "default";
+    ikrsvg.style.transformOrigin = "0 0";
 
     if (isMobileDevice) {
       mapId.forEach((id) => {
