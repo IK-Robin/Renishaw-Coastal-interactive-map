@@ -17,15 +17,15 @@ function ikrZoom(ikrsvg) {
   let panEnabled = false;
 
   /* ---------- buttons ---------- */
-  const zoomInBtn  = document.getElementById("zoom_in");
+  const zoomInBtn = document.getElementById("zoom_in");
   const zoomOutBtn = document.getElementById("zoom_out");
-  const resetBtn   = document.getElementById("reset");
+  const resetBtn = document.getElementById("reset");
 
   ikrsvg.style.touchAction = "none";
   ikrsvg.style.cursor = "default";
 
   /* ---------- store original size for fullscreen restore ---------- */
-  const originalWidth  = ikrsvg.style.width  || "";
+  const originalWidth = ikrsvg.style.width || "";
   const originalHeight = ikrsvg.style.height || "";
 
   /* ---------- apply transform ---------- */
@@ -36,13 +36,13 @@ function ikrZoom(ikrsvg) {
 
   /* ---------- FULLSCREEN SUPPORT ---------- */
   function enterFullscreenStyles() {
-    ikrsvg.style.width  = "100%";
+    ikrsvg.style.width = "100%";
     ikrsvg.style.height = "100%";
     applyTransform();
   }
 
   function exitFullscreenStyles() {
-    ikrsvg.style.width  = originalWidth;
+    ikrsvg.style.width = originalWidth;
     ikrsvg.style.height = originalHeight;
     applyTransform();
   }
@@ -166,42 +166,42 @@ function ikrZoom(ikrsvg) {
 
   /* ---------- button zoom (same behaviour as wheel) ---------- */
   // button zoom in
-zoomInBtn.addEventListener("click", () => {
-  let newScale = currentScale * BUTTON_ZOOM_FACTOR;
-  newScale = Math.min(MAX_SCALE, newScale);
-  if (newScale === currentScale) return;
+  zoomInBtn.addEventListener("click", () => {
+    let newScale = currentScale * BUTTON_ZOOM_FACTOR;
+    newScale = Math.min(MAX_SCALE, newScale);
+    if (newScale === currentScale) return;
 
-  currentScale = ts.scale = newScale;
+    currentScale = ts.scale = newScale;
 
-  if (currentScale > 1 && !panEnabled) {
-    panEnabled = true;
-    ikrsvg.style.cursor = "grab";
-    initPanning();
-  }
+    if (currentScale > 1 && !panEnabled) {
+      panEnabled = true;
+      ikrsvg.style.cursor = "grab";
+      initPanning();
+    }
 
-  applyTransform();
-});
+    applyTransform();
+  });
 
-// button zoom out
-zoomOutBtn.addEventListener("click", () => {
-  let newScale = currentScale / BUTTON_ZOOM_FACTOR;
-  newScale = Math.max(MIN_SCALE, newScale);
+  // button zoom out
+  zoomOutBtn.addEventListener("click", () => {
+    let newScale = currentScale / BUTTON_ZOOM_FACTOR;
+    newScale = Math.max(MIN_SCALE, newScale);
 
-  if (newScale < currentScale) {
-    gentlyRecenterTranslation(newScale);
-  }
+    if (newScale < currentScale) {
+      gentlyRecenterTranslation(newScale);
+    }
 
-  currentScale = ts.scale = newScale;
+    currentScale = ts.scale = newScale;
 
-  if (currentScale === 1) {
-    ts.translate.x = 0;
-    ts.translate.y = 0;
-    panEnabled = false;
-    ikrsvg.style.cursor = "default";
-  }
+    if (currentScale === 1) {
+      ts.translate.x = 0;
+      ts.translate.y = 0;
+      panEnabled = false;
+      ikrsvg.style.cursor = "default";
+    }
 
-  applyTransform();
-});
+    applyTransform();
+  });
 
 
   resetBtn.addEventListener("click", () => {
@@ -350,58 +350,134 @@ zoomOutBtn.addEventListener("click", () => {
     ikrsvg.style.cursor = "default";
 
     if (isMobileDevice) {
-      mapId.forEach((id) => {
-        const el = ikrsvg.querySelector(`#${id}`);
-        if (!el) return;
+      // mapId.forEach((id) => {
+      //   const el = ikrsvg.querySelector(`#${id}`);
+      //   if (!el) return;
 
-        const mapD = mapData.find((d) => d.id === id);
-        if (!mapD) return;
+      //   const mapD = mapData.find((d) => d.id === id);
+      //   if (!mapD) return;
 
-        el.replaceWith(el.cloneNode(true));
-        const freshEl = ikrsvg.querySelector(`#${id}`);
+      //   el.replaceWith(el.cloneNode(true));
+      //   const freshEl = ikrsvg.querySelector(`#${id}`);
 
-        freshEl.addEventListener(
-          "touchstart",
-          (ev) => {
-            ev.preventDefault();
-            handleShow(ev, freshEl, mapD);
-          },
-          { passive: false }
-        );
+      //   freshEl.addEventListener(
+      //     "touchstart",
+      //     (ev) => {
+      //       ev.preventDefault();
+      //       handleShow(ev, freshEl, mapD);
+      //     },
+      //     { passive: false }
+      //   );
 
-        freshEl.addEventListener("touchend", (ev) => {
-          handleHideOnMobile(freshEl);
-        });
+      //   freshEl.addEventListener("touchend", (ev) => {
+      //     handleHideOnMobile(freshEl);
+      //   });
 
-        freshEl.addEventListener("click", (ev) => {
-          handleShow(ev, freshEl, mapD);
-        });
+      //   freshEl.addEventListener("click", (ev) => {
+      //     handleShow(ev, freshEl, mapD);
+      //   });
+      // });
+        init_interactive_map({
+        mapData,
+        mapId,
+        tooltipElementId: "ikr_toltipMove",
+        svgElementId: "ikr_svg",
+        renderTooltipContent: renderTooltipContent,
+        tooltipLeft: 20,
+        tooltipTop: 10,
+        onLotHoverIn: (el, mapD, ev) => {
+          applyStrokeHover(el);
+        },
+        onLotHoverOut: (el, mapD, ev) => {
+          clearStrokeHover(el);
+        }
       });
     } else {
-      mapId.forEach((id) => {
-        const el = ikrsvg.querySelector(`#${id}`);
-        if (!el) return;
-
-        const mapD = mapData.find((d) => d.id === id);
-        if (!mapD) return;
-
-        el.replaceWith(el.cloneNode(true));
-        const freshEl = ikrsvg.querySelector(`#${id}`);
-        freshEl.addEventListener("mouseenter", (ev) =>
-          handleShow(ev, freshEl, mapD)
-        );
-        freshEl.addEventListener("mousemove", (ev) =>
-          handleShow(ev, freshEl, mapD)
-        );
-        freshEl.addEventListener("mouseleave", () =>
-          handleHide(freshEl)
-        );
+      // call the interactive map function to make the svg again interactive 
+      init_interactive_map({
+        mapData,
+        mapId,
+        tooltipElementId: "ikr_toltipMove",
+        svgElementId: "ikr_svg",
+        renderTooltipContent: renderTooltipContent,
+        tooltipLeft: 20,
+        tooltipTop: 10,
+        onLotHoverIn: (el, mapD, ev) => {
+          applyStrokeHover(el);
+        },
+        onLotHoverOut: (el, mapD, ev) => {
+          clearStrokeHover(el);
+        }
       });
     }
 
     applyTransform();
   }
 
+
+  //    function removePanning() {
+  //   // Clone and replace SVG to remove pan listeners
+  //   const clone = ikrsvg.cloneNode(true);
+  //   ikrsvg.parentNode.replaceChild(clone, ikrsvg);
+
+  //   // Update reference
+  //   const newSvg = document.getElementById(ikrsvg.id);
+  //   ikrsvg = newSvg;
+  //   ikrsvg.style.touchAction = "none";
+  //   ikrsvg.style.cursor = "default";
+
+  //   // === CRITICAL: Rebind mobile tooltip listeners ===
+  //   if (isMobileDevice) {
+  //     mapId.forEach((id) => {
+  //       const el = ikrsvg.querySelector(`#${id}`);
+  //       if (!el) return;
+
+  //       const mapD = mapData.find((d) => d.id === id);
+  //       if (!mapD) return;
+
+  //       // Remove old listeners if any (just in case)
+  //       el.replaceWith(el.cloneNode(true));
+  //       const freshEl = ikrsvg.querySelector(`#${id}`);
+
+  //       freshEl.addEventListener(
+  //         "touchstart",
+  //         (ev) => {
+  //           ev.preventDefault();
+  //           handleShow(ev, freshEl, mapD);
+  //         },
+  //         { passive: false }
+  //       );
+
+  //       freshEl.addEventListener("touchend", (ev) => {
+  //         handleHideOnMobile(freshEl);
+  //       });
+
+  //       freshEl.addEventListener("click", (ev) => {
+  //         handleShow(ev, freshEl, mapD);
+  //       });
+  //     });
+  //   }else{
+  //       mapId.forEach((id) => {
+  //       console.log('hello')
+  //        const el = ikrsvg.querySelector(`#${id}`);
+  //       if (!el) return;
+
+  //       const mapD = mapData.find((d) => d.id === id);
+  //       if (!mapD) return;
+
+  //       // Remove old listeners if any (just in case)
+  //       el.replaceWith(el.cloneNode(true));
+  //       const freshEl = ikrsvg.querySelector(`#${id}`);
+  //        // Desktop: normal hover
+  //   freshEl.addEventListener("mouseenter", (ev) => handleShow(ev, freshEl, mapD));
+  //   freshEl.addEventListener("mousemove", (ev) => handleShow(ev, freshEl, mapD));
+  //   freshEl.addEventListener("mouseleave", () => handleHide(freshEl));
+  //   });
+  //   }
+  //   // === End of mobile rebind ===
+
+  //   applyTransform();
+  // }
   /* ---------- init ---------- */
   attachWheelZoom();
   applyTransform();
