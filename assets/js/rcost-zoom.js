@@ -1,5 +1,14 @@
-function ikrZoom(ikrsvg) {
-  const container = ikrsvg.parentElement;
+function ikrZoom({
+   ikrsvg,
+    tooltipElementId = "ikr_toltipMove", 
+    mapData,
+     mapId 
+  }) {
+  const svg = ikrsvg;
+  console.log(svg)
+  const container = svg.parentElement;
+  const ikr_toltipMove_on_zoom   = document.getElementById(tooltipElementId)
+  console.log(ikr_toltipMove_on_zoom)
 
   /* ---------- CONFIG ---------- */
   const CTRL_WHEEL_ZOOM = false;             // Ctrl + wheel to zoom, plain wheel scrolls page
@@ -17,9 +26,9 @@ function ikrZoom(ikrsvg) {
   let panEnabled = false;
 
   /* ---------- buttons ---------- */
-  const zoomInBtn  = document.getElementById("zoom_in");
+  const zoomInBtn = document.getElementById("zoom_in");
   const zoomOutBtn = document.getElementById("zoom_out");
-  const resetBtn   = document.getElementById("reset");
+  const resetBtn = document.getElementById("reset");
 
   ikrsvg.style.touchAction = "none";
   ikrsvg.style.cursor = "default";
@@ -28,7 +37,7 @@ function ikrZoom(ikrsvg) {
   ikrsvg.style.transformOrigin = "0 0";
 
   /* ---------- store original size for fullscreen restore ---------- */
-  const originalWidth  = ikrsvg.style.width  || "";
+  const originalWidth = ikrsvg.style.width || "";
   const originalHeight = ikrsvg.style.height || "";
 
   /* ---------- apply transform ---------- */
@@ -39,13 +48,13 @@ function ikrZoom(ikrsvg) {
 
   /* ---------- FULLSCREEN SUPPORT ---------- */
   function enterFullscreenStyles() {
-    ikrsvg.style.width  = "100%";
+    ikrsvg.style.width = "100%";
     ikrsvg.style.height = "100%";
     applyTransform();
   }
 
   function exitFullscreenStyles() {
-    ikrsvg.style.width  = originalWidth;
+    ikrsvg.style.width = originalWidth;
     ikrsvg.style.height = originalHeight;
     applyTransform();
   }
@@ -172,11 +181,11 @@ function ikrZoom(ikrsvg) {
     const cx = rect.width / 2;
     const cy = rect.height / 2;
     const scaleRatio = newScale / currentScale;
-    
+
     // zoom around center
     ts.translate.x = cx - scaleRatio * (cx - ts.translate.x);
     ts.translate.y = cy - scaleRatio * (cy - ts.translate.y);
-    
+
     currentScale = ts.scale = newScale;
     console.log(currentScale)
 
@@ -406,7 +415,11 @@ function ikrZoom(ikrsvg) {
         freshEl.addEventListener("mouseleave", () =>
           handleHide(freshEl)
         );
+         freshEl.addEventListener("click", (ev) => {
+          rcostClick_func(ev, freshEl, mapD);
+        });
       });
+      attachWheelZoom();
     }
 
     applyTransform();
@@ -415,4 +428,89 @@ function ikrZoom(ikrsvg) {
   /* ---------- init ---------- */
   attachWheelZoom();
   applyTransform();
+
+  // tooltip related functions 
+
+      // ====== Utilities ======
+function getClientPoint(ev) {
+    if (ev.touches && ev.touches[0]) {
+        return { x: ev.touches[0].clientX, y: ev.touches[0].clientY };
+    }
+    if (ev.changedTouches && ev.changedTouches[0]) {
+        return { x: ev.changedTouches[0].clientX, y: ev.changedTouches[0].clientY };
+    }
+    return { x: ev.clientX, y: ev.clientY };
+}
+
+// Smart positioning inside tooltip's offsetParent
+function placeSmartInContainer(el, ev, pad = 8) {
+    el.style.position = "absolute";
+
+    const parent = el.offsetParent || document.body;
+    const rect = parent.getBoundingClientRect();
+
+    const cs = getComputedStyle(parent);
+    const padL = parseFloat(cs.paddingLeft) || 0;
+    const padT = parseFloat(cs.paddingTop) || 0;
+    const padR = parseFloat(cs.paddingRight) || 0;
+    const padB = parseFloat(cs.paddingBottom) || 0;
+
+    const prevDisp = el.style.display;
+    const prevVis = el.style.visibility;
+    el.style.visibility = "hidden";
+    el.style.display = "block";
+
+    const w = el.offsetWidth;
+    const h = el.offsetHeight;
+
+    const pt = getClientPoint(ev);
+    const relX = pt.x - rect.left - padL;
+    const relY = pt.y - rect.top - padT;
+
+    const contentW = rect.width - padL - padR;
+    const contentH = rect.height - padT - padB;
+
+    let left = relX + pad;
+    let top = relY + pad;
+
+    if (left + w > contentW) left = relX - w - pad;
+    left = Math.max(0, Math.min(left, contentW - w));
+
+    if (top + h > contentH) top = relY - h - pad;
+    top = Math.max(0, Math.min(top, contentH - h));
+
+    el.style.left = (left + padL) +"px";
+    el.style.top = (top + padT) + "px";
+
+    el.style.visibility = prevVis || "visible";
+    el.style.display = prevDisp || "block";
+}
+  function handleShow(ev, ct, mapD) {
+      if (!mapD || !renderTooltipContent) return;
+
+      ikr_toltipMove_on_zoom.innerHTML = renderTooltipContent(mapD);
+      ikr_toltipMove_on_zoom.style.display = "block";
+      placeSmartInContainer(ikr_toltipMove_on_zoom, ev, 12);
+    }
+
+    function handleHide(ct) {
+      ikr_toltipMove_on_zoom.style.display = "none";
+      ikr_toltipMove_on_zoom.innerHTML = "";
+    }
+
+    function handleHideOnMobile(ct) {
+      // could call handleHide(ct) if you want
+    }
+
+    function rcostClick_func(ev, ct, mapD) {
+      if (!mapD || !mapD.link) return;
+      // example: just log instead of redirect
+      console.log("Clicked lot:", mapD.id, "->", mapD.link);
+      // window.location.href = mapD.link;
+     window.location.href = 'all-nodes/node-1.html';  // No ../ needed
+      // get the home url  
+
+       
+
+    }
 }
