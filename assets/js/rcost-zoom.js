@@ -1,6 +1,16 @@
 function ikrZoom(ikrsvg) {
   const container = ikrsvg.parentElement;
 
+  // ================== CONFIG ==================
+  // If true → zoom happens only when holding CTRL + wheel.
+  // If false → zoom on plain wheel (current behaviour).
+  const REQUIRE_CTRL_FOR_WHEEL = false;
+
+  // If true → add a fullscreen button on the map.
+  // If false → no fullscreen button is created.
+  const ENABLE_FULLSCREEN_BUTTON = true;
+  // ============================================
+
   // ----- state -----
   const ts = {
     scale: 1,
@@ -14,7 +24,7 @@ function ikrZoom(ikrsvg) {
 
   let panEnabled = false;
 
-  // buttons
+  // buttons (existing ones in your HTML)
   const zoomInBtn  = document.getElementById("zoom_in");
   const zoomOutBtn = document.getElementById("zoom_out");
   const resetBtn   = document.getElementById("reset");
@@ -28,12 +38,12 @@ function ikrZoom(ikrsvg) {
     );
 
   // ----- measure base size of the SVG (at scale 1) -----
-  // IMPORTANT: call this AFTER the SVG has been laid out (e.g. on window load)
+  // IMPORTANT: call ikrZoom AFTER layout (e.g. on window load)
   const baseRect = ikrsvg.getBoundingClientRect();
   const baseW = baseRect.width;
   const baseH = baseRect.height;
 
-  // Start aligned top-left (you can change to center if you want)
+  // Start aligned top-left (you can change this if you want centering)
   ts.translate.x = 0;
   ts.translate.y = 0;
 
@@ -77,11 +87,70 @@ function ikrZoom(ikrsvg) {
     ikrsvg.style.transform = t;
   }
 
+  // ----- fullscreen button (optional) -----
+  if (ENABLE_FULLSCREEN_BUTTON) {
+    const fsBtn = document.createElement("button");
+    fsBtn.type = "button";
+    fsBtn.setAttribute("aria-label", "Toggle fullscreen");
+
+    // Simple icon: 4 arrows to corners
+    fsBtn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="4 9 4 4 9 4"></polyline>
+        <polyline points="15 4 20 4 20 9"></polyline>
+        <polyline points="20 15 20 20 15 20"></polyline>
+        <polyline points="9 20 4 20 4 15"></polyline>
+      </svg>
+    `;
+
+    // Basic styling via JS (you can override with CSS if you want)
+    fsBtn.style.position = "absolute";
+    fsBtn.style.right = "8px";
+    fsBtn.style.top = "8px";
+    fsBtn.style.width = "30px";
+    fsBtn.style.height = "30px";
+    fsBtn.style.border = "none";
+    fsBtn.style.borderRadius = "4px";
+    fsBtn.style.background = "rgba(255,255,255,0.9)";
+    fsBtn.style.boxShadow = "0 1px 4px rgba(0,0,0,0.3)";
+    fsBtn.style.display = "flex";
+    fsBtn.style.alignItems = "center";
+    fsBtn.style.justifyContent = "center";
+    fsBtn.style.cursor = "pointer";
+    fsBtn.style.padding = "0";
+    fsBtn.style.zIndex = "10";
+
+    // Place it inside the same container as the SVG
+    container.style.position = container.style.position || "relative";
+    container.appendChild(fsBtn);
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        if (container.requestFullscreen) {
+          container.requestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    fsBtn.addEventListener("click", toggleFullscreen);
+  }
+
   // ----- wheel zoom (desktop) -----
   function attachWheelZoom() {
     ikrsvg.addEventListener(
       "wheel",
       (e) => {
+        // Optional: require Ctrl + wheel to zoom (Google-map-style)
+        if (REQUIRE_CTRL_FOR_WHEEL && !e.ctrlKey) {
+          // No zoom, no preventDefault -> normal page scrolling
+          return;
+        }
+
         const delta = e.deltaY;
         const direction = delta < 0 ? 1 : -1; // up = zoom in
 
@@ -270,7 +339,7 @@ function ikrZoom(ikrsvg) {
         if (panEnabled) ikrsvg.style.cursor = "grab";
       };
 
-      ikrsvg.addEventListener("mouseup", stop);
+      ikrsvg.addEventListener("mouseup",   stop);
       ikrsvg.addEventListener("mouseleave", stop);
 
       // Capture-phase click handler to cancel click after a drag
