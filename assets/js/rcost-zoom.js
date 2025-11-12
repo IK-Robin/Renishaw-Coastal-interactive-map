@@ -1,13 +1,15 @@
 function ikrZoom({
-   ikrsvg,
-    tooltipElementId = "ikr_toltipMove", 
-    mapData,
-     mapId 
-  }) {
+  ikrsvg,
+  tooltipElementId = "ikr_toltipMove",
+  mapData,
+  mapId,
+  onLotHoverIn,
+  onLotHoverOut
+}) {
   const svg = ikrsvg;
   console.log(svg)
   const container = svg.parentElement;
-  const ikr_toltipMove_on_zoom   = document.getElementById(tooltipElementId)
+  const ikr_toltipMove_on_zoom = document.getElementById(tooltipElementId)
   console.log(ikr_toltipMove_on_zoom)
 
   /* ---------- CONFIG ---------- */
@@ -383,6 +385,10 @@ function ikrZoom({
           "touchstart",
           (ev) => {
             ev.preventDefault();
+
+            if (typeof onLotHoverIn === "function") {
+              onLotHoverIn(freshEl, mapD, ev);
+            }
             handleShow(ev, freshEl, mapD);
           },
           { passive: false }
@@ -406,16 +412,26 @@ function ikrZoom({
 
         el.replaceWith(el.cloneNode(true));
         const freshEl = ikrsvg.querySelector(`#${id}`);
-        freshEl.addEventListener("mouseenter", (ev) =>
-          handleShow(ev, freshEl, mapD)
+        freshEl.addEventListener("mouseenter", (ev) => {
+          handleShow(ev, freshEl, mapD);
+          if (typeof onLotHoverIn === "function") {
+            onLotHoverIn(freshEl, mapD, ev);
+          }
+
+        }
+
         );
         freshEl.addEventListener("mousemove", (ev) =>
           handleShow(ev, freshEl, mapD)
         );
-        freshEl.addEventListener("mouseleave", () =>
+        freshEl.addEventListener("mouseleave", (ev) => {
           handleHide(freshEl)
+          if (typeof onLotHoverOut === "function") {
+            onLotHoverOut(freshEl, mapD, ev);
+          }
+        }
         );
-         freshEl.addEventListener("click", (ev) => {
+        freshEl.addEventListener("click", (ev) => {
           rcostClick_func(ev, freshEl, mapD);
         });
       });
@@ -431,19 +447,19 @@ function ikrZoom({
 
   // tooltip related functions 
 
-      // ====== Utilities ======
-function getClientPoint(ev) {
+  // ====== Utilities ======
+  function getClientPoint(ev) {
     if (ev.touches && ev.touches[0]) {
-        return { x: ev.touches[0].clientX, y: ev.touches[0].clientY };
+      return { x: ev.touches[0].clientX, y: ev.touches[0].clientY };
     }
     if (ev.changedTouches && ev.changedTouches[0]) {
-        return { x: ev.changedTouches[0].clientX, y: ev.changedTouches[0].clientY };
+      return { x: ev.changedTouches[0].clientX, y: ev.changedTouches[0].clientY };
     }
     return { x: ev.clientX, y: ev.clientY };
-}
+  }
 
-// Smart positioning inside tooltip's offsetParent
-function placeSmartInContainer(el, ev, pad = 8) {
+  // Smart positioning inside tooltip's offsetParent
+  function placeSmartInContainer(el, ev, pad = 8) {
     el.style.position = "absolute";
 
     const parent = el.offsetParent || document.body;
@@ -479,38 +495,38 @@ function placeSmartInContainer(el, ev, pad = 8) {
     if (top + h > contentH) top = relY - h - pad;
     top = Math.max(0, Math.min(top, contentH - h));
 
-    el.style.left = (left + padL) +"px";
+    el.style.left = (left + padL) + "px";
     el.style.top = (top + padT) + "px";
 
     el.style.visibility = prevVis || "visible";
     el.style.display = prevDisp || "block";
-}
+  }
   function handleShow(ev, ct, mapD) {
-      if (!mapD || !renderTooltipContent) return;
+    if (!mapD || !renderTooltipContent) return;
 
-      ikr_toltipMove_on_zoom.innerHTML = renderTooltipContent(mapD);
-      ikr_toltipMove_on_zoom.style.display = "block";
-      placeSmartInContainer(ikr_toltipMove_on_zoom, ev, 12);
-    }
+    ikr_toltipMove_on_zoom.innerHTML = renderTooltipContent(mapD);
+    ikr_toltipMove_on_zoom.style.display = "block";
+    placeSmartInContainer(ikr_toltipMove_on_zoom, ev, 12);
+  }
 
-    function handleHide(ct) {
-      ikr_toltipMove_on_zoom.style.display = "none";
-      ikr_toltipMove_on_zoom.innerHTML = "";
-    }
+  function handleHide(ct) {
+    ikr_toltipMove_on_zoom.style.display = "none";
+    ikr_toltipMove_on_zoom.innerHTML = "";
+  }
 
-    function handleHideOnMobile(ct) {
-      // could call handleHide(ct) if you want
-    }
+  function handleHideOnMobile(ct) {
+    // could call handleHide(ct) if you want
+  }
 
-    function rcostClick_func(ev, ct, mapD) {
-      if (!mapD || !mapD.link) return;
-      // example: just log instead of redirect
-      console.log("Clicked lot:", mapD.id, "->", mapD.link);
-      // window.location.href = mapD.link;
-     window.location.href = 'all-nodes/node-1.html';  // No ../ needed
-      // get the home url  
+  function rcostClick_func(ev, ct, mapD) {
+    if (!mapD || !mapD.link) return;
+    // example: just log instead of redirect
+    console.log("Clicked lot:", mapD.id, "->", mapD.link);
+    // window.location.href = mapD.link;
+    window.location.href = 'all-nodes/node-1.html';  // No ../ needed
+    // get the home url  
 
-       
 
-    }
+
+  }
 }
