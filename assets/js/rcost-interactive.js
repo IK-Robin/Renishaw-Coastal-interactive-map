@@ -400,5 +400,6 @@ ikrZoom({
   },
   onLotHoverOut: (el, mapD, ev) => {
     clearStrokeHover(el);
-  }
+  },
+  max_zoom:3,
 });

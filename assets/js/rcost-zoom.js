@@ -4,7 +4,8 @@ function ikrZoom({
   mapData,
   mapId,
   onLotHoverIn,
-  onLotHoverOut
+  onLotHoverOut,
+  max_zoom = 6,
 }) {
   const svg = ikrsvg;
   console.log(svg)
@@ -23,7 +24,7 @@ function ikrZoom({
   const ts = { scale: 1, translate: { x: 0, y: 0 }, rotate: 0 };
   let currentScale = 1;
   const MIN_SCALE = 1;
-  const MAX_SCALE = 6;
+  const MAX_SCALE = max_zoom;
 
   let panEnabled = false;
 
