@@ -20,11 +20,24 @@ function ikrZoom({
   const BUTTON_ZOOM_FACTOR = 1.2;
   /* ---------------------------- */
 
+  // detect mobile device
+  const isMobileDevice =
+    /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
   /* ---------- state ---------- */
   const ts = { scale: 1, translate: { x: 0, y: 0 }, rotate: 0 };
   let currentScale = 1;
   const MIN_SCALE = 1;
-  const MAX_SCALE = max_zoom;
+  let MAX_SCALE = null;
+  if (isMobileDevice){
+    // increase max zoom for mobile devices
+    MAX_SCALE = max_zoom + 8;
+  }else{
+    MAX_SCALE = max_zoom;
+  }
+
+
 
   let panEnabled = false;
 
@@ -240,10 +253,7 @@ function ikrZoom({
 
   /* ---------- panning (unchanged) ---------- */
   let startX, startY, startTX, startTY;
-  const isMobileDevice =
-    /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    );
+  
 
   function initPanning() {
     if (isMobileDevice) {
