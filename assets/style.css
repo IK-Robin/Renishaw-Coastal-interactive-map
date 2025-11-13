@@ -537,7 +537,7 @@
 
 #ikr_svg {
   display: block;
-  width: 50%; /* SVG scales with container width */
+  width: 40%; /* SVG scales with container width */
   height: auto;
   will-change: auto;
   image-rendering: optimizeQuality;
