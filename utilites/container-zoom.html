@@ -33,8 +33,9 @@
       border: 1px solid var(--border);
       box-shadow: 0 14px 40px rgba(15, 23, 42, .15);
       padding: 16px;
-      max-width: 900px;
+      ;
       width: 100%;
+      height: 100vh;
     }
 
     .map-shell h1 {
@@ -49,15 +50,20 @@
     }
 
     /* Outer view window */
-    .map-viewport {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 4/3;
-      border-radius: 10px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      background: #000;
-    }
+    /* Outer view window */
+.map-viewport {
+  position: relative;
+  width: 100%;       /* wider container */
+  max-width: 100%;     /* still responsive on small screens */
+  aspect-ratio: 4/3;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #000;
+  margin: 0 auto;
+  height: 90vh;
+}
+
 
     /* This is the element Panzoom controls (zoom + pan) */
     .innerWrap {
@@ -68,13 +74,17 @@
     }
 
     /* Your SVG fills the container */
-    #ikr_svg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
+   /* Your SVG fills the container */
+#ikr_svg {
+  position: absolute;
+  inset: 0;
+  width: 50%;    /* was 40% */
+  height: 100%;
+  display: block;
+  margin: 0 auto;
+
+}
+
 
     /* Example plot styling (optional) */
     .cls-3,
@@ -139,14 +149,7 @@
 </head>
 <body>
 
-<div class="map-shell">
-  <h1>Zoomable Container (Panzoom + SVG)</h1>
-  <p>
-    Mouse wheel or use the buttons to zoom. Drag to pan while zoomed.
-    The <strong>container</strong> is scaled, not just the SVG.
-  </p>
-
-  <div class="map-viewport">
+<div class="map-viewport">
     <!-- This is what we zoom & pan -->
     <div class="innerWrap" id="zoomContainer">
       <!-- Your SVG -->
@@ -248,13 +251,11 @@
   </div>
 
   <div class="zoom-label" id="zoomLabel">Zoom: 100%</div>
-</div>
 
 <!-- Panzoom library (no bundler needed) -->
 <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
 
 <script>
-  // Initialize Panzoom on the container, not on the SVG itself
   (function () {
     const container = document.getElementById("zoomContainer");
     const zoomInBtn = document.getElementById("zoom_in");
@@ -267,27 +268,32 @@
       return;
     }
 
-    // Create panzoom instance
+    // Panzoom with NO auto scaling on init
     const panzoom = Panzoom(container, {
-      maxScale: 6,
+      maxScale: 10,
       minScale: 1,
-      step: 0.25,          // button zoom step
-      contain: "outside",  // feel free to tweak: "inside" / "outside" / "none"
-      cursor: "grab"       // nice feedback while panning
+      step: 0.25,
+      contain: "none",   // <- important: don't auto-zoom to fit
+      cursor: "grab"
     });
 
-    // Wheel zoom on the viewport (so scroll always works on visible area)
     const viewport = container.parentElement;
-    viewport.addEventListener("wheel", function (event) {
-      event.preventDefault();
-      panzoom.zoomWithWheel(event);
-    }, { passive: false });
 
-    // Update zoom label whenever transform changes
+    // Wheel zoom
+    viewport.addEventListener(
+      "wheel",
+      function (event) {
+        event.preventDefault();
+        panzoom.zoomWithWheel(event);
+      },
+      { passive: false }
+    );
+
     function updateLabel(scale) {
       zoomLabel.textContent = "Zoom: " + Math.round(scale * 100) + "%";
     }
 
+    // Track zoom changes
     container.addEventListener("panzoomchange", function (event) {
       const detail = event.detail;
       if (detail && typeof detail.scale === "number") {
@@ -305,14 +311,17 @@
     });
 
     resetBtn.addEventListener("click", () => {
-      panzoom.reset();
+      panzoom.reset({
+        animate: true
+      });
       updateLabel(1);
     });
 
-    // Initial label
+    // Start exactly at 100%
     updateLabel(1);
   })();
 </script>
+
 
 </body>
 </html>
