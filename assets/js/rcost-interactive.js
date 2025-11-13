@@ -352,10 +352,10 @@ function renderTooltipContent(mapD) {
         <div class="node-tooltip__body">
           <div class="node-tooltip__metrics">
             <div class="node-tooltip__metric-main">
-              <span class="node-tooltip__metric-value">${area}</span>
+              <span class="node-tooltip__metric-value"><strong>${area}</strong></span>
             </div>
             ${sites
-      ? `<div class="node-tooltip__metric-sub">${sites} Sites</div>`
+      ? `<div class="node-tooltip__metric-sub"><strong>${sites} Sites</strong></div>`
       : ""
     }
           </div>
