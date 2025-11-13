@@ -542,7 +542,9 @@
   display: block;
   width: 40%; /* SVG scales with container width */
   height: auto;
-  will-change: auto;
+  /* 👇 we KNOW we'll transform, so tell the browser early */
+  /* 👇 ensure there is NO easing when transform changes */
+  transition: none !important;
   image-rendering: optimizeQuality;
   shape-rendering: geometricPrecision;
   text-rendering: geometricPrecision;

@@ -95,16 +95,33 @@
   margin: 0 auto;
     }
 
+  // #ikr_svg {
+  // display: block;
+  // width: 40%;            /* SVG scales with container width */
+  // height: auto;
+  /* 👇 we KNOW we'll transform, so tell the browser early */
+//   will-change: transform;
+
+//   /* 👇 ensure there is NO easing when transform changes */
+//   transition: none !important;
+// // transform-origin: 0 0; 
+//   // image-rendering: optimizeQuality;
+//   // shape-rendering: geometricPrecision;
+//   // text-rendering: geometricPrecision;
+//   margin: 0 auto;
+// }
+
+
 
  
 
 /* The raster image inside the SVG */
 #ikr_svg image {
   /* Prefer quality in Chromium */
-  image-rendering: -webkit-optimize-contrast;
-  /* Fallbacks for other engines */
-  image-rendering: crisp-edges;
-  image-rendering: optimizeQuality;
+  // image-rendering: -webkit-optimize-contrast;
+  // /* Fallbacks for other engines */
+  // image-rendering: crisp-edges;
+  // image-rendering: optimizeQuality;
 }
 .ikr_svg_container {
   width: 70%;

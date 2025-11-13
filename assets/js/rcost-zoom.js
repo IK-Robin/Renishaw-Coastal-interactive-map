@@ -8,15 +8,13 @@ function ikrZoom({
   max_zoom = 6,
 }) {
   const svg = ikrsvg;
-  console.log(svg)
   const container = svg.parentElement;
-  const ikr_toltipMove_on_zoom = document.getElementById(tooltipElementId)
-  console.log(ikr_toltipMove_on_zoom)
+  const ikr_toltipMove_on_zoom = document.getElementById(tooltipElementId);
 
   /* ---------- CONFIG ---------- */
-  const CTRL_WHEEL_ZOOM = false;             // Ctrl + wheel to zoom, plain wheel scrolls page
-  const ENABLE_FULLSCREEN_BUTTON = true;     // toggle fullscreen button on/off
-  const WHEEL_ZOOM_FACTOR = 1.1;            // ~Google Maps feel: 1.1–1.3 is nice
+  const CTRL_WHEEL_ZOOM = false;            // Ctrl + wheel to zoom, plain wheel scrolls page
+  const ENABLE_FULLSCREEN_BUTTON = true;    // toggle fullscreen button on/off
+  const WHEEL_ZOOM_FACTOR = 1.1;           // ~Google Maps feel: 1.1–1.3 is nice
   const BUTTON_ZOOM_FACTOR = 1.2;
   /* ---------------------------- */
 
@@ -25,19 +23,19 @@ function ikrZoom({
     /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent
     );
+
   /* ---------- state ---------- */
   const ts = { scale: 1, translate: { x: 0, y: 0 }, rotate: 0 };
   let currentScale = 1;
   const MIN_SCALE = 1;
   let MAX_SCALE = null;
-  if (isMobileDevice){
+
+  if (isMobileDevice) {
     // increase max zoom for mobile devices
     MAX_SCALE = max_zoom + 8;
-  }else{
+  } else {
     MAX_SCALE = max_zoom;
   }
-
-
 
   let panEnabled = false;
 
@@ -49,7 +47,7 @@ function ikrZoom({
   ikrsvg.style.touchAction = "none";
   ikrsvg.style.cursor = "default";
 
-  // ✅ IMPORTANT: make transforms predictable
+  // make transforms predictable
   ikrsvg.style.transformOrigin = "0 0";
 
   /* ---------- store original size for fullscreen restore ---------- */
@@ -60,6 +58,25 @@ function ikrZoom({
   function applyTransform() {
     ikrsvg.style.transform =
       `translate(${ts.translate.x}px, ${ts.translate.y}px) scale(${ts.scale})`;
+  }
+
+  /* ---------- Reset helpers (BOTH behaviours) ---------- */
+
+  // Only reset zoom/pan, keep existing listeners
+  function resetViewOnly() {
+    currentScale = 1;
+    ts.scale = 1;
+    ts.translate.x = 0;
+    ts.translate.y = 0;
+    panEnabled = false;
+    ikrsvg.style.cursor = "default";
+    applyTransform();
+  }
+
+  // Reset zoom/pan AND recreate listeners via removePanning()
+  function resetViewAndPanning() {
+    resetViewOnly();
+    removePanning();
   }
 
   /* ---------- FULLSCREEN SUPPORT ---------- */
@@ -118,6 +135,7 @@ function ikrZoom({
         container.requestFullscreen && container.requestFullscreen();
       } else {
         document.exitFullscreen && document.exitFullscreen();
+        // Exit behaviour handled in fullscreenchange
       }
     }
 
@@ -125,9 +143,16 @@ function ikrZoom({
 
     document.addEventListener("fullscreenchange", () => {
       if (document.fullscreenElement === container) {
+        // ✅ Entered fullscreen:
+        //  - keep your original behaviour: show map in reset view
         enterFullscreenStyles();
+        resetViewOnly();
       } else {
+        // ✅ Exited fullscreen (Esc, browser UI or button):
+        //  - restore size
+        //  - reset AND call removePanning()
         exitFullscreenStyles();
+        resetViewAndPanning();
       }
     });
   }
@@ -152,7 +177,7 @@ function ikrZoom({
 
         const scaleRatio = newScale / currentScale;
 
-        // ✅ anchor for zoom:
+        // anchor for zoom:
         // - zoom IN  : around mouse
         // - zoom OUT : around SVG center
         let anchorX, anchorY;
@@ -187,7 +212,6 @@ function ikrZoom({
   }
 
   /* ---------- BUTTON ZOOM (center-based) ---------- */
-
   zoomInBtn.addEventListener("click", () => {
     let newScale = currentScale * BUTTON_ZOOM_FACTOR;
     newScale = Math.min(MAX_SCALE, newScale);
@@ -203,7 +227,6 @@ function ikrZoom({
     ts.translate.y = cy - scaleRatio * (cy - ts.translate.y);
 
     currentScale = ts.scale = newScale;
-    console.log(currentScale)
 
     if (currentScale > 1 && !panEnabled) {
       panEnabled = true;
@@ -224,7 +247,7 @@ function ikrZoom({
     const cy = rect.height / 2;
     const scaleRatio = newScale / currentScale;
 
-    // ✅ zoom OUT around center too
+    // zoom OUT around center too
     ts.translate.x = cx - scaleRatio * (cx - ts.translate.x);
     ts.translate.y = cy - scaleRatio * (cy - ts.translate.y);
 
@@ -240,20 +263,11 @@ function ikrZoom({
     applyTransform();
   });
 
-  resetBtn.addEventListener("click", () => {
-    currentScale = 1;
-    ts.scale = 1;
-    ts.translate.x = 0;
-    ts.translate.y = 0;
-    panEnabled = false;
-    ikrsvg.style.cursor = "default";
-    removePanning();
-    applyTransform();
-  });
+  // Reset button: reset view + removePanning (your original behaviour)
+  resetBtn.addEventListener("click", resetViewAndPanning);
 
-  /* ---------- panning (unchanged) ---------- */
+  /* ---------- panning ---------- */
   let startX, startY, startTX, startTY;
-  
 
   function initPanning() {
     if (isMobileDevice) {
@@ -370,7 +384,7 @@ function ikrZoom({
     }
   }
 
-  /* ---------- removePanning (your version) ---------- */
+  /* ---------- removePanning ---------- */
   function removePanning() {
     const clone = ikrsvg.cloneNode(true);
     ikrsvg.parentNode.replaceChild(clone, ikrsvg);
@@ -423,49 +437,52 @@ function ikrZoom({
 
         el.replaceWith(el.cloneNode(true));
         const freshEl = ikrsvg.querySelector(`#${id}`);
+
         freshEl.addEventListener("mouseenter", (ev) => {
           handleShow(ev, freshEl, mapD);
           if (typeof onLotHoverIn === "function") {
             onLotHoverIn(freshEl, mapD, ev);
           }
+        });
 
-        }
-
-        );
         freshEl.addEventListener("mousemove", (ev) =>
           handleShow(ev, freshEl, mapD)
         );
+
         freshEl.addEventListener("mouseleave", (ev) => {
-          handleHide(freshEl)
+          handleHide(freshEl);
           if (typeof onLotHoverOut === "function") {
             onLotHoverOut(freshEl, mapD, ev);
           }
-        }
-        );
+        });
+
         freshEl.addEventListener("click", (ev) => {
           rcostClick_func(ev, freshEl, mapD);
         });
       });
+
       attachWheelZoom();
     }
 
     applyTransform();
 
-
-    // tooltip related functions 
-
-    // ====== Utilities ======
+    // ====== Utilities for tooltip ======
     function getClientPoint(ev) {
       if (ev.touches && ev.touches[0]) {
-        return { x: ev.touches[0].clientX, y: ev.touches[0].clientY };
+        return {
+          x: ev.touches[0].clientX,
+          y: ev.touches[0].clientY,
+        };
       }
       if (ev.changedTouches && ev.changedTouches[0]) {
-        return { x: ev.changedTouches[0].clientX, y: ev.changedTouches[0].clientY };
+        return {
+          x: ev.changedTouches[0].clientX,
+          y: ev.changedTouches[0].clientY,
+        };
       }
       return { x: ev.clientX, y: ev.clientY };
     }
 
-    // Smart positioning inside tooltip's offsetParent
     function placeSmartInContainer(el, ev, pad = 8) {
       el.style.position = "absolute";
 
@@ -502,12 +519,13 @@ function ikrZoom({
       if (top + h > contentH) top = relY - h - pad;
       top = Math.max(0, Math.min(top, contentH - h));
 
-      el.style.left = (left + padL) + "px";
-      el.style.top = (top + padT) + "px";
+      el.style.left = left + padL + "px";
+      el.style.top = top + padT + "px";
 
       el.style.visibility = prevVis || "visible";
       el.style.display = prevDisp || "block";
     }
+
     function handleShow(ev, ct, mapD) {
       if (!mapD || !renderTooltipContent) return;
 
@@ -527,20 +545,13 @@ function ikrZoom({
 
     function rcostClick_func(ev, ct, mapD) {
       if (!mapD || !mapD.link) return;
-      // example: just log instead of redirect
+
       console.log("Clicked lot:", mapD.id, "->", mapD.link);
-      // window.location.href = mapD.link;
-      window.location.href = 'all-nodes/node-1.html';  // No ../ needed
-      // get the home url  
-
-
-   
+      window.location.href = "all-nodes/node-1.html";
     }
   }
 
   /* ---------- init ---------- */
   attachWheelZoom();
   applyTransform();
-
-
 }

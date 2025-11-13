@@ -10,6 +10,7 @@
     onLotHoverOut
   }) {
     const ikr_svg = document.getElementById(svgElementId);
+    // console.log(ikr_svg)
     const tooltipMove = document.getElementById(tooltipElementId);
 
     if (!tooltipMove) {

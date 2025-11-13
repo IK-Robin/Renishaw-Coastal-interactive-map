@@ -1,201 +1,142 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Reusable Hover Stroke – Every Time + White Overlay</title>
-    <style>
-      /* ---------- Base path style (your original) ---------- */
-      .ikr_svg_container {
-        width: 70%;
-        height: auto;
-        margin: 0 auto;
-      }
+<head>
+  <meta charset="utf-8" />
+  <title>SVG Zoom + Fullscreen</title>
+  <style>
+    :root {
+      --bg: #f3f4f6;
+      --border: #d1d5db;
+      --ink: #111827;
+    }
 
-      .anim-path {
-        fill: #4d4da1;
-        stroke: #231f20;
-        stroke-width: 1;
-        stroke-miterlimit: 10;
-        cursor: pointer;
-        position: relative;
-        /* needed for pseudo-element */
-      }
+    * {
+      box-sizing: border-box;
+    }
 
-      /* ---------- White overlay (background) ---------- */
-      .anim-path::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: rgba(255, 255, 255, 0.12);
-        /* white with 12% opacity */
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.25s ease;
-      }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
 
-      .anim-path:hover::before {
-        opacity: 1;
-      }
+    /* Outer view window */
+    .map-viewport {
+      position: relative;
+      width: 100%;
+      max-width: 1600px;
+      aspect-ratio: 4/3;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #000;
+      margin: 0 auto;
+      height: 90vh;
+    }
 
-      /* ---------- Highlight stroke (white, thicker) ---------- */
-      .anim-path.highlight {
-        stroke: #ffffff;
-        stroke-width: var(--stroke-w, 4);
-        /* change this value! */
-        stroke-linecap: round;
-      }
+    /* Fullscreen state */
+    .map-viewport.fullscreen {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      border-radius: 0;
+      margin: 0;
+      z-index: 9999;
+    }
 
-      /* ---------- Draw animation (forward only) ---------- */
-      @keyframes draw {
-        from {
-          stroke-dashoffset: var(--len);
-        }
+    body.fullscreen-active {
+      overflow: hidden;
+    }
 
-        to {
-          stroke-dashoffset: 0;
-        }
-      }
+    /* This is the element Panzoom controls (zoom + pan) */
+    .innerWrap {
+      position: absolute;
+      inset: 0;
+      transform-origin: 0 0;
+    }
 
-      .anim-path.draw {
-        animation: draw 0.5s linear forwards;
-      }
+    /* SVG sizing */
+    #ikr_svg {
+      position: absolute;
+      inset: 0;
+      width: 50%;   /* you can tweak this */
+      height: 100%;
+      display: block;
+      margin: 0 auto;
+    }
 
-      .all_node_map_width{
-        /* width: 39% !important; */
-      }
-    </style>
-    <link rel="stylesheet" href="assets/style.css" />
-  </head>
-  <body>
-    <!--  main top filter  -->
-    <!--  main top filter  -->
-    <div class="rhill-serchMenu">
-      <div class="menuInner">
-        <button class="mobileSearchNav" id="mobileToggle">Filter by:</button>
+    /* Example plot styling (optional) */
+    .cls-3,
+    .cls-5 {
+      cursor: pointer;
+      transition: fill 0.15s ease, stroke 0.15s ease;
+    }
+    .cls-3:hover,
+    .cls-5:hover {
+      fill-opacity: 0.7;
+    }
 
-        <div class="searchandfilter" id="searchForm">
-          <ul id="filterList">
-            <!-- NODE -->
-            <li data-sf-field-name="_sfm_node">
-              <label>
-                <select
-                  name="_sfm_node[]"
-                  class="sf-input-select"
-                  id="nodeSelect"
-                >
-                  <option value="">Node</option>
-                  <option value="node_1">
-                    Node 1 – Renshaw Estate & Heritage Village
-                  </option>
-                  <option value="node_2">
-                    Node 2 – Clansthal & Craigieburn
-                  </option>
-                  <option value="node_3">
-                    Node 3 – Interchange & Waterfront
-                  </option>
-                  <option value="node_4">Node 4 – Crocworld Development</option>
-                  <option value="node_5">Node 5 – Scottburgh South</option>
-                </select>
-              </label>
-            </li>
+    /* Controls */
+    .controls {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 10;
+    }
 
-            <!-- DEVELOPMENT TYPE (filled by JS) -->
-            <li data-sf-field-name="_sfm_block">
-              <label>
-                <select
-                  name="_sfm_block[]"
-                  class="sf-input-select"
-                  id="blockSelect"
-                >
-                  <option value="">Development Type</option>
-                </select>
-              </label>
-            </li>
+    .controls button {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      background: rgba(255, 255, 255, 0.95);
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    }
 
-            <!-- PRICE RANGE (filled by JS) -->
-            <li data-sf-field-name="_sfm_price-field">
-              <label>
-                <select
-                  name="_sfm_price-field[]"
-                  class="sf-input-select"
-                  id="priceSelect"
-                >
-                  <option value="">Price Range</option>
-                </select>
-              </label>
-            </li>
+    .controls button:hover {
+      background: #eef2ff;
+      border-color: #c7d2fe;
+    }
 
-            <!-- STATUS (Sold and Available) -->
-            <li data-sf-field-name="_sfm_status">
-              <label>
-                <select
-                  name="_sfm_status[]"
-                  class="sf-input-select"
-                  id="statusSelect"
-                >
-                  <option value="">Status</option>
-                  <option value="available">Available</option>
-                  <option value="sold">Sold</option>
-                </select>
-              </label>
-            </li>
+    .controls button:active {
+      transform: translateY(1px);
+    }
 
-            <!-- RESET -->
-            <li class="sf-field-reset" id="resetLi">
-              <a href="#" class="search-filter-reset" id="resetBtn">Reset</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
+    .zoom-label {
+      margin-top: 8px;
+      font-size: 12px;
+      text-align: right;
+      opacity: 0.7;
+      width: 100%;
+      max-width: 1600px;
+    }
+  </style>
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
 
-    <!--  main top filter  -->
-
-    <!-- main map container  -->
-    <div class="ikr_svg_container all_node_map_width">
-      <div class="ikr_map5">
-        <div id="controls" class="controls">
-          <button id="zoom_in">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-              focusable="false"
-            >
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-          </button>
-          <button id="zoom_out">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-              focusable="false"
-            >
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-          </button>
-          <button id="reset">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M129.9 292.5C143.2 199.5 223.3 128 320 128C373 128 421 149.5 455.8 184.2C456 184.4 456.2 184.6 456.4 184.8L464 192L416.1 192C398.4 192 384.1 206.3 384.1 224C384.1 241.7 398.4 256 416.1 256L544.1 256C561.8 256 576.1 241.7 576.1 224L576.1 96C576.1 78.3 561.8 64 544.1 64C526.4 64 512.1 78.3 512.1 96L512.1 149.4L500.8 138.7C454.5 92.6 390.5 64 320 64C191 64 84.3 159.4 66.6 283.5C64.1 301 76.2 317.2 93.7 319.7C111.2 322.2 127.4 310 129.9 292.6zM573.4 356.5C575.9 339 563.7 322.8 546.3 320.3C528.9 317.8 512.6 330 510.1 347.4C496.8 440.4 416.7 511.9 320 511.9C267 511.9 219 490.4 184.2 455.7C184 455.5 183.8 455.3 183.6 455.1L176 447.9L223.9 447.9C241.6 447.9 255.9 433.6 255.9 415.9C255.9 398.2 241.6 383.9 223.9 383.9L96 384C87.5 384 79.3 387.4 73.3 393.5C67.3 399.6 63.9 407.7 64 416.3L65 543.3C65.1 561 79.6 575.2 97.3 575C115 574.8 129.2 560.4 129 542.7L128.6 491.2L139.3 501.3C185.6 547.4 249.5 576 320 576C449 576 555.7 480.6 573.4 356.5z"/></svg>
-          </button>
-        </div>
-        <svg
+  <div class="map-viewport">
+    <!-- This is what we zoom & pan -->
+    <div class="innerWrap" id="zoomContainer">
+      <!-- Your SVG -->
+    <svg
           id="ikr_svg"
           xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -258,7 +199,7 @@
               width="9933"
               height="7017"
               transform="translate(-627.66 -74.68) scale(.24)"
-              xlink:href="./Renishaw-Coastal-Precinct_Brochure 123 talha vi-01-01.png"
+              xlink:href="../Renishaw-Coastal-Precinct_Brochure 123 talha vi-01-01.png"
             />
           </g>
           <g id="node_area">
@@ -316,43 +257,118 @@
             />
           </g>
         </svg>
-
-        <div id="ikr_toltipMove">
-          <div id="mapTitle"></div>
-        </div>
-      </div>
-
-      <div class="ikr_rv_detail" id="ikr_rv_detail">
-        <div style="position: relative">
-          <div id="detail_img" class="ikr_detail_img">
-            <img src="" alt="" id="map_img" />
-          </div>
-          <div class="map_details">
-            <p id="plotId" class="map_title"></p>
-
-            <div id="detail_des" class="detail_des"></div>
-
-            <a
-              id="ikr_btnTxt"
-              style="display: none"
-              class="ikr_map_tooltip_button"
-              target="_blank"
-              href=""
-            >
-              Details</a
-            >
-          </div>
-        </div>
-      </div>
-      <div class="ikr_map_tooltip" id="ikr_map_tooltip"></div>
     </div>
-    <!-- end  main map container  -->
 
-    <script src="./assets/js/rcost-interactive-single-function.js"></script>
-    <!-- <script src="./assets/js/rcost-component.js"></script>
-    <script src="./assets/js/filter-top-menu.js"></script>
-    <script src="./assets/js/rcost-min.js"></script>
-    <script src="./assets/js/rcost-zoom.js"></script> -->
-    <script src="./assets/js/rcost-interactive.js"></script>
-  </body>
+    <!-- Zoom + fullscreen controls -->
+    <div class="controls">
+      <button id="zoom_in" type="button">+</button>
+      <button id="zoom_out" type="button">−</button>
+      <button id="reset" type="button">⟲</button>
+      <button id="fullscreen" type="button">⛶</button>
+    </div>
+  </div>
+
+  <div class="zoom-label" id="zoomLabel">Zoom: 100%</div>
+
+  <!-- Panzoom library -->
+  <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
+ <script src="../assets/js/rcost-interactive-single-function.js"></script>
+    <script src="../assets/js/rcost-component.js"></script>
+    <script src="../assets/js/filter-top-menu.js"></script>
+    <script src="../assets/js/rcost-min.js"></script>
+    <script src="../assets/js/rcost-zoom.js"></script>
+    <script src="../assets/js/rcost-interactive.js"></script>
+
+  <script>
+    (function () {
+      const container      = document.getElementById("zoomContainer");
+      const viewport       = document.querySelector(".map-viewport");
+      const zoomInBtn      = document.getElementById("zoom_in");
+      const zoomOutBtn     = document.getElementById("zoom_out");
+      const resetBtn       = document.getElementById("reset");
+      const fullscreenBtn  = document.getElementById("fullscreen");
+      const zoomLabel      = document.getElementById("zoomLabel");
+
+      if (!container || !viewport) {
+        console.error("zoomContainer or map-viewport not found");
+        return;
+      }
+
+      // Panzoom with NO auto-scaling on init
+      const panzoom = Panzoom(container, {
+        maxScale: 10,
+        minScale: 1,
+        step: 0.25,
+        contain: "none",
+        cursor: "grab"
+      });
+
+      // Wheel zoom on the viewport
+      viewport.addEventListener(
+        "wheel",
+        function (event) {
+          event.preventDefault();
+          panzoom.zoomWithWheel(event);
+        },
+        { passive: false }
+      );
+
+      function updateLabel(scale) {
+        zoomLabel.textContent = "Zoom: " + Math.round(scale * 100) + "%";
+      }
+
+      // Track zoom changes
+      container.addEventListener("panzoomchange", function (event) {
+        const detail = event.detail;
+        if (detail && typeof detail.scale === "number") {
+          updateLabel(detail.scale);
+        }
+      });
+
+      // Zoom buttons
+      zoomInBtn.addEventListener("click", () => {
+        panzoom.zoomIn();
+      });
+
+      zoomOutBtn.addEventListener("click", () => {
+        panzoom.zoomOut();
+      });
+
+      resetBtn.addEventListener("click", () => {
+        panzoom.reset({ animate: true });
+        updateLabel(1);
+      });
+
+      // ---- FULLSCREEN ----
+      function isViewportFullscreen() {
+        return document.fullscreenElement === viewport;
+      }
+
+      fullscreenBtn.addEventListener("click", () => {
+        if (!document.fullscreenElement) {
+          if (viewport.requestFullscreen) {
+            viewport.requestFullscreen();
+          }
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          }
+        }
+      });
+
+      document.addEventListener("fullscreenchange", () => {
+        const active = isViewportFullscreen();
+        document.body.classList.toggle("fullscreen-active", active);
+        viewport.classList.toggle("fullscreen", active);
+        fullscreenBtn.textContent = active ? "🗗" : "⛶";
+        // if you want reset on fullscreen toggle, you could do:
+        // panzoom.reset({ animate: false }); updateLabel(1);
+      });
+
+      // Start exactly at 100%
+      updateLabel(1);
+    })();
+  </script>
+
+</body>
 </html>
