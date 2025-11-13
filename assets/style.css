@@ -537,12 +537,13 @@
 
 #ikr_svg {
   display: block;
-  width: 100%; /* SVG scales with container width */
-  height: 100%;
+  width: 50%; /* SVG scales with container width */
+  height: auto;
   will-change: auto;
   image-rendering: optimizeQuality;
   shape-rendering: geometricPrecision;
   text-rendering: geometricPrecision;
+  margin: 0 auto;
 }
 
 /* The raster image inside the SVG */
