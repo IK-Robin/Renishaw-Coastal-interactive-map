@@ -118,10 +118,10 @@
 /* The raster image inside the SVG */
 #ikr_svg image {
   /* Prefer quality in Chromium */
-  // image-rendering: -webkit-optimize-contrast;
-  // /* Fallbacks for other engines */
-  // image-rendering: crisp-edges;
-  // image-rendering: optimizeQuality;
+  image-rendering: -webkit-optimize-contrast;
+  /* Fallbacks for other engines */
+  image-rendering: crisp-edges;
+  image-rendering: optimizeQuality;
 }
 .ikr_svg_container {
   width: 70%;

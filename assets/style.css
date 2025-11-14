@@ -542,15 +542,14 @@
   display: block;
   width: 40%; /* SVG scales with container width */
   height: auto;
-  /* 👇 we KNOW we'll transform, so tell the browser early */
-  /* 👇 ensure there is NO easing when transform changes */
-  transition: none !important;
+  will-change: auto;
   image-rendering: optimizeQuality;
   shape-rendering: geometricPrecision;
   text-rendering: geometricPrecision;
   margin: 0 auto;
 }
 
+/* 👇 we KNOW we'll transform, so tell the browser early */
 /* The raster image inside the SVG */
 #ikr_svg image {
   /* Prefer quality in Chromium */
