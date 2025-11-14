@@ -14,7 +14,7 @@ function ikrZoom({
   console.log(ikr_toltipMove_on_zoom)
 
   /* ---------- CONFIG ---------- */
-  const CTRL_WHEEL_ZOOM = true;             // Ctrl + wheel to zoom, plain wheel scrolls page
+  const CTRL_WHEEL_ZOOM = false;             // Ctrl + wheel to zoom, plain wheel scrolls page
   const ENABLE_FULLSCREEN_BUTTON = true;     // toggle fullscreen button on/off
   const WHEEL_ZOOM_FACTOR = 1.1;            // ~Google Maps feel: 1.1–1.3 is nice
   const BUTTON_ZOOM_FACTOR = 1.2;
