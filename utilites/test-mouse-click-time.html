@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Panzoom – Real Click (no false cancel)</title>
+<style>
+  body{margin:0;font-family:Arial}
+  .map-viewport{width:100vw;height:100vh;overflow:hidden;background:#eee;position:relative}
+  #zoomContainer{width:200%;height:200%;background:url('https://picsum.photos/2000/2000') center/cover;cursor:grab}
+  #zoomContainer:active{cursor:grabbing}
+  .controls{position:fixed;top:15px;left:15px;z-index:10;background:rgba(0,0,0,.7);color:#fff;padding:8px 12px;border-radius:6px;display:flex;gap:8px;align-items:center}
+  button{background:#007bff;color:#fff;border:none;padding:6px 10px;border-radius:4px;cursor:pointer}
+  button:hover{background:#0056b3}
+</style>
+</head>
+<body>
+
+<div class="controls">
+  <button id="zoom_in">+</button>
+  <button id="zoom_out">−</button>
+  <button id="reset">Reset</button>
+  <span id="zoomLabel">Zoom: 100%</span>
+</div>
+
+<div class="map-viewport">
+  <div id="zoomContainer"></div>
+</div>
+
+<script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
+
+<script>
+(function () {
+  const THRESHOLD      = 300;   // ms for a normal click
+  const MOVE_TOLERANCE = 5;     // px – any movement > this cancels click
+
+  const container = document.getElementById('zoomContainer');
+  const viewport  = document.querySelector('.map-viewport');
+  const zoomLabel = document.getElementById('zoomLabel');
+  const zoomIn    = document.getElementById('zoom_in');
+  const zoomOut   = document.getElementById('zoom_out');
+  const resetBtn  = document.getElementById('reset');
+
+  /* ---------- Panzoom ---------- */
+  const panzoom = Panzoom(container, {
+    maxScale: 10,
+    minScale: 1,
+    step: 0.25,
+    contain: 'none',
+    cursor: 'grab'
+  });
+
+  /* ---------- Click detection ---------- */
+  let startTime = 0;
+  let startX = 0, startY = 0;
+  let isPotentialClick = false;
+
+  container.addEventListener('mousedown', e => {
+    if (e.button !== 0) return;               // left click only
+    console.log('mousedown');
+    isPotentialClick = true;
+    startTime = Date.now();
+    startX = e.clientX;
+    startY = e.clientY;
+  });
+
+  // ---- Cancel only on *real* movement ----
+  container.addEventListener('mousemove', e => {
+    if (!isPotentialClick) return;
+    const dx = Math.abs(e.clientX - startX);
+    const dy = Math.abs(e.clientY - startY);
+    if (dx > MOVE_TOLERANCE || dy > MOVE_TOLERANCE) {
+      console.log('mousemove > tolerance → click cancelled');
+      isPotentialClick = false;
+    }
+  });
+
+  container.addEventListener('mouseup', e => {
+    if (!isPotentialClick) return;
+
+    const duration = Date.now() - startTime;
+    const dx = Math.abs(e.clientX - startX);
+    const dy = Math.abs(e.clientY - startY);
+    const moved = dx > MOVE_TOLERANCE || dy > MOVE_TOLERANCE;
+
+    console.log(`mouseup – ${duration} ms, moved: ${moved}`);
+
+    if (duration <= THRESHOLD && !moved) {
+      console.log('SHORT CLICK → opening link');
+      window.open('https://example.com', '_blank');
+    } else {
+      console.log('NOT a short click');
+    }
+
+    isPotentialClick = false;
+  });
+
+  // ---- If the pointer leaves while still down → cancel ----
+  container.addEventListener('mouseleave', () => {
+    if (isPotentialClick) {
+      console.log('mouseleave → click cancelled');
+      isPotentialClick = false;
+    }
+  });
+
+  /* ---------- Wheel zoom ---------- */
+  viewport.addEventListener('wheel', e => {
+    e.preventDefault();
+    panzoom.zoomWithWheel(e);
+  }, { passive: false });
+
+  /* ---------- UI helpers ---------- */
+  function updateLabel(scale) {
+    zoomLabel.textContent = `Zoom: ${Math.round(scale * 100)}%`;
+  }
+  container.addEventListener('panzoomchange', ({ detail }) => updateLabel(detail.scale));
+
+  zoomIn.addEventListener('click', () => panzoom.zoomIn());
+  zoomOut.addEventListener('click', () => panzoom.zoomOut());
+  resetBtn.addEventListener('click', () => {
+    panzoom.reset({ animate: true });
+    updateLabel(1);
+  });
+
+  updateLabel(1);
+})();
+
+
+</script>
+</body>
+</html>

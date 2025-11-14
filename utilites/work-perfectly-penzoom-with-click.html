@@ -1,175 +1,153 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>SVG Zoom + Fullscreen + Interactive Nodes</title>
+  <head>
+    <meta charset="utf-8" />
+    <title>
+      SVG Zoom + Fullscreen + Interactive Nodes (Click-first, Pan-second)
+    </title>
 
-  <!-- Your main CSS file -->
-  <link rel="stylesheet" href="../assets/style.css" />
+    <link rel="stylesheet" href="../assets/style.css" />
 
-  <style>
-    :root {
-      --bg: #f3f4f6;
-      --border: #d1d5db;
-      --ink: #111827;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--ink);
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    /* Outer view window */
-    .map-viewport {
-      position: relative;
-      width: 100%;
-      max-width: 1600px;
-      aspect-ratio: 4/3;
-      border-radius: 10px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      background: #000;
-      margin: 0 auto;
-      height: 90vh;
-    }
-
-    /* Fullscreen state */
-    .map-viewport.fullscreen {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      border-radius: 0;
-      margin: 0;
-      z-index: 9999;
-    }
-
-    body.fullscreen-active {
-      overflow: hidden;
-    }
-
-    /* Panzoom target */
-    .innerWrap {
-      position: absolute;
-      inset: 0;
-      transform-origin: 0 0;
-    }
-
-    /* SVG sizing */
-    #ikr_svg {
-      position: absolute;
-      inset: 0;
-      width: 50%;
-      height: 100%;
-      display: block;
-      margin: 0 auto;
-      transition: none !important;
-      image-rendering: optimizeQuality;
-    }
-
-    #ikr_svg image {
-      image-rendering: -webkit-optimize-contrast;
-      image-rendering: crisp-edges;
-      image-rendering: optimizeQuality;
-    }
-
-    /* Map hoverable shapes */
-    .cls-3,
-    .cls-5 {
-      cursor: pointer;
-      transition: fill 0.15s ease, stroke 0.15s ease;
-    }
-    .cls-3:hover,
-    .cls-5:hover {
-      fill-opacity: 0.7;
-    }
-
-    /* Controls */
-    .controls {
-      position: absolute;
-      top: 17px;
-      right: 2%;
-      z-index: 100;
-      display: flex;
-      flex-direction: column-reverse;
-      gap: 5px;
-    }
-
-    .controls button {
-      width: 32px;
-      height: 32px;
-      border-radius: 999px;
-      border: 1px solid #e5e7eb;
-      background: rgba(255, 255, 255, 0.95);
-      cursor: pointer;
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-    }
-
-    .controls button:hover {
-      background: #eef2ff;
-      border-color: #c7d2fe;
-    }
-
-    .controls button:active {
-      transform: translateY(1px);
-    }
-
-    .zoom-label {
-      margin-top: 8px;
-      font-size: 12px;
-      text-align: right;
-      opacity: 0.7;
-      width: 100%;
-      max-width: 1600px;
-    }
-
-    /* Tooltip container (already in your CSS, but keeping key bits here) */
-    #ikr_toltipMove {
-      position: absolute;
-      display: none;
-      width: max-content;
-      height: auto;
-      margin: 0 auto;
-      font-size: 16px;
-      text-align: center;
-      line-height: 22px;
-      z-index: 200;
-      pointer-events: none;
-      border-radius: 6px;
-    }
-
-    @media (max-width: 768px) {
+    <style>
+      :root {
+        --bg: #f3f4f6;
+        --border: #d1d5db;
+        --ink: #111827;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+      }
+      .map-viewport {
+        position: relative;
+        width: 100%;
+        max-width: 1600px;
+        aspect-ratio: 4/3;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        background: #000;
+        margin: 0 auto;
+        height: 90vh;
+      }
+      .map-viewport.fullscreen {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+        margin: 0;
+        z-index: 9999;
+      }
+      body.fullscreen-active {
+        overflow: hidden;
+      }
+      .innerWrap {
+        position: absolute;
+        inset: 0;
+        transform-origin: 0 0;
+      }
+      #ikr_svg {
+        position: absolute;
+        inset: 0;
+        width: 50%;
+        height: 100%;
+        display: block;
+        margin: 0 auto;
+        transition: none !important;
+        image-rendering: optimizeQuality;
+      }
+      #ikr_svg image {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+        image-rendering: optimizeQuality;
+      }
+      .cls-3,
+      .cls-5 {
+        cursor: pointer;
+        transition: fill 0.15s ease, stroke 0.15s ease;
+      }
+      .cls-3:hover,
+      .cls-5:hover {
+        fill-opacity: 0.7;
+      }
       .controls {
-        bottom: 11px;
-        left: auto;
-        top: auto;
-        right: 3%;
+        position: absolute;
+        top: 17px;
+        right: 2%;
+        z-index: 100;
+        display: flex;
         flex-direction: column-reverse;
+        gap: 5px;
       }
       .controls button {
-        padding: 4px;
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        border: 1px solid #e5e7eb;
+        background: rgba(255, 255, 255, 0.95);
+        cursor: pointer;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
       }
-    }
+      .controls button:hover {
+        background: #eef2ff;
+        border-color: #c7d2fe;
+      }
+      .controls button:active {
+        transform: translateY(1px);
+      }
+      .zoom-label {
+        margin-top: 8px;
+        font-size: 12px;
+        text-align: right;
+        opacity: 0.7;
+        width: 100%;
+        max-width: 1600px;
+      }
+      #ikr_toltipMove {
+        position: absolute;
+        display: none;
+        width: max-content;
+        height: auto;
+        margin: 0 auto;
+        font-size: 16px;
+        text-align: center;
+        line-height: 22px;
+        z-index: 200;
+        pointer-events: none;
+        border-radius: 6px;
+      }
+      @media (max-width: 768px) {
+        .controls {
+          bottom: 11px;
+          left: auto;
+          top: auto;
+          right: 3%;
+          flex-direction: column-reverse;
+        }
+        .controls button {
+          padding: 4px;
+        }
+      }
 
-    /* add the animation style  */
-    
+      /* ---------- animation style ---------- */
       .anim-path {
         fill: #4d4da1;
         stroke: #231f20;
@@ -177,61 +155,44 @@
         stroke-miterlimit: 10;
         cursor: pointer;
         position: relative;
-        /* needed for pseudo-element */
       }
-
-      /* ---------- White overlay (background) ---------- */
       .anim-path::before {
         content: "";
         position: absolute;
         inset: 0;
         background: rgba(255, 255, 255, 0.12);
-        /* white with 12% opacity */
         pointer-events: none;
         opacity: 0;
         transition: opacity 0.25s ease;
       }
-
       .anim-path:hover::before {
         opacity: 1;
       }
-
-      /* ---------- Highlight stroke (white, thicker) ---------- */
       .anim-path.highlight {
-        stroke: #ffffff;
+        stroke: #fff;
         stroke-width: var(--stroke-w, 4);
-        /* change this value! */
         stroke-linecap: round;
       }
-
-      /* ---------- Draw animation (forward only) ---------- */
       @keyframes draw {
         from {
           stroke-dashoffset: var(--len);
         }
-
         to {
           stroke-dashoffset: 0;
         }
       }
-
       .anim-path.draw {
         animation: draw 0.5s linear forwards;
       }
+    </style>
+  </head>
+  <body>
+    <div class="map-viewport">
+      <div id="ikr_toltipMove"></div>
 
-    /* add the animation style  */
-  </style>
-</head>
-<body>
-
-  <div class="map-viewport">
-    <!-- Tooltip lives inside viewport so smart placement works -->
-    <div id="ikr_toltipMove"></div>
-
-    <!-- Panzoom container -->
-    <div class="innerWrap" id="zoomContainer">
-      <!-- ======= YOUR REAL SVG GOES HERE (unchanged) ======= -->
-      <svg
+      <div class="innerWrap" id="zoomContainer">
+        <!-- ======= YOUR REAL SVG GOES HERE (unchanged) ======= -->
+        <svg
           id="ikr_svg"
           xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -352,271 +313,199 @@
             />
           </g>
         </svg>
+      </div>
+
+      <div class="controls">
+        <button id="zoom_in" type="button">+</button>
+        <button id="zoom_out" type="button">-</button>
+        <button id="reset" type="button">Reset</button>
+        <button id="fullscreen" type="button">Fullscreen</button>
+      </div>
     </div>
 
-    <!-- Zoom + fullscreen controls -->
-    <div class="controls">
-      <button id="zoom_in" type="button">+</button>
-      <button id="zoom_out" type="button">−</button>
-      <button id="reset" type="button">⟲</button>
-      <button id="fullscreen" type="button">⛶</button>
-    </div>
-  </div>
+    <div class="zoom-label" id="zoomLabel">Zoom: 100%</div>
 
-  <div class="zoom-label" id="zoomLabel">Zoom: 100%</div>
+    <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
 
-  <!-- Panzoom library -->
-  <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
+    <script>
+      /* ============================================================= */
+      /* 1. INTERACTIVE MAP CORE (unchanged – tooltip, hover, click)   */
+      /* ============================================================= */
 
-  <!-- If these old files also try to init panzoom/interactive map, they can clash.
-       You can comment them out if not needed anymore. -->
-  
-  <script src="../assets/js/rcost-interactive-single-function.js"></script>
-  <script src="../assets/js/rcost-component.js"></script>
-  <script src="../assets/js/filter-top-menu.js"></script>
-  <script src="../assets/js/rcost-min.js"></script>
-  <script src="../assets/js/rcost-zoom.js"></script>
-  <!-- <script src="../assets/js/rcost-interactive.js"></script> -->
- 
-
-  <script>
-
-    // global variable
-
-    
-    // global variable
-
-
-
-
-    /***********************
-     * INTERACTIVE MAP CORE
-     **********************/
-    function init_interactive_map({
-      mapData,
-      mapId,
-      tooltipElementId = "ikr_toltipMove",
-      svgElementId = "ikr_svg",
-      renderTooltipContent,
-      tooltipLeft = 0,
-      tooltipTop = 0,
-      onLotHoverIn,
-      onLotHoverOut
-    }) {
-      const ikr_svg = document.getElementById(svgElementId);
-      const tooltipMove = document.getElementById(tooltipElementId);
-
-      if (!tooltipMove) {
-        console.warn("Tooltip element not found:", tooltipElementId);
-        return;
-      }
-
-      // --- utilities ---
-      function getClientPoint(ev) {
-        if (ev.touches && ev.touches[0]) {
-          return { x: ev.touches[0].clientX, y: ev.touches[0].clientY };
+      let isClicked = false;
+      function init_interactive_map({
+        mapData,
+        mapId,
+        tooltipElementId = "ikr_toltipMove",
+        svgElementId = "ikr_svg",
+        renderTooltipContent,
+        tooltipLeft = 0,
+        tooltipTop = 0,
+        onLotHoverIn,
+        onLotHoverOut,
+      }) {
+        const ikr_svg = document.getElementById(svgElementId);
+        const tooltipMove = document.getElementById(tooltipElementId);
+        if (!tooltipMove) {
+          console.warn("Tooltip element not found:", tooltipElementId);
+          return;
         }
-        if (ev.changedTouches && ev.changedTouches[0]) {
-          return { x: ev.changedTouches[0].clientX, y: ev.changedTouches[0].clientY };
+
+        function getClientPoint(ev) {
+          if (ev.touches && ev.touches[0])
+            return { x: ev.touches[0].clientX, y: ev.touches[0].clientY };
+          if (ev.changedTouches && ev.changedTouches[0])
+            return {
+              x: ev.changedTouches[0].clientX,
+              y: ev.changedTouches[0].clientY,
+            };
+          return { x: ev.clientX, y: ev.clientY };
         }
-        return { x: ev.clientX, y: ev.clientY };
-      }
 
-      // Place tooltip inside its offsetParent (here: .map-viewport)
-      function placeSmartInContainer(el, ev, pad = 8) {
-        el.style.position = "absolute";
+        function placeSmartInContainer(el, ev, pad = 8) {
+          el.style.position = "absolute";
+          const parent = el.offsetParent || document.body;
+          const rect = parent.getBoundingClientRect();
+          const cs = getComputedStyle(parent);
+          const padL = parseFloat(cs.paddingLeft) || 0,
+            padT = parseFloat(cs.paddingTop) || 0;
+          const padR = parseFloat(cs.paddingRight) || 0,
+            padB = parseFloat(cs.paddingBottom) || 0;
 
-        const parent = el.offsetParent || document.body;
-        const rect = parent.getBoundingClientRect();
+          const prevDisp = el.style.display;
+          const prevVis = el.style.visibility;
+          el.style.visibility = "hidden";
+          el.style.display = "block";
+          const w = el.offsetWidth,
+            h = el.offsetHeight;
+          const pt = getClientPoint(ev);
+          const relX = pt.x - rect.left - padL;
+          const relY = pt.y - rect.top - padT;
+          const contentW = rect.width - padL - padR;
+          const contentH = rect.height - padT - padB;
 
-        const cs = getComputedStyle(parent);
-        const padL = parseFloat(cs.paddingLeft) || 0;
-        const padT = parseFloat(cs.paddingTop) || 0;
-        const padR = parseFloat(cs.paddingRight) || 0;
-        const padB = parseFloat(cs.paddingBottom) || 0;
+          let left = relX + pad;
+          let top = relY + pad;
+          if (left + w > contentW) left = relX - w - pad;
+          left = Math.max(0, Math.min(left, contentW - w));
+          if (top + h > contentH) top = relY - h - pad;
+          top = Math.max(0, Math.min(top, contentH - h));
 
-        // measure temporarily
-        const prevDisp = el.style.display;
-        const prevVis = el.style.visibility;
-        el.style.visibility = "hidden";
-        el.style.display = "block";
+          el.style.left = left + padL + tooltipLeft + "px";
+          el.style.top = top + padT + tooltipTop + "px";
+          el.style.visibility = prevVis || "visible";
+          el.style.display = prevDisp || "block";
+        }
 
-        const w = el.offsetWidth;
-        const h = el.offsetHeight;
+        function isMobile() {
+          return /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent
+          );
+        }
 
-        const pt = getClientPoint(ev);
-        const relX = pt.x - rect.left - padL;
-        const relY = pt.y - rect.top - padT;
+        function handleShow(ev, el, mapD) {
+          if (!mapD || !renderTooltipContent) return;
+          tooltipMove.innerHTML = renderTooltipContent(mapD);
+          tooltipMove.style.display = "block";
+          placeSmartInContainer(tooltipMove, ev, 12);
+        }
+        function handleHide() {
+          tooltipMove.style.display = "none";
+          tooltipMove.innerHTML = "";
+        }
 
-        const contentW = rect.width - padL - padR;
-        const contentH = rect.height - padT - padB;
+        function rcostClick_func(ev, el, mapD) {
+          if (!mapD || !mapD.link) return;
+          console.log("Clicked lot:", mapD.id, "->", mapD.link);
+          window.location.href = mapD.link;
+        }
 
-        let left = relX + pad;
-        let top = relY + pad;
+        window.addEventListener("load", () => {
+          mapId.forEach((id) => {
+            const el = document.querySelector("#" + id);
+            if (!el) return;
+            const data = mapData.find((d) => d.id === id);
+            if (data && data.mapColor) el.style.fill = "#" + data.mapColor;
+          });
+        });
 
-        if (left + w > contentW) left = relX - w - pad;
-        left = Math.max(0, Math.min(left, contentW - w));
-
-        if (top + h > contentH) top = relY - h - pad;
-        top = Math.max(0, Math.min(top, contentH - h));
-
-        el.style.left = (left + padL + tooltipLeft) + "px";
-        el.style.top = (top + padT + tooltipTop) + "px";
-
-        el.style.visibility = prevVis || "visible";
-        el.style.display = prevDisp || "block";
-      }
-
-      function isMobile() {
-        return /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent
-        );
-      }
-
-      function handleShow(ev, el, mapD) {
-        if (!mapD || !renderTooltipContent) return;
-        tooltipMove.innerHTML = renderTooltipContent(mapD);
-        tooltipMove.style.display = "block";
-        placeSmartInContainer(tooltipMove, ev, 12);
-      }
-
-      function handleHide() {
-        tooltipMove.style.display = "none";
-        tooltipMove.innerHTML = "";
-      }
-
-      function handleHideOnMobile() {
-        // optional: use handleHide() here if you want it to disappear after tap
-      }
-
-      function rcostClick_func(ev, el, mapD) {
-        if (!mapD || !mapD.link) return;
-        console.log("Clicked lot:", mapD.id, "->", mapD.link);
-        window.location.href = mapD.link;
-      }
-
-      // Init default colors if provided
-      window.addEventListener("load", () => {
         mapId.forEach((id) => {
           const el = document.querySelector("#" + id);
           if (!el) return;
-          const data = mapData.find((d) => d.id === id);
-          if (data && data.mapColor) {
-            el.style.fill = "#" + data.mapColor;
+          const mapD = mapData.find((d) => d.id === id);
+          if (!mapD) return;
+
+          if (isMobile()) {
+            el.addEventListener(
+              "touchstart",
+              (ev) => {
+                ev.preventDefault();
+                if (typeof onLotHoverIn === "function")
+                  onLotHoverIn(el, mapD, ev);
+                handleShow(ev, el, mapD);
+                rcostClick_func(ev, el, mapD);
+              },
+              { passive: false }
+            );
+            el.addEventListener("touchend", (ev) => {
+              if (typeof onLotHoverOut === "function")
+                setTimeout(() => onLotHoverOut(el, mapD, ev), 500);
+            });
+            el.addEventListener("click", (ev) => handleShow(ev, el, mapD));
+          } 
+          else {
+            el.addEventListener("mouseenter", (ev) => {
+              if (typeof onLotHoverIn === "function")
+                onLotHoverIn(el, mapD, ev);
+              handleShow(ev, el, mapD);
+            });
+            el.addEventListener("mousemove", (ev) => handleShow(ev, el, mapD));
+            el.addEventListener("mouseleave", (ev) => {
+              if (typeof onLotHoverOut === "function")
+                onLotHoverOut(el, mapD, ev);
+              handleHide();
+            });
           }
         });
-      });
 
-      // Bind events to each node
-      mapId.forEach((id) => {
-        const el = document.querySelector("#" + id);
-        if (!el) return;
+        window.addEventListener("click", (ev) => {
+          if (
+            ev.target &&
+            ev.target.tagName.toLowerCase() !== "path" &&
+            ev.target.tagName.toLowerCase() !== "polygon"
+          ) {
+            tooltipMove.style.display = "none";
+          }
+        });
+      }
 
-        const mapD = mapData.find((d) => d.id === id);
-        if (!mapD) return;
+      function renderTooltipContent(mapD) {
+        const nodeName = mapD.node_number;
+        const nodeSubtitle = mapD.nodeSubtitle || mapD.developmentType || "";
+        const area = mapD.size || mapD.area || "";
+        const sites = mapD.lotNumber || "";
+        const img = mapD.imageUrl || "https://via.placeholder.com/600x300";
 
-        if (isMobile()) {
-          el.addEventListener(
-            "touchstart",
-            (ev) => {
-              ev.preventDefault();
-              if (typeof onLotHoverIn === "function") {
-                onLotHoverIn(el, mapD, ev);
-              }
-              handleShow(ev, el, mapD);
-              rcostClick_func(ev, el, mapD);
-            },
-            { passive: false }
-          );
-
-          el.addEventListener("touchend", (ev) => {
-            if (typeof onLotHoverOut === "function") {
-              setTimeout(() => {
-                onLotHoverOut(el, mapD, ev);
-              }, 500);
-            }
-            handleHideOnMobile(el);
-          });
-
-          el.addEventListener("click", (ev) => {
-            handleShow(ev, el, mapD);
-          });
-        } else {
-          el.addEventListener("mouseenter", (ev) => {
-            if (typeof onLotHoverIn === "function") {
-              onLotHoverIn(el, mapD, ev);
-            }
-            handleShow(ev, el, mapD);
-          });
-
-          el.addEventListener("mousemove", (ev) => {
-            handleShow(ev, el, mapD);
-          });
-
-          el.addEventListener("mouseleave", (ev) => {
-            if (typeof onLotHoverOut === "function") {
-              onLotHoverOut(el, mapD, ev);
-            }
-            handleHide(el);
-          });
-
-          // el.addEventListener("click", (ev) => {
-          //   rcostClick_func(ev, el, mapD);
-          // });
-        }
-      });
-
-      // Hide tooltip when clicking outside paths
-      window.addEventListener("click", (ev) => {
-        if (ev.target && ev.target.tagName.toLowerCase() !== "path" &&
-            ev.target.tagName.toLowerCase() !== "polygon") {
-          tooltipMove.style.display = "none";
-        }
-      });
-    }
-
-    /***********************
-     * TOOLTIP TEMPLATE
-     **********************/
-    function renderTooltipContent(mapD) {
-      const nodeName = mapD.node_number;
-      const nodeSubtitle = mapD.nodeSubtitle || (mapD.developmentType || "");
-      const area = mapD.size || mapD.area || "";
-      const sites = mapD.lotNumber || "";
-      const img = mapD.imageUrl || "https://via.placeholder.com/600x300";
- 
-
-      return `
+        return `
         <div class="rcost-plot-tooltip">
           <div class="node-tooltip">
             <div class="node-tooltip__image-wrapper">
-              <img
-                src="${img}"
-                alt="${nodeName}"
-                class="node-tooltip__image"
-              />
+              <img src="${img}" alt="${nodeName}" class="node-tooltip__image"/>
               <div class="node-tooltip__badge">
                 <div class="node-tooltip__badge-title">Node ${nodeName}</div>
-                <div class="node-tooltip__badge-subtitle">
-                  ${nodeSubtitle}
-                </div>
+                <div class="node-tooltip__badge-subtitle">${nodeSubtitle}</div>
               </div>
             </div>
-
             <div class="node-tooltip__body">
               <div class="node-tooltip__metrics">
-                <div class="node-tooltip__metrics-main">
-                  <span class="node-tooltip__metrics-value"><strong>${area}</strong></span>
-                </div>
+                <div class="node-tooltip__metrics-main"><span class="node-tooltip__metrics-value"><strong>${area}</strong></span></div>
                 ${
                   sites
                     ? `<div class="node-tooltip__metrics-sub"><strong>${sites} Sites</strong></div>`
                     : ""
                 }
               </div>
-
               <div class="node-tooltip__divider"></div>
-
               <div class="node-tooltip__text">
                 ${
                   mapD.description
@@ -626,212 +515,228 @@
               </div>
             </div>
           </div>
-        </div>
-      `;
-    }
-
-    /***********************
-     * SIMPLE HOVER STYLES
-     * (you can replace with your own)
-     **********************/
-   
-
- 
-
-    /***********************
-     * MAP DATA + IDS
-     **********************/
-    const mapData = [
-      {
-        id: "node_1-2",
-        node_number: "1",
-        lotNumber: "210",
-        nodeSubtitle: "RENSHAW CENTRAL",
-        imageUrl: "../../assets/images/node-tooltip-images/node-1.png",
-        link: "../../all nods/node-1.html",
-        use: "Residential",
-        size: "714 000 m²",
-        description: "Renshaw Central is the largest residential property development node."
-      },
-      {
-        id: "node_2-2",
-        node_number: "2",
-        lotNumber: "143",
-        nodeSubtitle: "CLANSTHAL",
-        imageUrl: "../assets/images/node-tooltip-images/node-2.png",
-        link: "../../all nods/node-2.html",
-        use: "Residential",
-        size: "402 000 m²",
-        description: "Planned for Clansthal, is a luxury housing development featuring contemporary aesthetics."
-      },
-      {
-        id: "node_3-2",
-        node_number: "3",
-        lotNumber: "85",
-        nodeSubtitle: "INTERCHANGE",
-        imageUrl: "../assets/images/node-tooltip-images/node-3-01.png",
-        link: "../../all nods/node-3.html",
-        use: "Commercial",
-        size: "535 000 m²",
-        description:
-          "The Renshaw Coastal Precinct Interchange will be the nucleus of the development – as the social and business hub. The area’s first private hospital. Office parks. Light commercial zones. A shopping centre. The area’s first private school."
-      },
-      {
-        id: "node_4-2",
-        node_number: "4",
-        lotNumber: "7",
-        nodeSubtitle: "RENSHAW NORTH",
-        imageUrl: "../assets/images/node-tooltip-images/node-4.png",
-        link: "../../all nods/node-4.html",
-        use: "Residential",
-        size: "527 000 m²",
-        description:
-          "Renshaw North will boast luxury villas, seated within indigenous forest overlooking the ocean. An equestrian centre, indigenous nursery and a resort village are also included within the envisaged infrastructure."
-      },
-      {
-        id: "node_5-2",
-        node_number: "5",
-        lotNumber: "111",
-        nodeSubtitle: "RENSHAW SOUTH",
-        imageUrl: "../assets/images/node-tooltip-images/node-5.png",
-        link: "../../all nods/node-5.html",
-        use: "Residential",
-        size: "457 000 m²",
-        description:
-          "Renshaw South is to feature a special residential development. Group housing and small-holding plots will also be available. While some land is reserved for conservation, a community facility and light commercial opportunities are planned."
+        </div>`;
       }
-    ];
 
-    const mapId = [
-      "node_2-2",
-      "node_3-2",
-      "node_1-2",
-      "node_5-2",
-      "node_4-2"
-    ];
+      const mapData = [
+        {
+          id: "node_1-2",
+          node_number: "1",
+          lotNumber: "210",
+          nodeSubtitle: "RENSHAW CENTRAL",
+          imageUrl: "../../assets/images/node-tooltip-images/node-1.png",
+          link: "../../all nods/node-1.html",
+          use: "Residential",
+          size: "714 000 m²",
+          description:
+            "Renshaw Central is the largest residential property development node.",
+        },
+        {
+          id: "node_2-2",
+          node_number: "2",
+          lotNumber: "143",
+          nodeSubtitle: "CLANSTHAL",
+          imageUrl: "../assets/images/node-tooltip-images/node-2.png",
+          link: "../../all nods/node-2.html",
+          use: "Residential",
+          size: "402 000 m²",
+          description:
+            "Planned for Clansthal, is a luxury housing development featuring contemporary aesthetics.",
+        },
+        {
+          id: "node_3-2",
+          node_number: "3",
+          lotNumber: "85",
+          nodeSubtitle: "INTERCHANGE",
+          imageUrl: "../assets/images/node-tooltip-images/node-3-01.png",
+          link: "../../all nods/node-3.html",
+          use: "Commercial",
+          size: "535 000 m²",
+          description:
+            "The Renshaw Coastal Precinct Interchange will be the nucleus of the development – as the social and business hub. The area’s first private hospital. Office parks. Light commercial zones. A shopping centre. The area’s first private school.",
+        },
+        {
+          id: "node_4-2",
+          node_number: "4",
+          lotNumber: "7",
+          nodeSubtitle: "RENSHAW NORTH",
+          imageUrl: "../assets/images/node-tooltip-images/node-4.png",
+          link: "../../all nods/node-4.html",
+          use: "Residential",
+          size: "527 000 m²",
+          description:
+            "Renshaw North will boast luxury villas, seated within indigenous forest overlooking the ocean. An equestrian centre, indigenous nursery and a resort village are also included within the envisaged infrastructure.",
+        },
+        {
+          id: "node_5-2",
+          node_number: "5",
+          lotNumber: "111",
+          nodeSubtitle: "RENSHAW SOUTH",
+          imageUrl: "../assets/images/node-tooltip-images/node-5.png",
+          link: "../../all nods/node-5.html",
+          use: "Residential",
+          size: "457 000 m²",
+          description:
+            "Renshaw South is to feature a special residential development. Group housing and small-holding plots will also be available. While some land is reserved for conservation, a community facility and light commercial opportunities are planned.",
+        },
+      ];
+      const mapId = [
+        "node_2-2",
+        "node_3-2",
+        "node_1-2",
+        "node_5-2",
+        "node_4-2",
+      ];
 
-    /***********************
-     * INIT INTERACTIVE MAP
-     **********************/
-    init_interactive_map({
-      mapData,
-      mapId,
-      tooltipElementId: "ikr_toltipMove",
-      svgElementId: "ikr_svg",
-      renderTooltipContent,
-      tooltipLeft: 20,
-      tooltipTop: 10,
-      onLotHoverIn: (el, mapD, ev) => {
-        applyStrokeHover(el);
-      },
-      onLotHoverOut: (el, mapD, ev) => {
-        clearStrokeHover(el);
+      /* ----------------------------------------------------------- */
+      /* 2. HOVER STROKE ANIMATION (unchanged)                       */
+      /* ----------------------------------------------------------- */
+      function applyStrokeHover(el) {
+        const len = el.getTotalLength ? el.getTotalLength() : 0;
+        el.style.setProperty("--len", len);
+        el.classList.add("highlight", "draw");
       }
-    });
+      function clearStrokeHover(el) {
+        el.classList.remove("highlight", "draw");
+      }
 
-    /***********************
-     * PANZOOM + FULLSCREEN
-     **********************/
-   (function () {
-      const THRESHOLD = 300;          // ms for a "normal" click
-  let startTime = 0;
-  let isDragging = false;
-  const container = document.getElementById("zoomContainer");
-  const viewport = document.querySelector(".map-viewport");
-  const zoomInBtn = document.getElementById("zoom_in");
-  const zoomOutBtn = document.getElementById("zoom_out");
-  const resetBtn = document.getElementById("reset");
-  const fullscreenBtn = document.getElementById("fullscreen");
-  const zoomLabel = document.getElementById("zoomLabel");
+      init_interactive_map({
+        mapData,
+        mapId,
+        renderTooltipContent,
+        tooltipLeft: 20,
+        tooltipTop: 10,
+        onLotHoverIn: (el, mapD, ev) => applyStrokeHover(el),
+        onLotHoverOut: (el, mapD, ev) => clearStrokeHover(el),
+      });
 
-  if (!container || !viewport) {
-    console.error("zoomContainer or map-viewport not found");
-    return;
-  }
+      /* ============================================================= */
+      /* 3. CLICK-FIRST / PAN-SECOND + PANZOOM + FULLSCREEN            */
+      /* ============================================================= */
+      (function () {
+        const CLICK_THRESHOLD = 300; // ms
+        const MOVE_TOLERANCE = 5; // px
+        const container = document.getElementById("zoomContainer");
+        const viewport = document.querySelector(".map-viewport");
+        const zoomIn = document.getElementById("zoom_in");
+        const zoomOut = document.getElementById("zoom_out");
+        const resetBtn = document.getElementById("reset");
+        const fullscreenBtn = document.getElementById("fullscreen");
+        const zoomLabel = document.getElementById("zoomLabel");
 
-  const panzoom = Panzoom(container, {
-    maxScale: 10,
-    minScale: 1,
-    step: 0.25,
-    contain: "none",
-    cursor: "grab",
-  });
+        const panzoom = Panzoom(container, {
+          maxScale: 10,
+          minScale: 1,
+          step: 0.25,
+          contain: "none",
+          start: false, // panning disabled by default
+          cursor: "default",
+        });
 
-  // Track pan/zoom only on start & end
-  container.addEventListener("panzoomstart", () => {
-    e.preventDefault();           // stop text selection
-    isDragging = true;
-    startTime = Date.now();
-    console.log('panzoomstart');
-  });
+        let startTime = 0,
+          startX = 0,
+          startY = 0;
+        let isPotentialClick = false,
+          isDragging = false;
 
-  container.addEventListener("panzoomend", () => {
-    isDragging = false;
-    const duration = Date.now() - startTime;
-    console.log(Date.now(),'current time')
-    console.log(duration,'duration time')
+        /* ---- pointer events ------------------------------------------------ */
+        container.addEventListener("pointerdown", (e) => {
+          if (e.button !== 0) return; // left-click only
+          isPotentialClick = true;
+          isDragging = false;
+          startTime = Date.now();
+          startX = e.clientX;
+          startY = e.clientY;
+          container.setPointerCapture(e.pointerId);
+        });
 
-    if(duration < THRESHOLD){
-      console.log('open link' )
-    }else{
-      console.log('just panned/zoomed')
-    }
-     console.log('panzoomend');
-  });
+        container.addEventListener("pointermove", (e) => {
+          if (!isPotentialClick) return;
+          const dx = Math.abs(e.clientX - startX);
+          const dy = Math.abs(e.clientY - startY);
+          if (dx > MOVE_TOLERANCE || dy > MOVE_TOLERANCE) {
+            isPotentialClick = false;
+            isDragging = true;
+            panzoom.setOptions({ start: true });
+            panzoom.pan(e.clientX - startX, e.clientY - startY);
+          }
+        });
 
-  // Wheel zoom
-  viewport.addEventListener(
-    "wheel",
-    function (event) {
-      event.preventDefault();
-      panzoom.zoomWithWheel(event);
-    },
-    { passive: false }
-  );
+        container.addEventListener("pointerup", (e) => {
+          container.releasePointerCapture(e.pointerId);
+          if (isDragging) {
+            isDragging = false;
+            return;
+          }
 
-  function updateLabel(scale) {
-    zoomLabel.textContent = "Zoom: " + Math.round(scale * 100) + "%";
-  }
+          if (!isPotentialClick) return;
+          const duration = Date.now() - startTime;
+          const dx = Math.abs(e.clientX - startX);
+          const dy = Math.abs(e.clientY - startY);
+          const moved = dx > MOVE_TOLERANCE || dy > MOVE_TOLERANCE;
 
-  container.addEventListener("panzoomchange", function (event) {
-    const detail = event.detail;
-    if (detail && typeof detail.scale === "number") {
-      updateLabel(detail.scale);
-    }
-  });
+          if (duration <= CLICK_THRESHOLD && !moved) {
+            // ---- SHORT CLICK → open the link of the node under the pointer ----
+            const pt = container.getBoundingClientRect();
+            const svgX = e.clientX - pt.left;
+            const svgY = e.clientY - pt.top;
+            const el = document.elementFromPoint(e.clientX, e.clientY);
+            const nodeId = el?.closest('[id^="node_"]')?.id;
+            const data = mapData.find((d) => d.id === nodeId);
+            if (data?.link) window.location.href = data.link;
+          }
+          isPotentialClick = false;
+        });
 
-  zoomInBtn.addEventListener("click", () => panzoom.zoomIn());
-  zoomOutBtn.addEventListener("click", () => panzoom.zoomOut());
+        container.addEventListener("pointerleave", () => {
+          if (isPotentialClick) isPotentialClick = false;
+          if (isDragging) isDragging = false;
+        });
 
-  resetBtn.addEventListener("click", () => {
-    panzoom.reset({ animate: true });
-    updateLabel(1);
-  });
+        /* ---- wheel zoom --------------------------------------------------- */
+        viewport.addEventListener(
+          "wheel",
+          (e) => {
+            e.preventDefault();
+            panzoom.zoomWithWheel(e);
+          },
+          { passive: false }
+        );
 
-  function isViewportFullscreen() {
-    return document.fullscreenElement === viewport;
-  }
+        /* ---- UI helpers --------------------------------------------------- */
+        function updateLabel(scale) {
+          zoomLabel.textContent = `Zoom: ${Math.round(scale * 100)}%`;
+        }
+        container.addEventListener("panzoomchange", ({ detail }) =>
+          updateLabel(detail.scale)
+        );
 
-  fullscreenBtn.addEventListener("click", () => {
-    if (!document.fullscreenElement) {
-      viewport.requestFullscreen && viewport.requestFullscreen();
-    } else {
-      document.exitFullscreen && document.exitFullscreen();
-    }
-  });
+        zoomIn.addEventListener("click", () => panzoom.zoomIn());
+        zoomOut.addEventListener("click", () => panzoom.zoomOut());
 
-  document.addEventListener("fullscreenchange", () => {
-    const active = isViewportFullscreen();
-    document.body.classList.toggle("fullscreen-active", active);
-    viewport.classList.toggle("fullscreen", active);
-    fullscreenBtn.textContent = active ? "🗗" : "⛶";
-  });
+        resetBtn.addEventListener("click", () => {
+          panzoom.reset({ animate: true });
+          updateLabel(1);
+          panzoom.setOptions({ start: false }); // back to click-first mode
+        });
 
-  updateLabel(1);
-})();
-  
-  
-  
-  </script>
-</body>
+        /* ---- fullscreen --------------------------------------------------- */
+        function isViewportFullscreen() {
+          return document.fullscreenElement === viewport;
+        }
+        fullscreenBtn.addEventListener("click", () => {
+          if (!document.fullscreenElement) viewport.requestFullscreen?.();
+          else document.exitFullscreen?.();
+        });
+        document.addEventListener("fullscreenchange", () => {
+          const active = isViewportFullscreen();
+          document.body.classList.toggle("fullscreen-active", active);
+          viewport.classList.toggle("fullscreen", active);
+          fullscreenBtn.textContent = active ? "Exit" : "Fullscreen";
+        });
+
+        updateLabel(1);
+      })();
+    </script>
+  </body>
 </html>

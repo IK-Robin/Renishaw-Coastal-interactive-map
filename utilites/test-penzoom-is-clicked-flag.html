@@ -1,11 +1,9 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>SVG Zoom + Fullscreen + Interactive Nodes (Click-first, Pan-second)</title>
-
-  <link rel="stylesheet" href="../assets/style.css" />
-
+  <meta charset="utf-8">
+  <title>SVG Map – Click-first, Pan-second (isClicked flag + logging)</title>
+  <link rel="stylesheet" href="../assets/style.css">
   <style>
     :root{--bg:#f3f4f6;--border:#d1d5db;--ink:#111827}
     *{box-sizing:border-box}
@@ -26,7 +24,7 @@
     #ikr_toltipMove{position:absolute;display:none;width:max-content;height:auto;margin:0 auto;font-size:16px;text-align:center;line-height:22px;z-index:200;pointer-events:none;border-radius:6px}
     @media(max-width:768px){.controls{bottom:11px;left:auto;top:auto;right:3%;flex-direction:column-reverse}.controls button{padding:4px}}
 
-    /* ---------- animation style ---------- */
+    /* animation */
     .anim-path{fill:#4d4da1;stroke:#231f20;stroke-width:1;stroke-miterlimit:10;cursor:pointer;position:relative}
     .anim-path::before{content:"";position:absolute;inset:0;background:rgba(255,255,255,.12);pointer-events:none;opacity:0;transition:opacity .25s ease}
     .anim-path:hover::before{opacity:1}
@@ -41,8 +39,8 @@
     <div id="ikr_toltipMove"></div>
 
     <div class="innerWrap" id="zoomContainer">
-      <!-- ======= YOUR REAL SVG GOES HERE (unchanged) ======= -->
-      <svg
+      <!-- ==== YOUR SVG (keep the IDs) ==== -->
+     <svg
           id="ikr_svg"
           xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -166,10 +164,10 @@
     </div>
 
     <div class="controls">
-      <button id="zoom_in" type="button">+</button>
-      <button id="zoom_out" type="button">-</button>
-      <button id="reset" type="button">Reset</button>
-      <button id="fullscreen" type="button">Fullscreen</button>
+      <button id="zoom_in">+</button>
+      <button id="zoom_out">-</button>
+      <button id="reset">Reset</button>
+      <button id="fullscreen">Fullscreen</button>
     </div>
   </div>
 
@@ -178,26 +176,33 @@
   <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
 
   <script>
-    /* ============================================================= */
-    /* 1. INTERACTIVE MAP CORE (unchanged – tooltip, hover, click)   */
-    /* ============================================================= */
+    /* --------------------------------------------------------------- */
+    /* 1. GLOBAL FLAG & LOGGING HELPERS                               */
+    /* --------------------------------------------------------------- */
+    let isClicked = false;                     // the flag you asked for
+
+    const log = (msg, ...args) => console.log(`%c[MAP] ${msg}`, 'color:#2a9d8f', ...args);
+
+    /* --------------------------------------------------------------- */
+    /* 2. INTERACTIVE MAP CORE (tooltip, hover, click via isClicked) */
+    /* --------------------------------------------------------------- */
     function init_interactive_map({
       mapData, mapId, tooltipElementId = "ikr_toltipMove",
       svgElementId = "ikr_svg", renderTooltipContent,
       tooltipLeft = 0, tooltipTop = 0,
       onLotHoverIn, onLotHoverOut
     }) {
-      const ikr_svg = document.getElementById(svgElementId);
       const tooltipMove = document.getElementById(tooltipElementId);
-      if (!tooltipMove) { console.warn("Tooltip element not found:", tooltipElementId); return; }
+      if (!tooltipMove) { log('Tooltip element not found'); return; }
 
-      function getClientPoint(ev) {
-        if (ev.touches && ev.touches[0]) return {x: ev.touches[0].clientX, y: ev.touches[0].clientY};
-        if (ev.changedTouches && ev.changedTouches[0]) return {x: ev.changedTouches[0].clientX, y: ev.changedTouches[0].clientY};
+      /* ----- helpers ----- */
+      const getClientPoint = ev => {
+        if (ev.touches?.[0]) return {x: ev.touches[0].clientX, y: ev.touches[0].clientY};
+        if (ev.changedTouches?.[0]) return {x: ev.changedTouches[0].clientX, y: ev.changedTouches[0].clientY};
         return {x: ev.clientX, y: ev.clientY};
-      }
+      };
 
-      function placeSmartInContainer(el, ev, pad = 8) {
+      const placeSmartInContainer = (el, ev, pad = 8) => {
         el.style.position = "absolute";
         const parent = el.offsetParent || document.body;
         const rect = parent.getBoundingClientRect();
@@ -225,76 +230,99 @@
         el.style.top = (top + padT + tooltipTop) + "px";
         el.style.visibility = prevVis || "visible";
         el.style.display = prevDisp || "block";
-      }
+      };
 
-      function isMobile() {
-        return /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      }
+      const isMobile = () => /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-      function handleShow(ev, el, mapD) {
+      const handleShow = (ev, el, mapD) => {
         if (!mapD || !renderTooltipContent) return;
         tooltipMove.innerHTML = renderTooltipContent(mapD);
         tooltipMove.style.display = "block";
         placeSmartInContainer(tooltipMove, ev, 12);
-      }
-      function handleHide() { tooltipMove.style.display = "none"; tooltipMove.innerHTML = ""; }
+        // log('Tooltip shown', mapD.id);
+      };
+      const handleHide = () => {
+        tooltipMove.style.display = "none";
+        tooltipMove.innerHTML = "";
+        // log('Tooltip hidden');
+      };
 
-      function rcostClick_func(ev, el, mapD) {
-        if (!mapD || !mapD.link) return;
-        console.log("Clicked lot:", mapD.id, "->", mapD.link);
+      /* ----- click handler – ONLY fires when isClicked === true ----- */
+      const rcostClick_func = (ev, el, mapD) => {
+        log('Node click handler – isClicked?', isClicked);
+        if (!isClicked) return;
+        if (!mapD?.link) { log('No link for', mapD?.id); return; }
+        log('Navigate to', mapD.link);
         window.location.href = mapD.link;
-      }
+        isClicked = false;               // reset for next interaction
+      };
 
+      /* ----- initialise colours ----- */
       window.addEventListener("load", () => {
         mapId.forEach(id => {
           const el = document.querySelector("#" + id);
           if (!el) return;
           const data = mapData.find(d => d.id === id);
-          if (data && data.mapColor) el.style.fill = "#" + data.mapColor;
+          if (data?.mapColor) el.style.fill = "#" + data.mapColor;
         });
       });
 
+      /* ----- bind events to every node ----- */
       mapId.forEach(id => {
         const el = document.querySelector("#" + id);
-        if (!el) return;
+        if (!el) { log('Node element missing', id); return; }
         const mapD = mapData.find(d => d.id === id);
-        if (!mapD) return;
+        if (!mapD) { log('Data missing for', id); return; }
 
         if (isMobile()) {
           el.addEventListener("touchstart", ev => {
             ev.preventDefault();
-            if (typeof onLotHoverIn === "function") onLotHoverIn(el, mapD, ev);
+            log('Touch start on', id);
+            onLotHoverIn?.(el, mapD, ev);
             handleShow(ev, el, mapD);
             rcostClick_func(ev, el, mapD);
           }, {passive:false});
-          el.addEventListener("touchend", ev => {
-            if (typeof onLotHoverOut === "function") setTimeout(() => onLotHoverOut(el, mapD, ev), 500);
+          el.addEventListener("touchend", () => {
+            log('Touch end on', id);
+            setTimeout(() => onLotHoverOut?.(el, mapD), 500);
           });
           el.addEventListener("click", ev => handleShow(ev, el, mapD));
         } else {
           el.addEventListener("mouseenter", ev => {
-            if (typeof onLotHoverIn === "function") onLotHoverIn(el, mapD, ev);
+            // log('Mouse enter', id);
+            onLotHoverIn?.(el, mapD, ev);
             handleShow(ev, el, mapD);
           });
           el.addEventListener("mousemove", ev => handleShow(ev, el, mapD));
           el.addEventListener("mouseleave", ev => {
-            if (typeof onLotHoverOut === "function") onLotHoverOut(el, mapD, ev);
+            // log('Mouse leave', id);
+            onLotHoverOut?.(el, mapD, ev);
             handleHide();
+          });
+
+          /* ---- click listener (uses flag) ---- */
+          el.addEventListener("click", ev => {
+            log('Node click event fired for', id);
+            rcostClick_func(ev, el, mapD);
           });
         }
       });
 
+      /* hide tooltip when clicking elsewhere */
       window.addEventListener("click", ev => {
-        if (ev.target && ev.target.tagName.toLowerCase() !== "path" &&
-            ev.target.tagName.toLowerCase() !== "polygon") {
-          tooltipMove.style.display = "none";
+        const tag = ev.target?.tagName?.toLowerCase();
+        if (tag !== "path" && tag !== "polygon") {
+          handleHide();
         }
       });
     }
 
+    /* --------------------------------------------------------------- */
+    /* 3. TOOLTIP CONTENT                                             */
+    /* --------------------------------------------------------------- */
     function renderTooltipContent(mapD) {
       const nodeName = mapD.node_number;
-      const nodeSubtitle = mapD.nodeSubtitle || (mapD.developmentType || "");
+      const nodeSubtitle = mapD.nodeSubtitle || mapD.developmentType || "";
       const area = mapD.size || mapD.area || "";
       const sites = mapD.lotNumber || "";
       const img = mapD.imageUrl || "https://via.placeholder.com/600x300";
@@ -323,6 +351,9 @@
         </div>`;
     }
 
+    /* --------------------------------------------------------------- */
+    /* 4. MAP DATA & IDS                                              */
+    /* --------------------------------------------------------------- */
     const mapData = [
       {id:"node_1-2",node_number:"1",lotNumber:"210",nodeSubtitle:"RENSHAW CENTRAL",imageUrl:"../../assets/images/node-tooltip-images/node-1.png",link:"../../all nods/node-1.html",use:"Residential",size:"714 000 m²",description:"Renshaw Central is the largest residential property development node."},
       {id:"node_2-2",node_number:"2",lotNumber:"143",nodeSubtitle:"CLANSTHAL",imageUrl:"../assets/images/node-tooltip-images/node-2.png",link:"../../all nods/node-2.html",use:"Residential",size:"402 000 m²",description:"Planned for Clansthal, is a luxury housing development featuring contemporary aesthetics."},
@@ -332,28 +363,30 @@
     ];
     const mapId = ["node_2-2","node_3-2","node_1-2","node_5-2","node_4-2"];
 
-    /* ----------------------------------------------------------- */
-    /* 2. HOVER STROKE ANIMATION (unchanged)                       */
-    /* ----------------------------------------------------------- */
-    function applyStrokeHover(el) {
-      const len = el.getTotalLength ? el.getTotalLength() : 0;
+    /* --------------------------------------------------------------- */
+    /* 5. HOVER STROKE ANIMATION                                      */
+    /* --------------------------------------------------------------- */
+    const applyStrokeHover = el => {
+      const len = el.getTotalLength?.() ?? 0;
       el.style.setProperty('--len', len);
       el.classList.add('highlight','draw');
-    }
-    function clearStrokeHover(el) {
+      // log('Stroke hover ON', el.id);
+    };
+    const clearStrokeHover = el => {
       el.classList.remove('highlight','draw');
-    }
+      // log('Stroke hover OFF', el.id);
+    };
 
     init_interactive_map({
       mapData, mapId, renderTooltipContent,
       tooltipLeft:20, tooltipTop:10,
-      onLotHoverIn: (el,mapD,ev)=>applyStrokeHover(el),
-      onLotHoverOut: (el,mapD,ev)=>clearStrokeHover(el)
+      onLotHoverIn: applyStrokeHover,
+      onLotHoverOut: clearStrokeHover
     });
 
-    /* ============================================================= */
-    /* 3. CLICK-FIRST / PAN-SECOND + PANZOOM + FULLSCREEN            */
-    /* ============================================================= */
+    /* --------------------------------------------------------------- */
+    /* 6. CLICK-FIRST / PAN-SECOND + PANZOOM + FULLSCREEN            */
+    /* --------------------------------------------------------------- */
     (function () {
       const CLICK_THRESHOLD = 300;   // ms
       const MOVE_TOLERANCE   = 5;    // px
@@ -379,7 +412,8 @@
 
       /* ---- pointer events ------------------------------------------------ */
       container.addEventListener('pointerdown', e => {
-        if (e.button !== 0) return;                     // left-click only
+        if (e.button !== 0) return;                 // left click only
+        log('pointerdown – start tracking');
         isPotentialClick = true;
         isDragging = false;
         startTime = Date.now();
@@ -392,6 +426,7 @@
         const dx = Math.abs(e.clientX - startX);
         const dy = Math.abs(e.clientY - startY);
         if (dx > MOVE_TOLERANCE || dy > MOVE_TOLERANCE) {
+          log('pointermove – movement > tolerance → PAN');
           isPotentialClick = false;
           isDragging = true;
           panzoom.setOptions({ start: true });
@@ -401,30 +436,34 @@
 
       container.addEventListener('pointerup', e => {
         container.releasePointerCapture(e.pointerId);
-        if (isDragging) { isDragging = false; return; }
+        if (isDragging) {
+          log('pointerup – drag finished');
+          isDragging = false;
+          return;
+        }
 
         if (!isPotentialClick) return;
+
         const duration = Date.now() - startTime;
         const dx = Math.abs(e.clientX - startX);
         const dy = Math.abs(e.clientY - startY);
         const moved = dx > MOVE_TOLERANCE || dy > MOVE_TOLERANCE;
 
         if (duration <= CLICK_THRESHOLD && !moved) {
-          // ---- SHORT CLICK → open the link of the node under the pointer ----
-          const pt = container.getBoundingClientRect();
-          const svgX = e.clientX - pt.left;
-          const svgY = e.clientY - pt.top;
-          const el = document.elementFromPoint(e.clientX, e.clientY);
-          const nodeId = el?.closest('[id^="node_"]')?.id;
-          const data = mapData.find(d => d.id === nodeId);
-          if (data?.link) window.location.href = data.link;
+          log('pointerup – SHORT STILL CLICK → isClicked = true');
+          isClicked = true;
+        } else {
+          log('pointerup – LONG PRESS / MOVED → isClicked = false');
+          isClicked = false;
         }
         isPotentialClick = false;
       });
 
       container.addEventListener('pointerleave', () => {
-        if (isPotentialClick) isPotentialClick = false;
-        if (isDragging) isDragging = false;
+        log('pointerleave – reset flags');
+        isPotentialClick = false;
+        isDragging = false;
+        // isClicked = false;
       });
 
       /* ---- wheel zoom --------------------------------------------------- */
@@ -434,22 +473,24 @@
       }, {passive:false});
 
       /* ---- UI helpers --------------------------------------------------- */
-      function updateLabel(scale) {
+      const updateLabel = scale => {
         zoomLabel.textContent = `Zoom: ${Math.round(scale * 100)}%`;
-      }
+      };
       container.addEventListener('panzoomchange', ({detail}) => updateLabel(detail.scale));
 
       zoomIn.addEventListener('click', () => panzoom.zoomIn());
       zoomOut.addEventListener('click', () => panzoom.zoomOut());
 
       resetBtn.addEventListener('click', () => {
+        log('Reset button');
         panzoom.reset({animate:true});
         updateLabel(1);
-        panzoom.setOptions({start:false});   // back to click-first mode
+        panzoom.setOptions({start:false});
+        isClicked = false;
       });
 
       /* ---- fullscreen --------------------------------------------------- */
-      function isViewportFullscreen() { return document.fullscreenElement === viewport; }
+      const isViewportFullscreen = () => document.fullscreenElement === viewport;
       fullscreenBtn.addEventListener('click', () => {
         if (!document.fullscreenElement) viewport.requestFullscreen?.();
         else document.exitFullscreen?.();
