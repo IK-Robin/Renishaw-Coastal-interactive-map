@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>SVG Zoom + Fullscreen + Interactive Nodes (Click-first, Pan-second)</title>
+
+  <link rel="stylesheet" href="../assets/style.css" />
+
+  <style>
+    :root{--bg:#f3f4f6;--border:#d1d5db;--ink:#111827}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column;justify-content:flex-start;align-items:center;min-height:100vh;padding:20px}
+    .map-viewport{position:relative;width:100%;max-width:1600px;aspect-ratio:4/3;border-radius:10px;overflow:hidden;border:1px solid var(--border);background:#000;margin:0 auto;height:90vh}
+    .map-viewport.fullscreen{position:fixed;inset:0;width:100vw;height:100vh;border-radius:0;margin:0;z-index:9999}
+    body.fullscreen-active{overflow:hidden}
+    .innerWrap{position:absolute;inset:0;transform-origin:0 0}
+    #ikr_svg{position:absolute;inset:0;width:50%;height:100%;display:block;margin:0 auto;transition:none!important;image-rendering:optimizeQuality}
+    #ikr_svg image{image-rendering:-webkit-optimize-contrast;image-rendering:crisp-edges;image-rendering:optimizeQuality}
+    .cls-3,.cls-5{cursor:pointer;transition:fill .15s ease,stroke .15s ease}
+    .cls-3:hover,.cls-5:hover{fill-opacity:.7}
+    .controls{position:absolute;top:17px;right:2%;z-index:100;display:flex;flex-direction:column-reverse;gap:5px}
+    .controls button{width:32px;height:32px;border-radius:999px;border:1px solid #e5e7eb;background:rgba(255,255,255,.95);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;padding:0;box-shadow:0 3px 8px rgba(0,0,0,.15)}
+    .controls button:hover{background:#eef2ff;border-color:#c7d2fe}
+    .controls button:active{transform:translateY(1px)}
+    .zoom-label{margin-top:8px;font-size:12px;text-align:right;opacity:.7;width:100%;max-width:1600px}
+    #ikr_toltipMove{position:absolute;display:none;width:max-content;height:auto;margin:0 auto;font-size:16px;text-align:center;line-height:22px;z-index:200;pointer-events:none;border-radius:6px}
+    @media(max-width:768px){.controls{bottom:11px;left:auto;top:auto;right:3%;flex-direction:column-reverse}.controls button{padding:4px}}
+
+    /* ---------- animation style ---------- */
+    .anim-path{fill:#4d4da1;stroke:#231f20;stroke-width:1;stroke-miterlimit:10;cursor:pointer;position:relative}
+    .anim-path::before{content:"";position:absolute;inset:0;background:rgba(255,255,255,.12);pointer-events:none;opacity:0;transition:opacity .25s ease}
+    .anim-path:hover::before{opacity:1}
+    .anim-path.highlight{stroke:#fff;stroke-width:var(--stroke-w,4);stroke-linecap:round}
+    @keyframes draw{from{stroke-dashoffset:var(--len)}to{stroke-dashoffset:0}}
+    .anim-path.draw{animation:draw .5s linear forwards}
+  </style>
+</head>
+<body>
+
+  <div class="map-viewport">
+    <div id="ikr_toltipMove"></div>
+
+    <div class="innerWrap" id="zoomContainer">
+      <!-- ======= YOUR REAL SVG GOES HERE (unchanged) ======= -->
+      <svg
+          id="ikr_svg"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          viewBox="0 0 1105.28 1545.45"
+        >
+          <defs>
+            <style>
+              .cls-1 {
+                fill: #fff;
+              }
+
+              .cls-1,
+              .cls-2,
+              .cls-3,
+              .cls-4 {
+                stroke: #fff;
+              }
+
+              .cls-1,
+              .cls-2,
+              .cls-3,
+              .cls-4,
+              .cls-5 {
+                stroke-miterlimit: 10;
+              }
+
+              .cls-1,
+              .cls-4 {
+                stroke-width: 0.5px;
+              }
+
+              .cls-2 {
+                fill: #ed1d46;
+              }
+
+              .cls-2,
+              .cls-3,
+              .cls-5 {
+                opacity: 0;
+              }
+
+              .cls-3,
+              .cls-5 {
+                fill: #ec1a3b;
+              }
+
+              .cls-4 {
+                fill: #ff003d;
+                fill-opacity: 0;
+                stroke-width: 1px;
+              }
+
+              .cls-5 {
+                stroke: #ec1a3d;
+              }
+            </style>
+          </defs>
+          <g id="Layer_1">
+            <image
+              width="9933"
+              height="7017"
+              transform="translate(-627.66 -74.68) scale(.24)"
+              xlink:href="../Renishaw-Coastal-Precinct_Brochure 123 talha vi-01-01.png"
+            />
+          </g>
+          <g id="node_area">
+            <path
+              id="node_2"
+              class="cls-3"
+              d="m857.33,260.01l-41.12-.38,2.21-15.64-5.62-65.11.77-17.46,3.72-8.98h18.76l233.45,73.86-49.49,78.49-6.2,16.69-7.57,35.88-8.82,19.9-140.1-117.26Zm-61.34-.54l-2.3-43.11,6.28-18.37.13-49.01-5.65-6.02,4.21-46.06-1.02-36.4-169.11,6.81,31.92,190.63,135.55,1.54Z"
+            />
+            <path
+              id="node_3"
+              class="cls-5"
+              d="m543.16,917.19l-43.73,39.68-3.65-7.15-5.48-6.51-1.05.26-12.4-7.29-9.92-3.12-13.97-2.99-36.55-8.85-17.88-2.86-3.13.13-8.35,1.43-13.97,4.42-8.62,1.7-9.4-3-3.13-.39h-1.43l-3.14-2.08,126.88-207.54,26.69,79.06,6.86,20.35,12.66,37.48,5.61,16.65,1.02,2.97,4.06,12.02.66,2.06.45,1.26,6.63,19.63.23.71,1.18,4.55,1.44,4.29,1.43,3.13Zm-54.35,50.15l-3.65-7.15,2.15-7.08h0s-2.16-3.81-2.16-3.81l-14.83-6.87-5.74-3.25-53.13-12.75-15.53-1.83-5.09.65-12.66,3.91-5.74,3.25-9.93-.26-5.35-.52-12.75-4.64-1.72,1.22-1.71,2.9,12.54,28.73,54.03,123.32,11.62-16.21,30.41-42.81,42.18-59.51-2.94,2.71Zm54.51,148.67l-1.85.91-1,.38-4.88,2.22-2.48.62-1.43.55-1.45.06-7.56.72-5.88-.65-1.29-3.87-.54-1.01-12.5,1.93,6.24.22,9.14,3.64-4.7,1.17-5.22-1.69-7.83-.26-5.75,2.08-.19.09-5.94,3.95-5.49,7.15-9.91,20.71,7.57-3.68,19.05-9.87,40.21-3.77,9.79-24.34-6.11,2.74Zm-98.03,57.12l-.29.26h0s-21.78-49.84-21.78-49.84h-.02l-4.77-10.95-4.05,10.05-1.17,3.09-.06.15v29.8l-6.95,18.42-4.93,13.07,13.19-3.51.19-.09,13.77-6.03,10.84-3.51h6.39l-.36-.91Zm76.2-85.49l-1.56-2.21-1.05-2.6-.39-2.74v-2.99l.65-8.85,2.74-17.17-1.43-5.99-1.7-11.84-1.3-5.72-1.05-4.56-.65.26-4.62-12.68-.08-.23-.68-1.77-45.27,31.99-20.11,25.13-16.8,21.49-3.59,9.44.04.02-5.38,14.05h.03l5.35,12.23h-.02s20.9,48.02,20.9,48.02l.39-.4.79-1.17,1.43-1.3,2.48-1.82,2.22-1.17,17.76-8.98,10.83-22.64,5.74-7.55,3.76-2.47-1.02-1.56,3.14-1.82,6.39-2.34h.16s1.8-1.17,1.8-1.17l12.79-1.96.27-.77h-.01s.05-.14.05-.14l6.61-19.51,1.96-4.95-1.57-1.56Z"
+            />
+            <path
+              id="node_1"
+              class="cls-2"
+              d="m273.02,1076.93l5.92,19.05-7.24,2.96-10.33-1.02h-.03l-4.7,1.56-6.79.52-9,3.77h-6.53l-8.35-2.6-1.44-.32-4.7-1.5-.15.43-.11-.02v-.41h-1.96l-5.4,1.99-5.08,1.23-.74.16-16.19-.13-.65-3.51.52-4.03,5.09-11.19,2.22-3.91.65-4.94-.65-2.86-3.39-6.12-1.18-2.99.26-3.38,5.09-7.81,2.22-2.73,1.7-4.82-.92-3.25h.01v-.02s-.53-1.8-.53-1.8l-2.61-2.74-14.35-8.97-.03.04-1.67-1.47-4.05-5.47-6.66-3.9-2.21-.13-3.27.13-4.18-11.84,3.79-5.47,3.52-1.56h8.49l2.35-2.6-.26-5.6-4.18-5.46.26-5.73,4.18-8.72,2.74-3.12,6-.91,1.05,2.86,33.94-9.63,11.09,6.25,2.09,6.12,1.05,4.42,20.1,23.03,31.72,15.87-12.53,19.39-.4,1.52-2.6,7.44-8.49,19.02-8.06,9.02-.43.48-.65.15-1.04.24-1.44,3.12.78,3.12h0l4.04,3.25,7.93-2.85,6.17-2.22.19.61Zm112.35-38.89l-16.48-37.64-8.21,6.83-9.66,8.07-9.53,5.2-8.88,2.47-10.57.39-9.4-1.69-21.67-6.34-.66,1.03-.25.5-11.62,17.82h0s-1.43,5.34-1.43,5.34l-1.68,3.76-.93,2.74-7.56,16.36-.02.04-9,9.89-.72.19-.72.2-.91,1.95.52,2.08,3.13,2.47,4.12-1.49,10.63-3.84.12.38,6.57,21.38.42.46,8.82,9.14,1.26,1.76.17.19.41.62,4.68,6.53,4.44,4.3,1.83,5.85,4.05,4.43,2.1.8,2.99.89,1.62.88.07.03.24.14,3.81,2.07,5.35,2.86,5.49.92,3.13,1.17,4.7,2.47,5.09,2.21,10.92-1.42h.04s3.4-3,3.4-3l13.7-10.15,1.16-.39,1.06-.78h1.31l.78-.26,3.56.26h1.27l.17.1.35.03,8.89,5.66.18-.48,1.41-3.84.09.03,16.39-44.43-20.54-47.14Zm2.92,97.98l-.56-.36-9.69-5.99h-4.96l-1.9.63-18.33,13.55h-.05s-12.09,1.69-12.09,1.69l-12.8-5.98-6.65-1.17-8.49-4.95-5.57-2.16-1.09-.31-.18-.18-.21-.08-.83-.93-3.6-3.5-1.47-4.89-.43-1.29-5.15-5.14-2.79-4.25-1.97-2.75-9.76-10.55-7.54,3.11-.22-.02-.05.02-10.38-1.03h-.06s-4.57,1.42-4.57,1.42l-6.65.65-9.14,3.78-7.05.13-4.18-1.3-4.94-1.59-7.07-1.67-4.43,1.82-.73.17-.58.22-4.22.88-2.96.69-8.35-.39-1.83,6.76,5.09-1.3,13.32.26-.14,3.25,40.08,6.9,2.87-.13,3.52,4.55-3.65,3.65.91,2.73-2.87,1.56-2.87-.26-1.04-2.34-.13-.65-7.18-1.43-6.79-.39-6.27.52-5.87.91-5.61-2.08-3.79-1.96-14.49-2.34-9.66,3.64-2.09,6.64,6.4.39,6.92,5.86,1.3,5.2-3.26,2.99-8.35-.78-3.01-.65,3.4,5.86,6.26,7.28,1.96,2.48,4.31-1.3,6.79-.53,9.26-.13,5.49,4.3,5.87-.78,1.17-1.17,6.92,2.21,3.53,1.3,5.61,1.69,2.87-2.99,13.06,1.56.65,7.81-7.7,5.59-.53,4.43,2.75,5.72,4.43-1.3,8.11-.64-.41-1.18.08-.03-.47-1.27,15.15-7.16,1.04-3.12,1.7-1.95,3.91-1.04,7.96-3.26,5.62,3,3.78,5.46,1.7,7.68-11.75,5.33-5.35,5.21-4.7,3.51-2.74,2.86,6,3.91,2.62.65,8.35-1.17,5.61-.53,1.83,1.96,1.44,1.82,1.02.32-.89-3.44,37.49-9.7.88-.32,4.18,10.93,3.45,5.49,1.99,2.22,1.24,1.39.35.39.15-.26,12.53-18.99,3.52-2.21,1.11-3.89,1.48-6.28-4.94-16.64.06-.15-.19-.63,9.7-25.95,1.47-4.13Zm-75.13,73.27l-.39-.12-1.7-2.08-1.3-1.43-4.83.52-8.62,1.17-3.13-.78-7.7-5.08,4.18-4.16,4.7-3.64,5.35-5.21,10.83-4.94-1.3-6.38-3.4-4.81-4.7-2.48-7.44,3.13-3.39.78-1.17,1.43-1.31,3.51-14.36,6.77,1.05,3.12h-.1s.49,1.43.49,1.43l-.66,11.71-6.91,4.3,2.74,8.58,8.48,10.28-.13,5.21,2.42,2.62,2.41-2.1,2.55-2.27,8.29-7.36.65-1.3,5.58-2.84.81-.41,1.09-.49,3.87-1.73,5.1-.95,1.17-.22-.52-3.38,1.3-.4Zm41.77-2.85l-3.63-9.73-35.53,9.08,1.05,4.03-3.26.91.65,3.51-6.48,1.34-1.09.23-4.83,2.08-5.88,2.99-.65,1.17-10.96,9.63-9.27,8.2-2.61,4.29-10.82-13.54-4.59,2.74-5.09,8.2-5.87,10.54-9.83,17.01.43.31.95.68.85.61,13.85,9.92,13.67,9.65,4.08,1.01,1.29.26h10.69s24.55-23.23,24.55-23.23l8.4-8.21,7.51-1.85,7.32-3.97,23.79-23.58,8.06-13.7-6.75-10.58Zm-77.92,24.2v-5.08l-8.23-10.15-3.39-10.14,7.44-4.43.52-10.67-.49-1.43-8.39.65-5.48,1.56-3.52-7.28.65-5.47,7.44-5.59-.39-5.73-11.1-1.17-3,3.12-6.52-2.08-3.53-1.3-5.87-1.95-.92.91-7.05.91-5.61-4.42-8.61.26-6.66.39-5.09,1.56-2.61-3.25-6.4-7.29-5.09-8.85,6.27,1.3,7.57.65,2.09-1.95-.92-3.77-6.26-5.34-7.7-.39,2.74-9.24,10.7-4.03,15.27,2.47,3.92,1.95,5.09,1.96,5.61-.91,6.4-.53,6.92.39,8.22,1.7.39,1.43.65,1.43,1.57.13,1.31-.78-.79-2.47,3.27-3.26-2.22-2.86-2.22.13-41.51-7.16v-3.12l-11.49-.13-7.44,1.95,2.58-9.06-4.58-.03,1.22,3.63-1.57,6.24-13.18-1.17-3.27,4.17-3.91,9.76-1.44,7.54,1.96,10.93.91,7.03,2.48,9.11,2.75,3.77,2.96.41.04-.02v.03s2.61.36,2.61.36l-1.88.96.05.08-3.39,1.69-.79,3.78-5.35,4.16-5.62,2.93.79,2.28-7.98,1.8-.68.19-3.62,2.76-.29,1.31-2.96,13.58.65,5.86h-.01s.14,1.3.14,1.3l-1.56.39-5.33,11.65-.03.06.34,5.76.06.88,6.13.13,1.44-.13,1.17-.52,1.05-.92.78-1.04.52-1.17.13-1.43-1.43-12.75h.02s-.02-.26-.02-.26l5.35-2.99-2.87-5.34h.2s-.07-.13-.07-.13l11.09.52.39-3.25.64-.21.02-.05,5.17-1.68h.05s.13-.14.13-.14l2.74-2.62-.65-6.62,1.16-2.09.66-1.42,5.49-1.43.67-.32,3.76-2.16,1.96-.49.92-.42,4.3.91.13.08.26.05,4.7,2.61.53.52.05.13.21.13.91,7.41-2.34,2.59-1.39,1.62-3.32,7.76-.16,1.19-.49,5.58-.7,1.4-.34,1.46-4.49,3.96-.87.86-1.03,3.32-.14.58,2.35,3.64,5.09,1.82-.3,3.21-1.45,23.71.93-.16,1.71.05,4.15.13,3.47-.38,8.98,2.16,3.26.66,1.77,1.1,7.73,3.95,5.35,4.15,4.15,3.09.35.21.35.25,9.8-16.75,5.88-10.67,5.22-8.59,6.26-3.64.79,1.3,9.34,11.64,1.62-2.66,5.82-5.08-2.68-3.12Zm74.64-270l-12.46-28.41-262.02-24.24,24.13,92.45-.02.11-45.74,261.88,88.01,27.7,4.4-12.09,10.58-12.6,19.58-8.85,4.88-1.36,3.4-1.41,2.07-.12,1.98-.32,2.36-26.11-1.03-.14-1.7-.66-1.13-.75-.44-.16-.28-.41-1.02-1.02-1.04-1.56-.38-.96-.41-.6.03-.14h-.03s.17-.57.17-.57l1.01-4.23,1.13-1,4.35-4.34.51-1.02.53-1.97.66-5.86.08-.18.05-.47,3.26-7.28.19-.22.07-.17,1.18-1.32,2.08-2.46-.51-4.94-.14-1.04-4.83-2.92-2.58-.51-1.12-.2-.31.08-6.02,2.72-.54.31-2.53.64-2.43.66-1.31,2.6,1.05,6.25-.54.51.02.14-3.66,3.38-4.72,1.65-.8,3-.09.81h-.39s-9.46-.25-9.46-.25l2.67,5.07-6.21,2.84,1.25,11.73-.13,1.69-.66,1.69-1.04,1.44-1.44,1.04-1.56.65-1.83.26h-1.04l-6.53-.26-.52-8.33v-.13l2.24-4.98,3.24-7.38.14-.13.12-.26.2-.03.78-.7-.59-5.51h0s3.4-15.62,3.4-15.62l2.35-2.34,1.35-.64.34-.27.34-.09.05-.04,7.05-1.83-.65-1.69,11.23-6.89.91-4.04.38-.2v-.06s1.5-.79,1.5-.79l-1.49-.25-3.13-4.55-2.61-9.5-1.05-7.03-1.95-11.19,1.56-7.93,4.05-10.15,3.92-5.08,12.66,1.17,1.17-4.55-1.25-3.64h-.05l-.06-.3-.07-.22.03-.02-.82-4.54.66-4.42,5.22-11.45,1.95-3.78.66-4.29-.52-2.47-3.4-5.99-1.3-3.38.39-4.16,5.22-8.2,2.09-2.6,1.56-4.04-.71-2.62-2.81-4.01-5.87-3.13h-.01l-6.65-4.29-1.34-1.18-.36-.25.03-.05-1.86-1.64-4.04-5.34-6.14-3.64h-1.69l-4.31.13-4.96-13.53,4.57-6.51,4.17-1.82,8.23-.13,1.43-1.69-.13-4.43-4.31-5.46.27-6.64,4.56-9.11,3.14-3.77,7.83-1.17.91,2.6,33.29-9.37,12.14,6.9,2.35,6.77.91,4.16,19.58,22.51,32.11,16.07,22.19,6.57,9.14,1.69,10.18-.52,8.49-2.34,9.26-5.08,9.66-7.93,2-1.69.77-1.31,4.36-7.44-15.24-34.98Z"
+            />
+            <polygon
+              id="node_5"
+              class="cls-3"
+              points="313.69 1354.77 293.06 1389.64 282.23 1401.87 275.7 1419.31 272.05 1425.42 227.01 1501.54 189.42 1485.02 184.2 1500.11 103.66 1478.77 98.44 1449.1 159.13 1295.44 145.43 1291.14 149.56 1279.29 149.61 1279.17 159.79 1267.07 183.9 1257.04 188.33 1255.77 190.24 1255.64 200.3 1254.97 203.06 1255.06 209.12 1256.27 214.35 1257.57 214.87 1257.83 219.2 1260.3 227.66 1265.51 230.05 1267.21 234.84 1270.98 234.99 1270.8 264.93 1292.05 265.13 1292.18 265.16 1292.19 269.04 1293.22 270.74 1293.62 271.12 1293.63 273.22 1293.88 274.4 1293.75 276.9 1293.75 279.72 1294.02 248.16 1324.84 313.69 1354.77"
+            />
+            <path
+              id="node_4"
+              class="cls-3"
+              d="m668.08,713.68l-12.53,45.55.65,5.33-6.92,9.63-24.67,53.74-78.58,92.77-1.09-3.08.05-.04-8.25-24.42-1.41-4.21-.29-.8-59.62-176.42,200.62-41.5-8.61,17.04.65,26.41Zm31.72-49.44l-10.31,30.45-2.22,30.57-.36,1.53,17.2,2.25,7.83.65,13.58.13h4.04l3.13-.78,8.1-1.04v.03l2.87-2.24,1.17-1.7v-5.07l-.78-2.47,3.66-7.03,2.22-3.77,1.56-5.6.26-4.16,2.35-3.64,2.87-4.82,3.14-5.72,4.17-7.81,1.83-6.38,1.96-3.51,2.87-4.81,2.35-4.56,1.57-1.56,1.96-3.51,3.73-2.49-80.75,17.06Zm169.56-27.71l-1.76,6.68-.85,4.51-12.92-.26.35-1.79-.22-.04,1.44-10.02-15.15-1.04-17.11,3.62-40.71,9.53-4.44,2.99-1.83,3.38-1.69,1.56-2.09,4.43-2.87,4.68-1.96,3.51-1.83,6.25-4.18,8.07-3.26,5.72-2.87,4.82-2.09,3.25-.39,4.03-1.57,5.86-2.35,3.9-3.39,6.51.78,2.08v5.72l-1.7,2.35-2.61,2.08.66,1.04,2.61,1.95,5.09-1.95,6.39-.52,3.14-2.86,5.35-5.6,3.39-6.9,3.53-4.94,4.17,3.25,3.4,4.82-.26,5.85,1.82,5.73,3.4,5.2,5.87,4.04,5.35,1.95,5.62-1.69,3.39-1.43,4.7-.66,10.96.62,29.24-44.33,14.49-15.62,17.62-13.01,15.15-17.44,4.3-7.67-32.11-2.21Zm-59.52,101.23l-4.44.52-3.26,1.43-6.14,1.82-6.13-2.08-6.27-4.43-3.65-5.59-1.96-6.12.26-5.72-3-4.17-2.61-2.08-2.61,3.52-3.4,7.02-5.48,5.73-3.65,3.38-6.66.52-5.61,2.08-3.66-2.6-1.01-1.51-7.6.99-3.14.91h-4.3l-13.58-.13-7.96-.78-17.43-2.14-11.94,50.8-49.87,80.15-71.4,83.28,1.7,4.81,22.58-31.74,5.22-1.7,7.84-6.76,3.13-2.34,12.92-.26,4.7,3.9,3.92,9.89,15.4-18.61,9.14-3.77,30.02-19.26,6.13.91,5.49-1.69,9.26-2.34,5.36,2.6,5.35-1.95,5.48-9.11-3.39-8.85-6.79-8.59-4.05-7.41-2.74-8.2-3.92-6.11-5.74-5.47,6.27-6.9,10.18,8.2-.13,11.97,3.52,8.33,7.7,10.15,4.7,10.28-.91,6.76-4.05,7.42-6.78,4.55-9.79,1.31-10.45,4.68-9.4,1.95-23.62,24.85-2.09,13.54.39,7.8,3,2.09-1.3,3.12.91,5.07,1.96,1.69,5.61-9.36,12.01-17.83,43.21-43.85,89.02-108.65,19.37-29.36-9.84-.56Z"
+            />
+          </g>
+          <g id="only_stroke">
+            <polygon
+              id="node_2-2"
+              class="cls-4 anim-path"
+              points="1069.5 226.31 1020.01 304.8 1013.81 321.49 1006.25 357.38 997.43 377.27 857.33 260.01 795.99 259.44 795.92 258.09 793.8 259.42 795.99 259.44 795.99 259.48 660.44 257.94 628.53 67.31 797.64 60.5 798.66 96.9 794.44 142.96 800.09 148.98 836.05 152.45 1069.5 226.31"
+            />
+            <polygon
+              id="node_3-2"
+              class="cls-4 anim-path"
+              points="549.43 1113.27 539.64 1137.61 499.43 1141.38 480.38 1151.25 466.22 1158.14 452.83 1165.06 450.61 1166.23 448.13 1168.05 446.7 1169.35 445.91 1170.52 445.52 1170.92 445.5 1170.88 445 1173.39 445.29 1173.13 445.65 1174.04 439.26 1174.04 428.42 1177.55 414.65 1183.58 414.46 1183.67 401.27 1187.18 406.2 1174.11 413.15 1155.69 413.15 1125.89 413.21 1125.74 414.22 1128.54 414.77 1121.68 414.38 1122.65 413.21 1125.74 402.22 1095.19 405.91 1085.18 385.37 1038.04 369.13 1000.95 369.11 1000.9 366.89 995.62 363.99 988.97 353.51 959.84 340.97 931.11 342.68 928.21 347.36 920.57 349.52 922 347.81 919.84 474.24 713.03 500.93 792.09 507.79 812.44 520.45 849.92 526.06 866.57 527.08 869.54 531.14 881.56 531.8 883.62 532.25 884.88 538.88 904.51 539.11 905.22 540.29 909.77 541.73 914.06 543.16 917.19 493.81 963.55 491.75 957.96 487.8 970.19 489.93 967.19 493.81 963.55 511.05 1010.32 511.13 1010.55 515.75 1023.23 516.4 1022.97 517.45 1027.53 518.75 1033.25 520.45 1045.09 521.88 1051.08 519.14 1068.25 518.49 1077.1 518.49 1080.09 518.88 1082.83 519.93 1085.43 521.49 1087.64 523.06 1089.2 521.1 1094.15 514.49 1113.66 514.44 1113.79 514.45 1113.8 514.18 1114.57 501.39 1116.53 499.59 1117.71 499.43 1117.7 493.04 1120.04 489.9 1121.86 490.92 1123.42 487.16 1125.89 481.42 1133.44 474.16 1145.24 474.19 1146.58 482.72 1134.22 488.21 1127.07 494.15 1123.12 494.34 1123.03 500.09 1120.95 507.92 1121.21 513.14 1122.9 517.84 1121.73 508.7 1118.09 502.46 1117.87 514.96 1115.94 515.5 1116.95 516.79 1120.82 522.67 1121.47 530.23 1120.75 531.68 1120.69 533.11 1120.14 535.59 1119.52 540.47 1117.3 541.47 1116.92 543.32 1116.01 549.43 1113.27"
+            />
+            <polygon
+              id="node_1-2"
+              class="cls-4 anim-path"
+              points="405.91 1085.18 402.22 1095.19 389.52 1129.61 389.43 1129.58 388.02 1133.42 387.89 1133.78 387.96 1134.21 387.44 1135.48 382.71 1151.13 377.12 1166.1 377.31 1166.73 377.25 1166.88 377.6 1168.07 382.19 1183.52 380.71 1189.8 379.6 1193.69 376.08 1195.9 363.55 1214.89 363.4 1215.15 360.53 1219.26 360.18 1219.57 353.62 1230.72 329.83 1254.3 322.51 1258.27 315 1260.12 306.6 1268.33 282.05 1291.55 271.36 1291.56 270.07 1291.3 265.99 1290.29 252.32 1280.64 238.47 1270.72 237.62 1270.11 236.67 1269.43 236.24 1269.12 235.09 1267.99 217.36 1250.64 194.26 1252.86 193.69 1252.84 192.76 1253 190.44 1253.38 188.46 1253.7 186.39 1253.82 182.99 1255.23 178.11 1256.59 158.53 1265.44 147.95 1278.04 143.55 1290.13 55.54 1262.43 101.28 1000.55 101.3 1000.44 77.17 907.99 339.19 932.23 351.65 960.64 363.99 988.97 366.89 995.62 369.11 1000.9 369.13 1000.95 385.37 1038.04 405.91 1085.18"
+            />
+            <polygon
+              id="node_5-2"
+              class="cls-4 anim-path"
+              points="313.69 1354.77 293.06 1389.64 282.23 1401.87 275.7 1419.31 272.05 1425.42 227.01 1501.54 189.42 1485.02 184.2 1500.11 103.66 1478.77 98.44 1449.1 159.13 1295.44 145.43 1291.14 149.56 1279.29 149.61 1279.17 159.79 1267.07 183.9 1257.04 188.33 1255.77 190.24 1255.64 200.3 1254.97 203.06 1255.06 209.12 1256.27 214.35 1257.57 214.87 1257.83 219.2 1260.3 227.66 1265.51 230.05 1267.21 234.84 1270.98 234.99 1270.8 264.93 1292.05 265.13 1292.18 265.16 1292.19 269.04 1293.22 270.74 1293.62 271.12 1293.63 273.22 1293.88 274.4 1293.75 276.9 1293.75 279.72 1294.02 248.16 1324.84 313.69 1354.77"
+            />
+            <polygon
+              id="node_4-2"
+              class="cls-4 anim-path"
+              points="901.47 638.74 897.17 646.41 882.02 663.85 864.4 676.86 849.91 692.48 820.67 736.81 800.31 767.68 711.29 876.33 668.08 920.18 656.07 938.01 650.46 947.37 648.5 945.68 647.59 940.61 648.89 937.49 645.89 935.4 645.5 927.6 647.59 914.06 671.21 889.21 680.61 887.26 691.06 882.58 700.85 881.27 707.63 876.72 711.68 869.3 712.59 862.54 707.89 852.26 700.19 842.11 696.67 833.78 696.8 821.81 686.62 813.61 680.35 820.51 686.09 825.98 690.01 832.09 692.75 840.29 696.8 847.7 703.59 856.29 706.98 865.14 701.5 874.25 696.15 876.2 690.79 873.6 681.53 875.94 676.04 877.63 669.91 876.72 639.89 895.98 630.75 899.75 615.35 918.36 611.43 908.47 606.73 904.57 593.81 904.83 590.68 907.17 582.84 913.93 577.62 915.63 555.04 947.37 553.74 943.7 557.19 938.07 553.34 942.56 544.94 917.62 544.99 917.58 536.74 893.16 535.33 888.95 535.04 888.15 475.42 711.73 702.7 663.63 702.86 663.6 704.32 663.3 792.88 645.27 782.43 647.72 781.39 648.42 792.88 645.27 823.14 638.19 840.25 634.57 855.4 635.61 853.96 645.63 854.18 645.67 853.83 647.46 866.75 647.72 867.6 643.21 869.36 636.53 901.47 638.74"
+            />
+          </g>
+        </svg>
+    </div>
+
+    <div class="controls">
+      <button id="zoom_in" type="button">+</button>
+      <button id="zoom_out" type="button">-</button>
+      <button id="reset" type="button">Reset</button>
+      <button id="fullscreen" type="button">Fullscreen</button>
+    </div>
+  </div>
+
+  <div class="zoom-label" id="zoomLabel">Zoom: 100%</div>
+
+  <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
+
+  <script>
+    /* ============================================================= */
+    /* 1. INTERACTIVE MAP CORE (unchanged – tooltip, hover, click)   */
+    /* ============================================================= */
+    function init_interactive_map({
+      mapData, mapId, tooltipElementId = "ikr_toltipMove",
+      svgElementId = "ikr_svg", renderTooltipContent,
+      tooltipLeft = 0, tooltipTop = 0,
+      onLotHoverIn, onLotHoverOut
+    }) {
+      const ikr_svg = document.getElementById(svgElementId);
+      const tooltipMove = document.getElementById(tooltipElementId);
+      if (!tooltipMove) { console.warn("Tooltip element not found:", tooltipElementId); return; }
+
+      function getClientPoint(ev) {
+        if (ev.touches && ev.touches[0]) return {x: ev.touches[0].clientX, y: ev.touches[0].clientY};
+        if (ev.changedTouches && ev.changedTouches[0]) return {x: ev.changedTouches[0].clientX, y: ev.changedTouches[0].clientY};
+        return {x: ev.clientX, y: ev.clientY};
+      }
+
+      function placeSmartInContainer(el, ev, pad = 8) {
+        el.style.position = "absolute";
+        const parent = el.offsetParent || document.body;
+        const rect = parent.getBoundingClientRect();
+        const cs = getComputedStyle(parent);
+        const padL = parseFloat(cs.paddingLeft)||0, padT = parseFloat(cs.paddingTop)||0;
+        const padR = parseFloat(cs.paddingRight)||0, padB = parseFloat(cs.paddingBottom)||0;
+
+        const prevDisp = el.style.display;
+        const prevVis = el.style.visibility;
+        el.style.visibility = "hidden"; el.style.display = "block";
+        const w = el.offsetWidth, h = el.offsetHeight;
+        const pt = getClientPoint(ev);
+        const relX = pt.x - rect.left - padL;
+        const relY = pt.y - rect.top - padT;
+        const contentW = rect.width - padL - padR;
+        const contentH = rect.height - padT - padB;
+
+        let left = relX + pad; let top = relY + pad;
+        if (left + w > contentW) left = relX - w - pad;
+        left = Math.max(0, Math.min(left, contentW - w));
+        if (top + h > contentH) top = relY - h - pad;
+        top = Math.max(0, Math.min(top, contentH - h));
+
+        el.style.left = (left + padL + tooltipLeft) + "px";
+        el.style.top = (top + padT + tooltipTop) + "px";
+        el.style.visibility = prevVis || "visible";
+        el.style.display = prevDisp || "block";
+      }
+
+      function isMobile() {
+        return /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      }
+
+      function handleShow(ev, el, mapD) {
+        if (!mapD || !renderTooltipContent) return;
+        tooltipMove.innerHTML = renderTooltipContent(mapD);
+        tooltipMove.style.display = "block";
+        placeSmartInContainer(tooltipMove, ev, 12);
+      }
+      function handleHide() { tooltipMove.style.display = "none"; tooltipMove.innerHTML = ""; }
+
+      function rcostClick_func(ev, el, mapD) {
+        if (!mapD || !mapD.link) return;
+        console.log("Clicked lot:", mapD.id, "->", mapD.link);
+        window.location.href = mapD.link;
+      }
+
+      window.addEventListener("load", () => {
+        mapId.forEach(id => {
+          const el = document.querySelector("#" + id);
+          if (!el) return;
+          const data = mapData.find(d => d.id === id);
+          if (data && data.mapColor) el.style.fill = "#" + data.mapColor;
+        });
+      });
+
+      mapId.forEach(id => {
+        const el = document.querySelector("#" + id);
+        if (!el) return;
+        const mapD = mapData.find(d => d.id === id);
+        if (!mapD) return;
+
+        if (isMobile()) {
+          el.addEventListener("touchstart", ev => {
+            ev.preventDefault();
+            if (typeof onLotHoverIn === "function") onLotHoverIn(el, mapD, ev);
+            handleShow(ev, el, mapD);
+            rcostClick_func(ev, el, mapD);
+          }, {passive:false});
+          el.addEventListener("touchend", ev => {
+            if (typeof onLotHoverOut === "function") setTimeout(() => onLotHoverOut(el, mapD, ev), 500);
+          });
+          el.addEventListener("click", ev => handleShow(ev, el, mapD));
+        } else {
+          el.addEventListener("mouseenter", ev => {
+            if (typeof onLotHoverIn === "function") onLotHoverIn(el, mapD, ev);
+            handleShow(ev, el, mapD);
+          });
+          el.addEventListener("mousemove", ev => handleShow(ev, el, mapD));
+          el.addEventListener("mouseleave", ev => {
+            if (typeof onLotHoverOut === "function") onLotHoverOut(el, mapD, ev);
+            handleHide();
+          });
+        }
+      });
+
+      window.addEventListener("click", ev => {
+        if (ev.target && ev.target.tagName.toLowerCase() !== "path" &&
+            ev.target.tagName.toLowerCase() !== "polygon") {
+          tooltipMove.style.display = "none";
+        }
+      });
+    }
+
+    function renderTooltipContent(mapD) {
+      const nodeName = mapD.node_number;
+      const nodeSubtitle = mapD.nodeSubtitle || (mapD.developmentType || "");
+      const area = mapD.size || mapD.area || "";
+      const sites = mapD.lotNumber || "";
+      const img = mapD.imageUrl || "https://via.placeholder.com/600x300";
+
+      return `
+        <div class="rcost-plot-tooltip">
+          <div class="node-tooltip">
+            <div class="node-tooltip__image-wrapper">
+              <img src="${img}" alt="${nodeName}" class="node-tooltip__image"/>
+              <div class="node-tooltip__badge">
+                <div class="node-tooltip__badge-title">Node ${nodeName}</div>
+                <div class="node-tooltip__badge-subtitle">${nodeSubtitle}</div>
+              </div>
+            </div>
+            <div class="node-tooltip__body">
+              <div class="node-tooltip__metrics">
+                <div class="node-tooltip__metrics-main"><span class="node-tooltip__metrics-value"><strong>${area}</strong></span></div>
+                ${sites ? `<div class="node-tooltip__metrics-sub"><strong>${sites} Sites</strong></div>` : ""}
+              </div>
+              <div class="node-tooltip__divider"></div>
+              <div class="node-tooltip__text">
+                ${mapD.description ? `<p><strong>${mapD.description}</strong></p>` : ""}
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    const mapData = [
+      {id:"node_1-2",node_number:"1",lotNumber:"210",nodeSubtitle:"RENSHAW CENTRAL",imageUrl:"../../assets/images/node-tooltip-images/node-1.png",link:"../../all nods/node-1.html",use:"Residential",size:"714 000 m²",description:"Renshaw Central is the largest residential property development node."},
+      {id:"node_2-2",node_number:"2",lotNumber:"143",nodeSubtitle:"CLANSTHAL",imageUrl:"../assets/images/node-tooltip-images/node-2.png",link:"../../all nods/node-2.html",use:"Residential",size:"402 000 m²",description:"Planned for Clansthal, is a luxury housing development featuring contemporary aesthetics."},
+      {id:"node_3-2",node_number:"3",lotNumber:"85",nodeSubtitle:"INTERCHANGE",imageUrl:"../assets/images/node-tooltip-images/node-3-01.png",link:"../../all nods/node-3.html",use:"Commercial",size:"535 000 m²",description:"The Renshaw Coastal Precinct Interchange will be the nucleus of the development – as the social and business hub. The area’s first private hospital. Office parks. Light commercial zones. A shopping centre. The area’s first private school."},
+      {id:"node_4-2",node_number:"4",lotNumber:"7",nodeSubtitle:"RENSHAW NORTH",imageUrl:"../assets/images/node-tooltip-images/node-4.png",link:"../../all nods/node-4.html",use:"Residential",size:"527 000 m²",description:"Renshaw North will boast luxury villas, seated within indigenous forest overlooking the ocean. An equestrian centre, indigenous nursery and a resort village are also included within the envisaged infrastructure."},
+      {id:"node_5-2",node_number:"5",lotNumber:"111",nodeSubtitle:"RENSHAW SOUTH",imageUrl:"../assets/images/node-tooltip-images/node-5.png",link:"../../all nods/node-5.html",use:"Residential",size:"457 000 m²",description:"Renshaw South is to feature a special residential development. Group housing and small-holding plots will also be available. While some land is reserved for conservation, a community facility and light commercial opportunities are planned."}
+    ];
+    const mapId = ["node_2-2","node_3-2","node_1-2","node_5-2","node_4-2"];
+
+    /* ----------------------------------------------------------- */
+    /* 2. HOVER STROKE ANIMATION (unchanged)                       */
+    /* ----------------------------------------------------------- */
+    function applyStrokeHover(el) {
+      const len = el.getTotalLength ? el.getTotalLength() : 0;
+      el.style.setProperty('--len', len);
+      el.classList.add('highlight','draw');
+    }
+    function clearStrokeHover(el) {
+      el.classList.remove('highlight','draw');
+    }
+
+    init_interactive_map({
+      mapData, mapId, renderTooltipContent,
+      tooltipLeft:20, tooltipTop:10,
+      onLotHoverIn: (el,mapD,ev)=>applyStrokeHover(el),
+      onLotHoverOut: (el,mapD,ev)=>clearStrokeHover(el)
+    });
+
+    /* ============================================================= */
+    /* 3. CLICK-FIRST / PAN-SECOND + PANZOOM + FULLSCREEN            */
+    /* ============================================================= */
+    (function () {
+      const CLICK_THRESHOLD = 300;   // ms
+      const MOVE_TOLERANCE   = 5;    // px
+      const container = document.getElementById('zoomContainer');
+      const viewport  = document.querySelector('.map-viewport');
+      const zoomIn    = document.getElementById('zoom_in');
+      const zoomOut   = document.getElementById('zoom_out');
+      const resetBtn  = document.getElementById('reset');
+      const fullscreenBtn = document.getElementById('fullscreen');
+      const zoomLabel = document.getElementById('zoomLabel');
+
+      const panzoom = Panzoom(container, {
+        maxScale: 10,
+        minScale: 1,
+        step: 0.25,
+        contain: 'none',
+        start: false,          // panning disabled by default
+        cursor: 'default'
+      });
+
+      let startTime = 0, startX = 0, startY = 0;
+      let isPotentialClick = false, isDragging = false;
+
+      /* ---- pointer events ------------------------------------------------ */
+      container.addEventListener('pointerdown', e => {
+        if (e.button !== 0) return;                     // left-click only
+        isPotentialClick = true;
+        isDragging = false;
+        startTime = Date.now();
+        startX = e.clientX; startY = e.clientY;
+        container.setPointerCapture(e.pointerId);
+      });
+
+      container.addEventListener('pointermove', e => {
+        if (!isPotentialClick) return;
+        const dx = Math.abs(e.clientX - startX);
+        const dy = Math.abs(e.clientY - startY);
+        if (dx > MOVE_TOLERANCE || dy > MOVE_TOLERANCE) {
+          isPotentialClick = false;
+          isDragging = true;
+          panzoom.setOptions({ start: true });
+          panzoom.pan(e.clientX - startX, e.clientY - startY);
+        }
+      });
+
+      container.addEventListener('pointerup', e => {
+        container.releasePointerCapture(e.pointerId);
+        if (isDragging) { isDragging = false; return; }
+
+        if (!isPotentialClick) return;
+        const duration = Date.now() - startTime;
+        const dx = Math.abs(e.clientX - startX);
+        const dy = Math.abs(e.clientY - startY);
+        const moved = dx > MOVE_TOLERANCE || dy > MOVE_TOLERANCE;
+
+        if (duration <= CLICK_THRESHOLD && !moved) {
+          // ---- SHORT CLICK → open the link of the node under the pointer ----
+          const pt = container.getBoundingClientRect();
+          const svgX = e.clientX - pt.left;
+          const svgY = e.clientY - pt.top;
+          const el = document.elementFromPoint(e.clientX, e.clientY);
+          const nodeId = el?.closest('[id^="node_"]')?.id;
+          const data = mapData.find(d => d.id === nodeId);
+          if (data?.link) window.location.href = data.link;
+        }
+        isPotentialClick = false;
+      });
+
+      container.addEventListener('pointerleave', () => {
+        if (isPotentialClick) isPotentialClick = false;
+        if (isDragging) isDragging = false;
+      });
+
+      /* ---- wheel zoom --------------------------------------------------- */
+      viewport.addEventListener('wheel', e => {
+        e.preventDefault();
+        panzoom.zoomWithWheel(e);
+      }, {passive:false});
+
+      /* ---- UI helpers --------------------------------------------------- */
+      function updateLabel(scale) {
+        zoomLabel.textContent = `Zoom: ${Math.round(scale * 100)}%`;
+      }
+      container.addEventListener('panzoomchange', ({detail}) => updateLabel(detail.scale));
+
+      zoomIn.addEventListener('click', () => panzoom.zoomIn());
+      zoomOut.addEventListener('click', () => panzoom.zoomOut());
+
+      resetBtn.addEventListener('click', () => {
+        panzoom.reset({animate:true});
+        updateLabel(1);
+        panzoom.setOptions({start:false});   // back to click-first mode
+      });
+
+      /* ---- fullscreen --------------------------------------------------- */
+      function isViewportFullscreen() { return document.fullscreenElement === viewport; }
+      fullscreenBtn.addEventListener('click', () => {
+        if (!document.fullscreenElement) viewport.requestFullscreen?.();
+        else document.exitFullscreen?.();
+      });
+      document.addEventListener('fullscreenchange', () => {
+        const active = isViewportFullscreen();
+        document.body.classList.toggle('fullscreen-active', active);
+        viewport.classList.toggle('fullscreen', active);
+        fullscreenBtn.textContent = active ? 'Exit' : 'Fullscreen';
+      });
+
+      updateLabel(1);
+    })();
+  </script>
+</body>
+</html>
