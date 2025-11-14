@@ -12,6 +12,7 @@ function ikrZoom({
   const container = svg.parentElement;
   const ikr_toltipMove_on_zoom = document.getElementById(tooltipElementId)
   console.log(ikr_toltipMove_on_zoom)
+  const controls = document.getElementById("controls");
 
   /* ---------- CONFIG ---------- */
   const CTRL_WHEEL_ZOOM = true;             // Ctrl + wheel to zoom, plain wheel scrolls page
@@ -79,26 +80,26 @@ function ikrZoom({
       </svg>
     `;
 
-    fsBtn.style.position = "absolute";
-    fsBtn.style.right = "8px";
-    fsBtn.style.top = "8px";
-    fsBtn.style.width = "30px";
-    fsBtn.style.height = "30px";
-    fsBtn.style.border = "none";
-    fsBtn.style.borderRadius = "4px";
-    fsBtn.style.background = "rgba(255,255,255,0.9)";
-    fsBtn.style.boxShadow = "0 1px 4px rgba(0,0,0,0.3)";
-    fsBtn.style.display = "flex";
-    fsBtn.style.alignItems = "center";
-    fsBtn.style.justifyContent = "center";
-    fsBtn.style.cursor = "pointer";
-    fsBtn.style.padding = "0";
-    fsBtn.style.zIndex = "10";
+    // fsBtn.style.position = "absolute";
+    // fsBtn.style.right = "8px";
+    // fsBtn.style.top = "8px";
+    // fsBtn.style.width = "30px";
+    // fsBtn.style.height = "30px";
+    // fsBtn.style.border = "none";
+    // fsBtn.style.borderRadius = "4px";
+    // fsBtn.style.background = "rgba(255,255,255,0.9)";
+    // fsBtn.style.boxShadow = "0 1px 4px rgba(0,0,0,0.3)";
+    // fsBtn.style.display = "flex";
+    // fsBtn.style.alignItems = "center";
+    // fsBtn.style.justifyContent = "center";
+    // fsBtn.style.cursor = "pointer";
+    // fsBtn.style.padding = "0";
+    // fsBtn.style.zIndex = "10";
 
     if (getComputedStyle(container).position === "static") {
       container.style.position = "relative";
     }
-    container.appendChild(fsBtn);
+    controls.appendChild(fsBtn);
 
     function toggleFullscreen() {
       if (!document.fullscreenElement) {
