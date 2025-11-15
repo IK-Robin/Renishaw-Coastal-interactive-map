@@ -176,182 +176,8 @@
   <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
 
   <script>
-    /* --------------------------------------------------------------- */
-    /* 1. GLOBAL FLAG & LOGGING HELPERS                               */
-    /* --------------------------------------------------------------- */
-    let isClicked = false;                     // the flag you asked for
+  
 
-    const log = (msg, ...args) => console.log(`%c[MAP] ${msg}`, 'color:#2a9d8f', ...args);
-
-    /* --------------------------------------------------------------- */
-    /* 2. INTERACTIVE MAP CORE (tooltip, hover, click via isClicked) */
-    /* --------------------------------------------------------------- */
-    function init_interactive_map({
-      mapData, mapId, tooltipElementId = "ikr_toltipMove",
-      svgElementId = "ikr_svg", renderTooltipContent,
-      tooltipLeft = 0, tooltipTop = 0,
-      onLotHoverIn, onLotHoverOut
-    }) {
-      const tooltipMove = document.getElementById(tooltipElementId);
-      if (!tooltipMove) { log('Tooltip element not found'); return; }
-
-      /* ----- helpers ----- */
-      const getClientPoint = ev => {
-        if (ev.touches?.[0]) return {x: ev.touches[0].clientX, y: ev.touches[0].clientY};
-        if (ev.changedTouches?.[0]) return {x: ev.changedTouches[0].clientX, y: ev.changedTouches[0].clientY};
-        return {x: ev.clientX, y: ev.clientY};
-      };
-
-      const placeSmartInContainer = (el, ev, pad = 8) => {
-        el.style.position = "absolute";
-        const parent = el.offsetParent || document.body;
-        const rect = parent.getBoundingClientRect();
-        const cs = getComputedStyle(parent);
-        const padL = parseFloat(cs.paddingLeft)||0, padT = parseFloat(cs.paddingTop)||0;
-        const padR = parseFloat(cs.paddingRight)||0, padB = parseFloat(cs.paddingBottom)||0;
-
-        const prevDisp = el.style.display;
-        const prevVis = el.style.visibility;
-        el.style.visibility = "hidden"; el.style.display = "block";
-        const w = el.offsetWidth, h = el.offsetHeight;
-        const pt = getClientPoint(ev);
-        const relX = pt.x - rect.left - padL;
-        const relY = pt.y - rect.top - padT;
-        const contentW = rect.width - padL - padR;
-        const contentH = rect.height - padT - padB;
-
-        let left = relX + pad; let top = relY + pad;
-        if (left + w > contentW) left = relX - w - pad;
-        left = Math.max(0, Math.min(left, contentW - w));
-        if (top + h > contentH) top = relY - h - pad;
-        top = Math.max(0, Math.min(top, contentH - h));
-
-        el.style.left = (left + padL + tooltipLeft) + "px";
-        el.style.top = (top + padT + tooltipTop) + "px";
-        el.style.visibility = prevVis || "visible";
-        el.style.display = prevDisp || "block";
-      };
-
-      const isMobile = () => /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-      const handleShow = (ev, el, mapD) => {
-        if (!mapD || !renderTooltipContent) return;
-        tooltipMove.innerHTML = renderTooltipContent(mapD);
-        tooltipMove.style.display = "block";
-        placeSmartInContainer(tooltipMove, ev, 12);
-        // log('Tooltip shown', mapD.id);
-      };
-      const handleHide = () => {
-        tooltipMove.style.display = "none";
-        tooltipMove.innerHTML = "";
-        // log('Tooltip hidden');
-      };
-
-      /* ----- click handler – ONLY fires when isClicked === true ----- */
-      const rcostClick_func = (ev, el, mapD) => {
-        log('Node click handler – isClicked?', isClicked);
-        if (!isClicked) return;
-        if (!mapD?.link) { log('No link for', mapD?.id); return; }
-        log('Navigate to', mapD.link);
-        window.location.href = mapD.link;
-        isClicked = false;               // reset for next interaction
-      };
-
-      /* ----- initialise colours ----- */
-      window.addEventListener("load", () => {
-        mapId.forEach(id => {
-          const el = document.querySelector("#" + id);
-          if (!el) return;
-          const data = mapData.find(d => d.id === id);
-          if (data?.mapColor) el.style.fill = "#" + data.mapColor;
-        });
-      });
-
-      /* ----- bind events to every node ----- */
-      mapId.forEach(id => {
-        const el = document.querySelector("#" + id);
-        if (!el) { log('Node element missing', id); return; }
-        const mapD = mapData.find(d => d.id === id);
-        if (!mapD) { log('Data missing for', id); return; }
-
-        if (isMobile()) {
-          el.addEventListener("touchstart", ev => {
-            ev.preventDefault();
-            log('Touch start on', id);
-            onLotHoverIn?.(el, mapD, ev);
-            handleShow(ev, el, mapD);
-            rcostClick_func(ev, el, mapD);
-          }, {passive:false});
-          el.addEventListener("touchend", () => {
-            log('Touch end on', id);
-            setTimeout(() => onLotHoverOut?.(el, mapD), 500);
-          });
-          el.addEventListener("click", ev => handleShow(ev, el, mapD));
-        } else {
-          el.addEventListener("mouseenter", ev => {
-            // log('Mouse enter', id);
-            onLotHoverIn?.(el, mapD, ev);
-            handleShow(ev, el, mapD);
-          });
-          el.addEventListener("mousemove", ev => handleShow(ev, el, mapD));
-          el.addEventListener("mouseleave", ev => {
-            // log('Mouse leave', id);
-            onLotHoverOut?.(el, mapD, ev);
-            handleHide();
-          });
-
-          /* ---- click listener (uses flag) ---- */
-          el.addEventListener("click", ev => {
-            log('Node click event fired for', id);
-            rcostClick_func(ev, el, mapD);
-          });
-        }
-      });
-
-      /* hide tooltip when clicking elsewhere */
-      window.addEventListener("click", ev => {
-        const tag = ev.target?.tagName?.toLowerCase();
-        if (tag !== "path" && tag !== "polygon") {
-          handleHide();
-        }
-      });
-    }
-
-    /* --------------------------------------------------------------- */
-    /* 3. TOOLTIP CONTENT                                             */
-    /* --------------------------------------------------------------- */
-    function renderTooltipContent(mapD) {
-      const nodeName = mapD.node_number;
-      const nodeSubtitle = mapD.nodeSubtitle || mapD.developmentType || "";
-      const area = mapD.size || mapD.area || "";
-      const sites = mapD.lotNumber || "";
-      const img = mapD.imageUrl || "https://via.placeholder.com/600x300";
-
-      return `
-        <div class="rcost-plot-tooltip">
-          <div class="node-tooltip">
-            <div class="node-tooltip__image-wrapper">
-              <img src="${img}" alt="${nodeName}" class="node-tooltip__image"/>
-              <div class="node-tooltip__badge">
-                <div class="node-tooltip__badge-title">Node ${nodeName}</div>
-                <div class="node-tooltip__badge-subtitle">${nodeSubtitle}</div>
-              </div>
-            </div>
-            <div class="node-tooltip__body">
-              <div class="node-tooltip__metrics">
-                <div class="node-tooltip__metrics-main"><span class="node-tooltip__metrics-value"><strong>${area}</strong></span></div>
-                ${sites ? `<div class="node-tooltip__metrics-sub"><strong>${sites} Sites</strong></div>` : ""}
-              </div>
-              <div class="node-tooltip__divider"></div>
-              <div class="node-tooltip__text">
-                ${mapD.description ? `<p><strong>${mapD.description}</strong></p>` : ""}
-              </div>
-            </div>
-          </div>
-        </div>`;
-    }
-
-    /* --------------------------------------------------------------- */
     /* 4. MAP DATA & IDS                                              */
     /* --------------------------------------------------------------- */
     const mapData = [
@@ -363,147 +189,117 @@
     ];
     const mapId = ["node_2-2","node_3-2","node_1-2","node_5-2","node_4-2"];
 
+ 
+  </script>
+
+  <script>
     /* --------------------------------------------------------------- */
-    /* 5. HOVER STROKE ANIMATION                                      */
-    /* --------------------------------------------------------------- */
-    const applyStrokeHover = el => {
-      const len = el.getTotalLength?.() ?? 0;
-      el.style.setProperty('--len', len);
-      el.classList.add('highlight','draw');
-      // log('Stroke hover ON', el.id);
-    };
-    const clearStrokeHover = el => {
-      el.classList.remove('highlight','draw');
-      // log('Stroke hover OFF', el.id);
-    };
+/* 1. GLOBAL FLAG & LOGGING                                         */
+/* --------------------------------------------------------------- */
+let isClicked = false;                     // the flag you asked for
+const log = (msg,...args)=>console.log(`%c[MAP] ${msg}`, 'color:#2a9d8f', ...args);
 
-    init_interactive_map({
-      mapData, mapId, renderTooltipContent,
-      tooltipLeft:20, tooltipTop:10,
-      onLotHoverIn: applyStrokeHover,
-      onLotHoverOut: clearStrokeHover
-    });
+/* --------------------------------------------------------------- */
+/* 2. MAP DATA (same structure you already have)                   */
+/* --------------------------------------------------------------- */
 
-    /* --------------------------------------------------------------- */
-    /* 6. CLICK-FIRST / PAN-SECOND + PANZOOM + FULLSCREEN            */
-    /* --------------------------------------------------------------- */
-    (function () {
-      const CLICK_THRESHOLD = 300;   // ms
-      const MOVE_TOLERANCE   = 5;    // px
-      const container = document.getElementById('zoomContainer');
-      const viewport  = document.querySelector('.map-viewport');
-      const zoomIn    = document.getElementById('zoom_in');
-      const zoomOut   = document.getElementById('zoom_out');
-      const resetBtn  = document.getElementById('reset');
-      const fullscreenBtn = document.getElementById('fullscreen');
-      const zoomLabel = document.getElementById('zoomLabel');
 
-      const panzoom = Panzoom(container, {
-        maxScale: 10,
-        minScale: 1,
-        step: 0.25,
-        contain: 'none',
-        start: false,          // panning disabled by default
-        cursor: 'default'
-      });
 
-      let startTime = 0, startX = 0, startY = 0;
-      let isPotentialClick = false, isDragging = false;
+/* --------------------------------------------------------------- */
+/* 3. TOOLTIP & HOVER (very small)                                 */
+/* --------------------------------------------------------------- */
+const tooltip = document.getElementById('tooltip');
+function showTooltip(ev, data){
+  tooltip.textContent = `Node ${data.node_number} – click to open link`;
+  tooltip.style.left = (ev.clientX + 10) + 'px';
+  tooltip.style.top  = (ev.clientY + 10) + 'px';
+  tooltip.style.display = 'block';
+  log('Tooltip shown', data.id);
+}
+function hideTooltip(){ tooltip.style.display='none'; log('Tooltip hidden'); }
 
-      /* ---- pointer events ------------------------------------------------ */
-      container.addEventListener('pointerdown', e => {
-        if (e.button !== 0) return;                 // left click only
-        log('pointerdown – start tracking');
-        isPotentialClick = true;
-        isDragging = false;
-        startTime = Date.now();
-        startX = e.clientX; startY = e.clientY;
-        container.setPointerCapture(e.pointerId);
-      });
+/* --------------------------------------------------------------- */
+/* 4. CLICK HANDLER – fires ONLY when isClicked === true          */
+/* --------------------------------------------------------------- */
+function handleNodeClick(ev, el, data){
+  log('Node click handler – isClicked?', isClicked);
+  if(!isClicked) return;
+  if(!data.link) return;
+  log('Navigate →', data.link);
+  window.location.href = data.link;   // <-- real navigation
+  isClicked = false;                  // reset for next interaction
+}
 
-      container.addEventListener('pointermove', e => {
-        if (!isPotentialClick) return;
-        const dx = Math.abs(e.clientX - startX);
-        const dy = Math.abs(e.clientY - startY);
-        if (dx > MOVE_TOLERANCE || dy > MOVE_TOLERANCE) {
-          log('pointermove – movement > tolerance → PAN');
-          isPotentialClick = false;
-          isDragging = true;
-          panzoom.setOptions({ start: true });
-          panzoom.pan(e.clientX - startX, e.clientY - startY);
-        }
-      });
+/* --------------------------------------------------------------- */
+/* 5. BIND EVENTS TO EVERY NODE                                    */
+/* --------------------------------------------------------------- */
+mapId.forEach(id=>{
+  const el = document.getElementById(id);
+  const data = mapData.find(d=>d.id===id);
+  if(!el||!data) return;
 
-      container.addEventListener('pointerup', e => {
-        container.releasePointerCapture(e.pointerId);
-        if (isDragging) {
-          log('pointerup – drag finished');
-          isDragging = false;
-          return;
-        }
+  // ---- hover & tooltip ----
+  el.addEventListener('mouseenter', ev=>{ showTooltip(ev,data); });
+  el.addEventListener('mousemove', ev=>{ showTooltip(ev,data); });
+  el.addEventListener('mouseleave', hideTooltip);
 
-        if (!isPotentialClick) return;
+  // ---- click (uses flag) ----
+  el.addEventListener('click', ev=>handleNodeClick(ev,el,data));
+});
 
-        const duration = Date.now() - startTime;
-        const dx = Math.abs(e.clientX - startX);
-        const dy = Math.abs(e.clientY - startY);
-        const moved = dx > MOVE_TOLERANCE || dy > MOVE_TOLERANCE;
+/* --------------------------------------------------------------- */
+/* 6. CLICK-FIRST / PAN-SECOND (pointer events)                    */
+/* --------------------------------------------------------------- */
+const container = document.getElementById('map');
+let startTime=0, startX=0, startY=0;
+let potentialClick = false, dragging = false;
+const CLICK_MS = 300, MOVE_PX = 5;
 
-        if (duration <= CLICK_THRESHOLD && !moved) {
-          log('pointerup – SHORT STILL CLICK → isClicked = true');
-          isClicked = true;
-        } else {
-          log('pointerup – LONG PRESS / MOVED → isClicked = false');
-          isClicked = false;
-        }
-        isPotentialClick = false;
-      });
+container.addEventListener('pointerdown', e=>{
+  if(e.button!==0) return;               // left button only
+  log('pointerdown');
+  potentialClick = true;  dragging = false;
+  startTime = Date.now();  startX = e.clientX;  startY = e.clientY;
+  container.setPointerCapture(e.pointerId);
+});
 
-      container.addEventListener('pointerleave', () => {
-        log('pointerleave – reset flags');
-        isPotentialClick = false;
-        isDragging = false;
-        // isClicked = false;
-      });
+container.addEventListener('pointermove', e=>{
+  if(!potentialClick) return;
+  const dx = Math.abs(e.clientX-startX);
+  const dy = Math.abs(e.clientY-startY);
+  if(dx>MOVE_PX || dy>MOVE_PX){
+    log('pointermove → drag detected');
+    potentialClick = false;  dragging = true;
+    // simple pan for demo (you can replace with Panzoom later)
+    container.style.transform = `translate(${e.clientX-startX}px, ${e.clientY-startY}px)`;
+  }
+});
 
-      /* ---- wheel zoom --------------------------------------------------- */
-      viewport.addEventListener('wheel', e => {
-        e.preventDefault();
-        panzoom.zoomWithWheel(e);
-      }, {passive:false});
+container.addEventListener('pointerup', e=>{
+  container.releasePointerCapture(e.pointerId);
+  if(dragging){ dragging=false; log('pointerup – drag finished'); return; }
+  if(!potentialClick) return;
 
-      /* ---- UI helpers --------------------------------------------------- */
-      const updateLabel = scale => {
-        zoomLabel.textContent = `Zoom: ${Math.round(scale * 100)}%`;
-      };
-      container.addEventListener('panzoomchange', ({detail}) => updateLabel(detail.scale));
+  const duration = Date.now()-startTime;
+  const dx = Math.abs(e.clientX-startX);
+  const dy = Math.abs(e.clientY-startY);
+  const moved = dx>MOVE_PX || dy>MOVE_PX;
 
-      zoomIn.addEventListener('click', () => panzoom.zoomIn());
-      zoomOut.addEventListener('click', () => panzoom.zoomOut());
+  if(duration<=CLICK_MS && !moved){
+    log('pointerup → SHORT STILL CLICK → isClicked = true');
+    isClicked = true;
+  }else{
+    log('pointerup → LONG / MOVED → isClicked = false');
+    isClicked = false;
+  }
+  potentialClick = false;
+});
 
-      resetBtn.addEventListener('click', () => {
-        log('Reset button');
-        panzoom.reset({animate:true});
-        updateLabel(1);
-        panzoom.setOptions({start:false});
-        isClicked = false;
-      });
-
-      /* ---- fullscreen --------------------------------------------------- */
-      const isViewportFullscreen = () => document.fullscreenElement === viewport;
-      fullscreenBtn.addEventListener('click', () => {
-        if (!document.fullscreenElement) viewport.requestFullscreen?.();
-        else document.exitFullscreen?.();
-      });
-      document.addEventListener('fullscreenchange', () => {
-        const active = isViewportFullscreen();
-        document.body.classList.toggle('fullscreen-active', active);
-        viewport.classList.toggle('fullscreen', active);
-        fullscreenBtn.textContent = active ? 'Exit' : 'Fullscreen';
-      });
-
-      updateLabel(1);
-    })();
+container.addEventListener('pointerleave',()=>{
+  log('pointerleave – reset flags');
+  potentialClick = dragging = false;
+  isClicked = false;
+});
   </script>
 </body>
 </html>
