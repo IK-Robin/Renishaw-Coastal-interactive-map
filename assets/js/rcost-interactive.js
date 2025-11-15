@@ -4,7 +4,7 @@ const sold_color = "red";
 const mapData = [
   {
     id: "node_1-2",
-    node_number: "Node 1 ",
+    node_number: "1 ",
     lotNumber: "210",
     nodeSubtitle: 'RENSHAW CENTRAL',
     imageUrl: 'assets/images/node-tooltip-images/node-1.png',
@@ -403,3 +403,7 @@ ikrZoom({
   },
   max_zoom:3,
 });
+
+// create the node buttons for mobile view
+
+   createNodeButtons(mapData, "node_number", "buttonsContainer");
