@@ -152,7 +152,11 @@
 
     <!--  main top filter  -->
 
-    <!-- main map container  -->
+
+     <main class="container-for-mobile-view">
+    <section class="map-section">
+      <div class="map-overlay">
+  <!-- main map container  -->
     <div class="ikr_svg_container all_node_map_width">
       <div class="ikr_map5">
         <div id="controls" class="controls">
@@ -321,32 +325,60 @@
           <div id="mapTitle"></div>
         </div>
       </div>
-
-      <div class="ikr_rv_detail" id="ikr_rv_detail">
-        <div style="position: relative">
-          <div id="detail_img" class="ikr_detail_img">
-            <img src="" alt="" id="map_img" />
-          </div>
-          <div class="map_details">
-            <p id="plotId" class="map_title"></p>
-
-            <div id="detail_des" class="detail_des"></div>
-
-            <a
-              id="ikr_btnTxt"
-              style="display: none"
-              class="ikr_map_tooltip_button"
-              target="_blank"
-              href=""
-            >
-              Details</a
-            >
-          </div>
-        </div>
       </div>
-      <div class="ikr_map_tooltip" id="ikr_map_tooltip"></div>
-    </div>
-    <!-- end  main map container  -->
+      </div>
+    </section>
+
+     
+  
+<!-- =============== MOBILE-ONLY BUTTON PANEL =============== -->
+    <aside class="plot-panel">
+      <h2 class="panel-title">CHOOSE A NODE</h2>
+      <div class="plot-buttons" id="buttonsContainer">
+        <!-- Buttons injected by JS -->
+         <button class="plot-btn" onclick="selectPlot('2249')">PLOT 2249</button>
+        <button class="plot-btn" onclick="selectPlot('2250')">PLOT 2250</button>
+        <button class="plot-btn" onclick="selectPlot('2251')">PLOT 2251</button>
+        <button class="plot-btn" onclick="selectPlot('2252')">PLOT 2252</button>
+        <button class="plot-btn" onclick="selectPlot('2253')">PLOT 2253</button>
+        <button class="plot-btn" onclick="selectPlot('2254')">PLOT 2254</button>
+        <button class="plot-btn" onclick="selectPlot('2255')">PLOT 2255</button>
+        <button class="plot-btn" onclick="selectPlot('2256')">PLOT 2256</button>
+        <button class="plot-btn" onclick="selectPlot('2262')">PLOT 2262</button>
+        <button class="plot-btn" onclick="selectPlot('2263')">PLOT 2263</button>
+        <!-- Add more plots as needed -->
+        <button class="plot-btn" onclick="selectPlot('2341')">PLOT 2341</button>
+        <button class="plot-btn" onclick="selectPlot('2342')">PLOT 2342</button><button class="plot-btn" onclick="selectPlot('2249')">PLOT 2249</button>
+        <button class="plot-btn" onclick="selectPlot('2250')">PLOT 2250</button>
+        <button class="plot-btn" onclick="selectPlot('2251')">PLOT 2251</button>
+        <button class="plot-btn" onclick="selectPlot('2252')">PLOT 2252</button>
+        <button class="plot-btn" onclick="selectPlot('2253')">PLOT 2253</button>
+        <button class="plot-btn" onclick="selectPlot('2254')">PLOT 2254</button>
+        <button class="plot-btn" onclick="selectPlot('2255')">PLOT 2255</button>
+        <button class="plot-btn" onclick="selectPlot('2256')">PLOT 2256</button>
+        <button class="plot-btn" onclick="selectPlot('2262')">PLOT 2262</button>
+        <button class="plot-btn" onclick="selectPlot('2263')">PLOT 2263</button>
+        <!-- Add more plots as needed -->
+        <button class="plot-btn" onclick="selectPlot('2341')">PLOT 2341</button>
+        <button class="plot-btn" onclick="selectPlot('2342')">PLOT 2342</button><button class="plot-btn" onclick="selectPlot('2249')">PLOT 2249</button>
+        <button class="plot-btn" onclick="selectPlot('2250')">PLOT 2250</button>
+        <button class="plot-btn" onclick="selectPlot('2251')">PLOT 2251</button>
+        <button class="plot-btn" onclick="selectPlot('2252')">PLOT 2252</button>
+        <button class="plot-btn" onclick="selectPlot('2253')">PLOT 2253</button>
+        <button class="plot-btn" onclick="selectPlot('2254')">PLOT 2254</button>
+        <button class="plot-btn" onclick="selectPlot('2255')">PLOT 2255</button>
+        <button class="plot-btn" onclick="selectPlot('2256')">PLOT 2256</button>
+        <button class="plot-btn" onclick="selectPlot('2262')">PLOT 2262</button>
+        <button class="plot-btn" onclick="selectPlot('2263')">PLOT 2263</button>
+        <!-- Add more plots as needed -->
+        <button class="plot-btn" onclick="selectPlot('2341')">PLOT 2341</button>
+        <button class="plot-btn" onclick="selectPlot('2342')">PLOT 2342</button>
+      </div>
+    </aside>
+    </main>
+
+
+  
 
     <script src="./assets/js/rcost-interactive-single-function.js"></script>
     <script src="./assets/js/rcost-component.js"></script>
