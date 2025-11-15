@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seaton Estate - Precinct H-2</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        background: #f8f8f8;
+        color: #333;
+      }
+
+      /* ---------- HEADER ---------- */
+      .header {
+        background: #fff;
+        padding: 1rem;
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #d4a017;
+      }
+      .menu-icon {
+        display: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+      }
+
+      /* ---------- MAIN LAYOUT ---------- */
+      .container-for-mobile-view {
+        display: flex;
+        min-height: calc(100vh - 80px);
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      /* ---------- MAP ---------- */
+      .map-section {
+        flex: 1;
+        position: relative;
+        background: #e0f2e0
+          url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 600%22><rect width=%22800%22 height=%22600%22 fill=%22%23e0f2e0%22/><text x=%22400%22 y=%22300%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2220%22>Aerial Map Placeholder</text></svg>")
+          center/cover no-repeat;
+      }
+      .map-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.1);
+      }
+
+      /* ---------- PLOT PANEL ---------- */
+      .plot-panel {
+        width: 300px;
+        background: #fff;
+        border-left: 1px solid #ddd;
+        padding: 1.5rem;
+        overflow-y: auto;
+      }
+      .panel-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        color: #d4a017;
+        text-align: center;
+      }
+
+      /* ---------- FLEX BUTTONS (2 columns) ---------- */
+      .plot-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem; /* space between buttons */
+        justify-content: space-between;
+      }
+      .plot-btn {
+        flex: 0 0 calc(50% - 0.3rem); /* 2 columns: 50% width minus half gap */
+        background: #dc3545;
+        color: #fff;
+        border: none;
+        padding: 0.75rem;
+        font-size: 0.9rem;
+        font-weight: bold;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .plot-btn:hover,
+      .plot-btn:active {
+        background: #c82333;
+      }
+
+      .footer {
+        background: #fff;
+        padding: 1rem;
+        text-align: center;
+        border-top: 1px solid #ddd;
+        font-size: 0.8rem;
+        color: #666;
+      }
+
+      /* ---------- MOBILE RESPONSIVE ---------- */
+      @media (max-width: 768px) {
+        .header {
+          padding: 0.75rem;
+        }
+        .logo {
+          font-size: 1.2rem;
+        }
+        .menu-icon {
+          display: block;
+        }
+
+        .container-for-mobile-view {
+          flex-direction: column;
+        }
+        .map-section {
+          height: 40vh;
+          order: 1;
+        }
+        .plot-panel {
+          width: 100%;
+          height: 60vh;
+          order: 2;
+          border-left: none;
+          border-top: 1px solid #ddd;
+          padding: 1rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .map-section {
+          height: 30vh;
+        }
+        .plot-panel {
+          height: 70vh;
+        }
+      }
+
+      /* Optional: 1-column on very tiny screens */
+      @media (max-width: 380px) {
+        .plot-btn {
+          flex: 0 0 46%;
+          font-size: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container-for-mobile-view">
+      <section class="map-section">
+        <div class="map-overlay"></div>
+       
+      </section>
+
+      <aside class="plot-panel">
+        <h2 class="panel-title">CHOOSE A NODE</h2>
+        <div class="plot-buttons" id="buttonsContainer">
+          <!-- Buttons will be injected here -->
+        </div>
+      </aside>
+    </main>
+
+    <footer class="footer">Powered by Seaton Estate</footer>
+
+    <script>
+      // ----- 1. YOUR MAP DATA -----
+      const mapData = [
+        {
+          id: "node_1-2",
+          node_number: "Node 1 ",
+          lotNumber: "210",
+          nodeSubtitle: "RENSHAW CENTRAL",
+          imageUrl: "assets/images/node-tooltip-images/node-1.png",
+          link: "../../all nods/node-1.html",
+          use: "Residential",
+          size: "714 000 m²",
+          description:
+            "Renshaw Central is the largest residential property development node.",
+        },
+        {
+          id: "node_2-2",
+          node_number: "Node 2 ",
+          lotNumber: "143",
+          nodeSubtitle: "CLANSTHAL",
+          imageUrl: "assets/images/node-tooltip-images/node-2.png",
+          link: "../../all nods/node-2.html",
+          use: "Residential",
+          size: "402 000 m²",
+          description:
+            "Planned for Clansthal, is a luxury housing development featuring contemporary aesthetics.",
+        },
+        {
+          id: "node_3-2",
+          node_number: "Node 3 ",
+          lotNumber: "85",
+          nodeSubtitle: "INTERCHANGE",
+          imageUrl: "assets/images/node-tooltip-images/node-3-01.png",
+          link: "../../all nods/node-3.html",
+          use: "Commercial",
+          size: "535 000 m²",
+          description:
+            "The Renshaw Coastal Precinct Interchange will be the nucleus of the development – as the social and business hub. The area’s first private hospital. Office parks. Light commercial zones. A shopping centre. The area’s first private school.",
+        },
+        {
+          id: "node_4-2",
+          node_number: "Node 4 ",
+          lotNumber: "7",
+          nodeSubtitle: "RENSHAW NORTH",
+          imageUrl: "assets/images/node-tooltip-images/node-4.png",
+          link: "../../all nods/node-4.html",
+          use: "Residential",
+          size: "527 000 m²",
+          description:
+            "Renshaw North will boast luxury villas, seated within indigenous forest overlooking the ocean. An equestrian centre, indigenous nursery and a resort village are also included within the envisaged infrastructure.",
+        },
+        {
+          id: "node_5-2",
+          node_number: "Node 5 ",
+          lotNumber: "111",
+          nodeSubtitle: "RENSHAW SOUTH",
+          imageUrl: "assets/images/node-tooltip-images/node-5.png",
+          link: "../../all nods/node-5.html",
+          use: "Residential",
+          size: "457 000 m²",
+          description:
+            "Renshaw South is to feature a special residential development. Group housing and small-holding plots will also be available. While some land is reserved for conservation, a community facility and light commercial opportunities are planned.",
+        },
+      ];
+
+      // ----- 2. FUNCTION: create buttons from data -----
+      /**
+       * Creates red buttons inside a container using an array of objects.
+       * @param {Array} data          – array of node objects
+       * @param {string} property     – property to use as button text (e.g. "node_number")
+       * @param {string} containerId  – id of the element that will hold the buttons
+       */
+      function createNodeButtons(data, property, containerId) {
+        const button_container = document.getElementById(containerId);
+        if (!button_container) return console.error("Container not found");
+
+        // Clear any existing buttons
+        button_container.innerHTML = "";
+
+        data.forEach((node) => {
+          // 1. Get the text (trim whitespace)
+          const text = (node[property] || "").trim();
+          console.log(text);
+
+          // 2. Create button element
+          const btn = document.createElement("button");
+          btn.className = "plot-btn";
+          btn.textContent = text; // e.g. "Node 1" or "2"
+
+          // 3. Attach click – passes the **whole node object**
+          btn.addEventListener("click", () => handleNodeClick(node));
+
+          // 4. Append to container
+          button_container.appendChild(btn);
+        });
+      }
+
+      // ----- 3. CLICK HANDLER (receives the full object) -----
+      function handleNodeClick(node) {
+        // Example actions – replace with your own logic
+        console.log("Selected node:", node);
+        alert(
+          `You selected: ${node.node_number.trim()} – ${node.nodeSubtitle}`
+        );
+
+        // OPTIONAL: redirect to the node page
+        // window.location.href = node.link;
+      }
+
+      // ----- 4. RUN THE FUNCTION -----
+      // Pass: data, property to display, container id
+      createNodeButtons(mapData, "node_number", "buttonsContainer");
+    </script>
+  </body>
+</html>
