@@ -222,7 +222,7 @@ function hideTooltip() {
     /* ========== FLY-TO-ZOOM ========== */
     let zoomState = { x: 0, y: 0, scale: 1 };
     const SVG_CONTAINER = document.getElementById('fly_to_zoom_container');
-    const MAX_ZOOM = 6;
+    const MAX_ZOOM = 8;
     const ZOOM_DURATION = 380;
 
     function applyZoom() {
@@ -233,7 +233,7 @@ function hideTooltip() {
     }
 
     function computeFit(bb, padding = 40) {
-      const viewW = 1200, viewH = 720;
+      const viewW = 1105.28 , viewH = 1545.45;
       const scale = Math.min(
         viewW / (bb.width + padding * 2),
         viewH / (bb.height + padding * 2),
@@ -270,7 +270,6 @@ function hideTooltip() {
       const target = computeFit(bb, padding);
       animateTo(target);
     }
-
 
 
 
