@@ -175,35 +175,45 @@ function createNodeButtons(data, property, containerId) {
 
 let previous_selected_element = null;
 
+// Single redirect handler reused for add/remove
+function redirectHandler(e) {
+  const id = e.target.getAttribute("data-node-id");
+  const link = e.target.getAttribute("data-node-link");
+  if (link) window.location.href = link;
+}
+
 function handleNodeClick(node) {
+  const select_svg_element = document.getElementById(node.id);
   console.log("Selected node:", node);
 
-  const select_svg_element = document.getElementById(node.id);
-
-  // Remove stroke from previous
+  // Remove stroke & click event from previous element
   if (previous_selected_element) {
     clearStrokeHover(previous_selected_element);
-
-    //remove the click event listener to avoid multiple redirects
-    previous_selected_element.removeEventListener("touchstart", () => {
-      window.location.href = node.link;
-    });
+    previous_selected_element.removeEventListener("touchstart", redirectHandler);
   }
 
-  // Apply new stroke
+  // Apply stroke to new element
   if (select_svg_element) {
     applyStrokeHover(select_svg_element);
+
+    // Store this as the previous element
     previous_selected_element = select_svg_element;
 
-    // Show tooltip at center of the SVG element
-    showTooltip(select_svg_element, node.label ?? node.name ?? node.id);
+    // Set data attributes (needed by redirectHandler)
+    select_svg_element.setAttribute("data-node-id", node.id);
+    select_svg_element.setAttribute("data-node-link", node.link);
 
-    // Redirect on mobile tap
-    select_svg_element.addEventListener("touchstart", () => {
-      window.location.href = node.link;
-    });
+    // Add click event with correct handler
+    select_svg_element.addEventListener("touchstart", redirectHandler);
+
+    // Show tooltip at center of SVG element
+    showTooltip(
+      select_svg_element,
+      node.label ?? node.name ?? node.id
+    );
   }
 }
+
 
 function showTooltip(svgElement, text) {
   const tooltip = document.getElementById("svgTooltip");
@@ -229,3 +239,5 @@ function hideTooltip() {
 
 // ----- 4. RUN THE FUNCTION -----
 // Pass: data, property to display, container id
+
+
