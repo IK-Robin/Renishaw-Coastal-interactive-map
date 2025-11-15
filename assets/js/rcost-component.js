@@ -100,3 +100,51 @@ const selectAll_anim_paths = ikr_svg.querySelectorAll('.anim-path');
 
 //   animation function on nodelavel 
 
+
+
+    /**
+       * Creates red buttons inside a container using an array of objects.
+       * @param {Array} data          – array of node objects
+       * @param {string} property     – property to use as button text (e.g. "node_number")
+       * @param {string} containerId  – id of the element that will hold the buttons
+       */
+      function createNodeButtons(data, property, containerId) {
+        const button_container = document.getElementById(containerId);
+        if (!button_container) return console.error("Container not found");
+
+        // Clear any existing buttons
+        button_container.innerHTML = "";
+
+        data.forEach((node) => {
+          // 1. Get the text (trim whitespace)
+          const text = (node[property] || "").trim();
+          console.log(text);
+
+          // 2. Create button element
+          const btn = document.createElement("button");
+          btn.className = "plot-btn";
+          btn.textContent = text; // e.g. "Node 1" or "2"
+
+          // 3. Attach click – passes the **whole node object**
+          btn.addEventListener("click", () => handleNodeClick(node));
+
+          // 4. Append to container
+          button_container.appendChild(btn);
+        });
+      }
+
+      // ----- 3. CLICK HANDLER (receives the full object) -----
+      function handleNodeClick(node) {
+        // Example actions – replace with your own logic
+        console.log("Selected node:", node);
+        alert(
+          `You selected: ${node.node_number.trim()} – ${node.nodeSubtitle}`
+        );
+
+        // OPTIONAL: redirect to the node page
+        // window.location.href = node.link;
+      }
+
+      // ----- 4. RUN THE FUNCTION -----
+      // Pass: data, property to display, container id
+   
