@@ -393,16 +393,16 @@ init_interactive_map({
     clearStrokeHover(el);
   }
 });
-// apply zoom
-ikrZoom({
-  ikrsvg: ikr_svg, tooltipElementId: 'ikr_toltipMove', mapData, mapId, onLotHoverIn: (el, mapD, ev) => {
-    applyStrokeHover(el);
-  },
-  onLotHoverOut: (el, mapD, ev) => {
-    clearStrokeHover(el);
-  },
-  max_zoom:3,
-});
+// // apply zoom
+// ikrZoom({
+//   ikrsvg: ikr_svg, tooltipElementId: 'ikr_toltipMove', mapData, mapId, onLotHoverIn: (el, mapD, ev) => {
+//     applyStrokeHover(el);
+//   },
+//   onLotHoverOut: (el, mapD, ev) => {
+//     clearStrokeHover(el);
+//   },
+//   max_zoom:3,
+// });
 
 // create the node buttons for mobile view
 
