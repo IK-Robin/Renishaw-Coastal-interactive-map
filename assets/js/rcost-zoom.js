@@ -15,7 +15,7 @@ function ikrZoom({
   const controls = document.getElementById("controls");
 
   /* ---------- CONFIG ---------- */
-  const CTRL_WHEEL_ZOOM = true;             // Ctrl + wheel to zoom, plain wheel scrolls page
+  const CTRL_WHEEL_ZOOM = false;             // Ctrl + wheel to zoom, plain wheel scrolls page
   const ENABLE_FULLSCREEN_BUTTON = true;     // toggle fullscreen button on/off
   const WHEEL_ZOOM_FACTOR = 1.1;            // ~Google Maps feel: 1.1–1.3 is nice
   const BUTTON_ZOOM_FACTOR = 1.2;
@@ -52,14 +52,15 @@ function ikrZoom({
 
   /* ---------- FULLSCREEN SUPPORT ---------- */
   function enterFullscreenStyles() {
-    ikrsvg.style.width = "100%";
+    ikrsvg.style.width = "100% !imprtent";
     ikrsvg.style.height = "100%";
+    ikrsvg.style.translate = "0 0";
     applyTransform();
   }
 
   function exitFullscreenStyles() {
-    ikrsvg.style.width = originalWidth;
-    ikrsvg.style.height = originalHeight;
+    ikrsvg.style.width = '100%';
+    ikrsvg.style.height = '100%';
     applyTransform();
   }
 
@@ -399,10 +400,10 @@ function ikrZoom({
         freshEl.addEventListener("touchend", (ev) => {
           handleHideOnMobile(freshEl);
         });
-
-        freshEl.addEventListener("click", (ev) => {
-          handleShow(ev, freshEl, mapD);
-        });
+// hide click for mobile devices
+        // freshEl.addEventListener("click", (ev) => {
+        //   // handleShow(ev, freshEl, mapD);
+        // });
       });
     } else {
       mapId.forEach((id) => {
