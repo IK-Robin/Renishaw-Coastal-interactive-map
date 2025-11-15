@@ -134,16 +134,34 @@ const selectAll_anim_paths = ikr_svg.querySelectorAll('.anim-path');
       }
 
       // ----- 3. CLICK HANDLER (receives the full object) -----
-      function handleNodeClick(node) {
-        // Example actions – replace with your own logic
-        console.log("Selected node:", node);
-        alert(
-          `You selected: ${node.node_number.trim()} – ${node.nodeSubtitle}`
-        );
+  // Store the previously clicked element globally
+let previous_selected_element = null;
 
-        // OPTIONAL: redirect to the node page
-        // window.location.href = node.link;
-      }
+// ----- 3. CLICK HANDLER (receives the full object) -----
+function handleNodeClick(node) {
+    console.log("Selected node:", node);
+
+    const select_svg_element = document.getElementById(node.id);
+    console.log(select_svg_element);
+
+    // 1. Remove stroke from previously selected element
+    if (previous_selected_element) {
+        clearStrokeHover(previous_selected_element);
+    }
+
+    // 2. If clicking the same element again -> remove stroke & deselect
+    if (previous_selected_element === select_svg_element) {
+        previous_selected_element = null; // reset selection
+        return; // stop here
+    }
+
+    // 3. Apply stroke on newly selected element
+    if (select_svg_element) {
+        applyStrokeHover(select_svg_element);
+        previous_selected_element = select_svg_element; // store it
+    }
+}
+
 
       // ----- 4. RUN THE FUNCTION -----
       // Pass: data, property to display, container id
