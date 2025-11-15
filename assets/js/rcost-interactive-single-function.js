@@ -138,7 +138,7 @@ function placeSmartInContainer(el, ev, pad = 8) {
               onLotHoverIn(el, mapD, ev);
             }
             handleShow(ev, el, mapD);
-            rcostClick_func(ev, el, mapD);
+            // rcostClick_func(ev, el, mapD);
           },
           { passive: false }
         );
