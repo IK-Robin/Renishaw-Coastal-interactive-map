@@ -849,10 +849,10 @@ create the mobile view layout and  button
 }
 @media (max-width: 480px) {
   .map-section {
-    height: 30vh;
+    max-height: 300px;
   }
-  .plot-panel {
-    height: 70vh;
+  .ikr_map5 {
+    height: 300px;
   }
 }
 @media (max-width: 380px) {
