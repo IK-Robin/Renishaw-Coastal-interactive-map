@@ -182,37 +182,12 @@ function redirectHandler(e) {
   if (link) window.location.href = link;
 }
 
-function handleNodeClick(node) {
-  const select_svg_element = document.getElementById(node.id);
-  console.log("Selected node:", node);
 
-  // Remove stroke & click event from previous element
-  if (previous_selected_element) {
-    clearStrokeHover(previous_selected_element);
-    previous_selected_element.removeEventListener("touchstart", redirectHandler);
-  }
-
-  // Apply stroke to new element
-  if (select_svg_element) {
-    applyStrokeHover(select_svg_element);
-
-    // Store this as the previous element
-    previous_selected_element = select_svg_element;
-
-    // Set data attributes (needed by redirectHandler)
-    select_svg_element.setAttribute("data-node-id", node.id);
-    select_svg_element.setAttribute("data-node-link", node.link);
-
-    // Add click event with correct handler
-    select_svg_element.addEventListener("touchstart", redirectHandler);
-
-    // Show tooltip at center of SVG element
-    showTooltip(
-      select_svg_element,
-      node.label ?? node.name ?? node.id
-    );
-  }
+function redirectHandler(e) {
+  const link = e.target.getAttribute("data-node-link");
+  if (link) window.location.href = link;
 }
+
 
 
 function showTooltip(svgElement, text) {
@@ -241,3 +216,90 @@ function hideTooltip() {
 // Pass: data, property to display, container id
 
 
+/* --------------------------------------------------------------
+   FLY-TO-ZOOM – center + fit any SVG element
+
+    /* ========== FLY-TO-ZOOM ========== */
+    let zoomState = { x: 0, y: 0, scale: 1 };
+    const SVG_CONTAINER = document.getElementById('fly_to_zoom_container');
+    const MAX_ZOOM = 6;
+    const ZOOM_DURATION = 380;
+
+    function applyZoom() {
+      SVG_CONTAINER.setAttribute(
+        'transform',
+        `translate(${zoomState.x},${zoomState.y}) scale(${zoomState.scale})`
+      );
+    }
+
+    function computeFit(bb, padding = 40) {
+      const viewW = 1200, viewH = 720;
+      const scale = Math.min(
+        viewW / (bb.width + padding * 2),
+        viewH / (bb.height + padding * 2),
+        MAX_ZOOM
+      );
+      const cx = bb.x + bb.width / 2;
+      const cy = bb.y + bb.height / 2;
+      return { x: viewW / 2 - scale * cx, y: viewH / 2 - scale * cy, scale };
+    }
+
+    function animateTo(target, onDone) {
+      const start = { ...zoomState };
+      const dX = target.x - start.x, dY = target.y - start.y, dS = target.scale - start.scale;
+      const t0 = performance.now();
+
+      function step(now) {
+        const p = Math.min((now - t0) / ZOOM_DURATION, 1);
+        const ease = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+        zoomState.x = start.x + dX * ease;
+        zoomState.y = start.y + dY * ease;
+        zoomState.scale = start.scale + dS * ease;
+        applyZoom();
+        if (p < 1) requestAnimationFrame(step);
+        else if (onDone) onDone();
+      }
+      requestAnimationFrame(step);
+    }
+
+    function flyToElement(el, padding = 40) {
+      const current = SVG_CONTAINER.getAttribute('transform') || '';
+      SVG_CONTAINER.setAttribute('transform', 'translate(0,0) scale(1)');
+      const bb = el.getBBox();
+      SVG_CONTAINER.setAttribute('transform', current);
+      const target = computeFit(bb, padding);
+      animateTo(target);
+    }
+
+
+
+
+    
+function handleNodeClick(node) {
+  const select_svg_element = document.getElementById(node.id);
+   if (!select_svg_element) return console.warn("Node not found:", node.id);
+  console.log("Selected node:", node);
+
+  /* ---- 1. Reset previous selection ---- */
+  if (previous_selected_element) {
+    clearStrokeHover(previous_selected_element);
+    previous_selected_element.removeEventListener("touchstart", redirectHandler);
+  }
+
+  if (!select_svg_element) return;   // safety
+
+  /* ---- 2. Highlight new element ---- */
+  applyStrokeHover(select_svg_element);
+  previous_selected_element = select_svg_element;
+
+  /* ---- 3. Store data for redirect ---- */
+  select_svg_element.setAttribute("data-node-id", node.id);
+  select_svg_element.setAttribute("data-node-link", node.link);
+  select_svg_element.addEventListener("touchstart", redirectHandler);
+
+  /* ---- 4. Show tooltip at element centre ---- */
+  showTooltip(select_svg_element, node.label ?? node.name ?? node.id);
+
+  /* ---- 5. FLY-TO-ZOOM (center + fit) ---- */
+  flyToElement(select_svg_element, 60);   // 40 px padding – tweak as you like
+}

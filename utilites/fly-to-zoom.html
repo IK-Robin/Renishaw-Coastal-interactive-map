@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Interactive SVG Map – Fly-to-Zoom</title>
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --panel: #0f1621;
+      --ink: #e9eef6;
+      --stroke: #18202b;
+      --hover: #ef4444;
+      --btn-red: #dc2626;
+    }
+    * { box-sizing: border-box; margin:0; padding:0; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      padding: 16px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 280px 1fr;
+    }
+    .sidebar {
+      background: var(--panel);
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid var(--stroke);
+    }
+    .map-wrap {
+      position: relative;
+      background: #0a121b;
+      border-radius: 12px;
+      border: 1px solid #17212f;
+      overflow: hidden;
+    }
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      touch-action: none;
+    }
+    .plot-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 8px;
+      background: var(--btn-red);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .plot-btn:hover {
+      background: #b91c1c;
+      transform: translateY(-1px);
+    }
+    .plot-btn:active {
+      transform: translateY(0);
+    }
+    #svgTooltip {
+      position: absolute;
+      pointer-events: none;
+      background: #0d1420;
+      color: #e9eef6;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0,0,0,.4);
+      transform: translate(-50%, -50%);
+      z-index: 999;
+      display: none;
+    }
+    .node {
+      fill: #1e293b;
+      stroke: #334155;
+      stroke-width: 2;
+      cursor: pointer;
+      transition: fill 0.2s;
+    }
+    .node.highlight {
+      stroke: var(--hover);
+      stroke-width: 4;
+      filter: drop-shadow(0 0 8px rgba(239,68,68,.5));
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Sidebar: Buttons -->
+    <div class="sidebar">
+      <h3 style="margin-bottom:12px; color:#94a3b8">Select Node</h3>
+      <div id="buttonContainer"></div>
+    </div>
+
+    <!-- Map -->
+    <div class="map-wrap">
+      <svg id="map" viewBox="0 0 1200 720" preserveAspectRatio="xMidYMid meet">
+        <g id="ikr_map5">
+          <!-- Sample Nodes -->
+          <path id="node1" class="node" d="M200,150 L400,120 L450,250 L220,280 Z" />
+          <path id="node2" class="node" d="M500,100 L720,130 L680,280 L480,250 Z" />
+          <path id="node3" class="node" d="M800,140 L1000,110 L1050,290 L820,320 Z" />
+          <path id="node4" class="node" d="M300,400 L520,370 L560,580 L310,610 Z" />
+          <path id="node5" class="node" d="M650,380 L880,350 L920,590 L670,620 Z" />
+        </g>
+      </svg>
+      <div id="svgTooltip"></div>
+    </div>
+  </div>
+
+  <script>
+    /* ========== DATA ========== */
+    const nodesData = [
+      { id: "node1", node_number: "Node 1", label: "Central Hub", link: "https://example.com/node1" },
+      { id: "node2", node_number: "Node 2", label: "North Wing", link: "https://example.com/node2" },
+      { id: "node3", node_number: "Node 3", label: "East Tower", link: "https://example.com/node3" },
+      { id: "node4", node_number: "Node 4", label: "South Plaza", link: "https://example.com/node4" },
+      { id: "node5", node_number: "Node 5", label: "West Gate", link: "https://example.com/node5" }
+    ];
+
+    /* ========== BUTTON CREATOR ========== */
+    function createNodeButtons(data, property, containerId) {
+      const container = document.getElementById(containerId);
+      if (!container) return console.error("Container not found");
+      container.innerHTML = "";
+
+      data.forEach(node => {
+        const text = (node[property] || "").trim();
+        const btn = document.createElement("button");
+        btn.className = "plot-btn";
+        btn.textContent = text;
+        btn.addEventListener("click", () => handleNodeClick(node));
+        container.appendChild(btn);
+      });
+    }
+
+    /* ========== HIGHLIGHT & REDIRECT ========== */
+    let previous_selected_element = null;
+
+    function redirectHandler(e) {
+      const link = e.target.getAttribute("data-node-link");
+      if (link) window.location.href = link;
+    }
+
+    function applyStrokeHover(el) {
+      el.classList.add("highlight");
+    }
+
+    function clearStrokeHover(el) {
+      el.classList.remove("highlight");
+    }
+
+    /* ========== TOOLTIP ========== */
+    function showTooltip(svgElement, text) {
+      const tooltip = document.getElementById("svgTooltip");
+      tooltip.innerText = text;
+
+      function update() {
+        const bbox = svgElement.getBoundingClientRect();
+        const cx = bbox.left + bbox.width / 2 + window.scrollX;
+        const cy = bbox.top + bbox.height / 2 + window.scrollY;
+        tooltip.style.left = `${cx}px`;
+        tooltip.style.top = `${cy}px`;
+      }
+
+      update();
+      tooltip.style.display = "block";
+
+      let raf;
+      const loop = () => { update(); raf = requestAnimationFrame(loop); };
+      raf = requestAnimationFrame(loop);
+
+      const oldHide = hideTooltip;
+      hideTooltip = () => {
+        cancelAnimationFrame(raf);
+        tooltip.style.display = "none";
+        hideTooltip = oldHide;
+      };
+    }
+
+    function hideTooltip() {
+      document.getElementById("svgTooltip").style.display = "none";
+    }
+
+    /* ========== FLY-TO-ZOOM ========== */
+    let zoomState = { x: 0, y: 0, scale: 1 };
+    const SVG_CONTAINER = document.getElementById('ikr_map5');
+    const MAX_ZOOM = 6;
+    const ZOOM_DURATION = 380;
+
+    function applyZoom() {
+      SVG_CONTAINER.setAttribute(
+        'transform',
+        `translate(${zoomState.x},${zoomState.y}) scale(${zoomState.scale})`
+      );
+    }
+
+    function computeFit(bb, padding = 40) {
+      const viewW = 1200, viewH = 720;
+      const scale = Math.min(
+        viewW / (bb.width + padding * 2),
+        viewH / (bb.height + padding * 2),
+        MAX_ZOOM
+      );
+      const cx = bb.x + bb.width / 2;
+      const cy = bb.y + bb.height / 2;
+      return { x: viewW / 2 - scale * cx, y: viewH / 2 - scale * cy, scale };
+    }
+
+    function animateTo(target, onDone) {
+      const start = { ...zoomState };
+      const dX = target.x - start.x, dY = target.y - start.y, dS = target.scale - start.scale;
+      const t0 = performance.now();
+
+      function step(now) {
+        const p = Math.min((now - t0) / ZOOM_DURATION, 1);
+        const ease = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+        zoomState.x = start.x + dX * ease;
+        zoomState.y = start.y + dY * ease;
+        zoomState.scale = start.scale + dS * ease;
+        applyZoom();
+        if (p < 1) requestAnimationFrame(step);
+        else if (onDone) onDone();
+      }
+      requestAnimationFrame(step);
+    }
+
+    function flyToElement(el, padding = 40) {
+      const current = SVG_CONTAINER.getAttribute('transform') || '';
+      SVG_CONTAINER.setAttribute('transform', 'translate(0,0) scale(1)');
+      const bb = el.getBBox();
+      SVG_CONTAINER.setAttribute('transform', current);
+      const target = computeFit(bb, padding);
+      animateTo(target);
+    }
+
+    /* ========== MAIN CLICK HANDLER ========== */
+    function handleNodeClick(node) {
+      const el = document.getElementById(node.id);
+      if (!el) return console.warn("Node not found:", node.id);
+
+      // Reset previous
+      if (previous_selected_element) {
+        clearStrokeHover(previous_selected_element);
+        previous_selected_element.removeEventListener("touchstart", redirectHandler);
+      }
+
+      // Highlight
+      applyStrokeHover(el);
+      previous_selected_element = el;
+
+      // Redirect setup
+      el.setAttribute("data-node-link", node.link);
+      el.addEventListener("touchstart", redirectHandler);
+
+      // Tooltip
+      showTooltip(el, node.label ?? node.node_number);
+
+      // FLY TO + ZOOM
+      flyToElement(el, 60);
+    }
+
+    /* ========== INIT ========== */
+    createNodeButtons(nodesData, "node_number", "buttonContainer");
+  </script>
+</body>
+</html>
