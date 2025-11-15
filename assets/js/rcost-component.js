@@ -220,56 +220,56 @@ function hideTooltip() {
    FLY-TO-ZOOM – center + fit any SVG element
 
     /* ========== FLY-TO-ZOOM ========== */
-    let zoomState = { x: 0, y: 0, scale: 1 };
-    const SVG_CONTAINER = document.getElementById('fly_to_zoom_container');
-    const MAX_ZOOM = 8;
-    const ZOOM_DURATION = 380;
+    // let zoomState = { x: 0, y: 0, scale: 1 };
+    // const SVG_CONTAINER = document.getElementById('fly_to_zoom_container');
+    // const MAX_ZOOM = 8;
+    // const ZOOM_DURATION = 380;
 
-    function applyZoom() {
-      SVG_CONTAINER.setAttribute(
-        'transform',
-        `translate(${zoomState.x},${zoomState.y}) scale(${zoomState.scale})`
-      );
-    }
+    // function applyZoom() {
+    //   SVG_CONTAINER.setAttribute(
+    //     'transform',
+    //     `translate(${zoomState.x},${zoomState.y}) scale(${zoomState.scale})`
+    //   );
+    // }
 
-    function computeFit(bb, padding = 40) {
-      const viewW = 1105.28 , viewH = 1545.45;
-      const scale = Math.min(
-        viewW / (bb.width + padding * 2),
-        viewH / (bb.height + padding * 2),
-        MAX_ZOOM
-      );
-      const cx = bb.x + bb.width / 2;
-      const cy = bb.y + bb.height / 2;
-      return { x: viewW / 2 - scale * cx, y: viewH / 2 - scale * cy, scale };
-    }
+    // function computeFit(bb, padding = 40) {
+    //   const viewW = 1105.28 , viewH = 1545.45;
+    //   const scale = Math.min(
+    //     viewW / (bb.width + padding * 2),
+    //     viewH / (bb.height + padding * 2),
+    //     MAX_ZOOM
+    //   );
+    //   const cx = bb.x + bb.width / 2;
+    //   const cy = bb.y + bb.height / 2;
+    //   return { x: viewW / 2 - scale * cx, y: viewH / 2 - scale * cy, scale };
+    // }
 
-    function animateTo(target, onDone) {
-      const start = { ...zoomState };
-      const dX = target.x - start.x, dY = target.y - start.y, dS = target.scale - start.scale;
-      const t0 = performance.now();
+    // function animateTo(target, onDone) {
+    //   const start = { ...zoomState };
+    //   const dX = target.x - start.x, dY = target.y - start.y, dS = target.scale - start.scale;
+    //   const t0 = performance.now();
 
-      function step(now) {
-        const p = Math.min((now - t0) / ZOOM_DURATION, 1);
-        const ease = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
-        zoomState.x = start.x + dX * ease;
-        zoomState.y = start.y + dY * ease;
-        zoomState.scale = start.scale + dS * ease;
-        applyZoom();
-        if (p < 1) requestAnimationFrame(step);
-        else if (onDone) onDone();
-      }
-      requestAnimationFrame(step);
-    }
+    //   function step(now) {
+    //     const p = Math.min((now - t0) / ZOOM_DURATION, 1);
+    //     const ease = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+    //     zoomState.x = start.x + dX * ease;
+    //     zoomState.y = start.y + dY * ease;
+    //     zoomState.scale = start.scale + dS * ease;
+    //     applyZoom();
+    //     if (p < 1) requestAnimationFrame(step);
+    //     else if (onDone) onDone();
+    //   }
+    //   requestAnimationFrame(step);
+    // }
 
-    function flyToElement(el, padding = 40) {
-      const current = SVG_CONTAINER.getAttribute('transform') || '';
-      SVG_CONTAINER.setAttribute('transform', 'translate(0,0) scale(1)');
-      const bb = el.getBBox();
-      SVG_CONTAINER.setAttribute('transform', current);
-      const target = computeFit(bb, padding);
-      animateTo(target);
-    }
+    // function flyToElement(el, padding = 40) {
+    //   const current = SVG_CONTAINER.getAttribute('transform') || '';
+    //   SVG_CONTAINER.setAttribute('transform', 'translate(0,0) scale(1)');
+    //   const bb = el.getBBox();
+    //   SVG_CONTAINER.setAttribute('transform', current);
+    //   const target = computeFit(bb, padding);
+    //   animateTo(target);
+    // }
 
 
 
@@ -300,5 +300,208 @@ function handleNodeClick(node) {
   showTooltip(select_svg_element, node.label ?? node.name ?? node.id);
 
   /* ---- 5. FLY-TO-ZOOM (center + fit) ---- */
-  flyToElement(select_svg_element, 60);   // 40 px padding – tweak as you like
+  // flyToElement(select_svg_element, 60);   // 40 px padding – tweak as you like
 }
+
+
+
+function ikrZooms(ikrsvg) {
+      /* ---------- state ---------- */
+      const ts = { scale: 1, translate: { x: 0, y: 0 }, rotate: 0 };
+      let currentScale = 1;
+      const STEP = 0.2;
+      const MAX_SCALE = 8;
+      const MIN_SCALE = 1;
+
+      let panEnabled = false;
+
+      /* ---------- buttons ---------- */
+      const zoomInBtn = document.getElementById("zoom_in");
+      const zoomOutBtn = document.getElementById("zoom_out");
+      const resetBtn = document.getElementById("reset");
+
+      ikrsvg.style.touchAction = "none";
+      ikrsvg.style.cursor = "default";
+
+      /* ---------- apply transform ---------- */
+      function applyTransform() {
+        const t = `translate(${ts.translate.x}px, ${ts.translate.y}px) scale(${ts.scale})`;
+        ikrsvg.style.transform = t;
+      }
+
+      /* ---------- button actions ---------- */
+      zoomInBtn.addEventListener("click", () => {
+        currentScale = Math.min(MAX_SCALE, currentScale + STEP);
+        ts.scale = currentScale;
+
+        if (!panEnabled) {
+          panEnabled = true;
+          ikrsvg.style.cursor = "grab";
+          initPanning();
+        }
+
+        applyTransform();
+      });
+
+      zoomOutBtn.addEventListener("click", () => {
+        currentScale = Math.max(MIN_SCALE, currentScale - STEP);
+        ts.scale = currentScale;
+        applyTransform();
+      });
+
+      resetBtn.addEventListener("click", () => {
+        currentScale = 1;
+        ts.scale = 1;
+        ts.translate.x = ts.translate.y = 0;
+        panEnabled = false;
+        ikrsvg.style.cursor = "default";
+        removePanning(); // This will re-clone SVG and rebind mobile listeners
+        applyTransform();
+      });
+
+      /* ---------- panning ---------- */
+      let startX, startY, startTX, startTY;
+      const isMobileDevice =
+        /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        );
+
+      function initPanning() {
+        if (isMobileDevice) {
+          let panId = null;
+          ikrsvg.addEventListener(
+            "touchstart",
+            (e) => {
+              if (!panEnabled || e.touches.length !== 1) return;
+              const t = e.touches[0];
+              panId = t.identifier;
+              startX = t.clientX;
+              startY = t.clientY;
+              startTX = ts.translate.x;
+              startTY = ts.translate.y;
+            },
+            { passive: false }
+          );
+
+          ikrsvg.addEventListener(
+            "touchmove",
+            (e) => {
+              if (!panEnabled || e.touches.length !== 1) return;
+              const t = Array.from(e.touches).find(
+                (tt) => tt.identifier === panId
+              );
+              if (!t) return;
+              e.preventDefault();
+              const dx = (t.clientX - startX) / ts.scale;
+              const dy = (t.clientY - startY) / ts.scale;
+              ts.translate.x = startTX + dx;
+              ts.translate.y = startTY + dy;
+              applyTransform();
+            },
+            { passive: false }
+          );
+
+          ikrsvg.addEventListener("touchend", () => (panId = null));
+        } else {
+          let panning = false;
+          ikrsvg.addEventListener("mousedown", (e) => {
+            if (!panEnabled || e.button !== 0) return;
+            panning = true;
+            ikrsvg.style.cursor = "grabbing";
+            startX = e.clientX;
+            startY = e.clientY;
+            startTX = ts.translate.x;
+            startTY = ts.translate.y;
+          });
+
+          ikrsvg.addEventListener("mousemove", (e) => {
+            if (!panning) return;
+            const dx = (e.clientX - startX) / ts.scale;
+            const dy = (e.clientY - startY) / ts.scale;
+            ts.translate.x = startTX + dx;
+            ts.translate.y = startTY + dy;
+            applyTransform();
+          });
+
+          const stop = () => {
+            panning = false;
+            if (panEnabled) ikrsvg.style.cursor = "grab";
+          };
+          ikrsvg.addEventListener("mouseup", stop);
+          ikrsvg.addEventListener("mouseleave", stop);
+        }
+      }
+
+          function removePanning() {
+        // Clone and replace SVG to remove pan listeners
+        const clone = ikrsvg.cloneNode(true);
+        ikrsvg.parentNode.replaceChild(clone, ikrsvg);
+
+        // Update reference
+        const newSvg = document.getElementById(ikrsvg.id);
+        ikrsvg = newSvg;
+        ikrsvg.style.touchAction = "none";
+        ikrsvg.style.cursor = "default";
+
+        // === CRITICAL: Rebind mobile tooltip listeners ===
+        if (isMobileDevice) {
+          mapId.forEach((id) => {
+            const el = ikrsvg.querySelector(`#${id}`);
+            if (!el) return;
+
+            const mapD = mapData.find((d) => d.id === id);
+            if (!mapD) return;
+
+            // Remove old listeners if any (just in case)
+            el.replaceWith(el.cloneNode(true));
+            const freshEl = ikrsvg.querySelector(`#${id}`);
+
+            freshEl.addEventListener(
+              "touchstart",
+              (ev) => {
+                ev.preventDefault();
+                handleShow(ev, freshEl, mapD);
+              },
+              { passive: false }
+            );
+
+            freshEl.addEventListener("touchend", (ev) => {
+              handleHideOnMobile(freshEl);
+            });
+
+            freshEl.addEventListener("click", (ev) => {
+              handleShow(ev, freshEl, mapD);
+            });
+          });
+        }else{
+            mapId.forEach((id) => {
+            console.log('hello')
+             const el = ikrsvg.querySelector(`#${id}`);
+            if (!el) return;
+
+            const mapD = mapData.find((d) => d.id === id);
+            if (!mapD) return;
+
+            // Remove old listeners if any (just in case)
+            el.replaceWith(el.cloneNode(true));
+            const freshEl = ikrsvg.querySelector(`#${id}`);
+             // Desktop: normal hover
+        freshEl.addEventListener("mouseenter", (ev) => handleShow(ev, freshEl, mapD));
+        freshEl.addEventListener("mousemove", (ev) => handleShow(ev, freshEl, mapD));
+        freshEl.addEventListener("mouseleave", () => handleHide(freshEl));
+        });
+        }
+        // === End of mobile rebind ===
+
+        applyTransform();
+      }
+
+      /* ---------- initial render ---------- */
+      applyTransform();
+    }
+
+    const ikrsvgs = document.querySelector('#ikr_svg');
+  
+    ikrZooms(ikrsvgs);
+ 
+
