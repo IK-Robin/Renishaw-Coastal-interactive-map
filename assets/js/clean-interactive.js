@@ -3,7 +3,7 @@ const avalible_color = "green";
 const sold_color = "red";
 const mapData = [
   {
-    id: "node_1-2",
+    id: "node_1",
     node_number: "Node 1 ",
     lotNumber: "210",
     nodeSubtitle: 'RENSHAW CENTRAL',
@@ -18,7 +18,7 @@ const mapData = [
   },
 
   {
-    id: "node_2-2",
+    id: "node_2",
     node_number: "Node 2 ",
     lotNumber: "143",
     nodeSubtitle: 'CLANSTHAL',
@@ -31,7 +31,7 @@ const mapData = [
 
 
   {
-    id: "node_3-2",
+    id: "node_3",
     node_number: "Node 3 ",
     lotNumber: "85",
     nodeSubtitle: 'INTERCHANGE',
@@ -43,7 +43,7 @@ const mapData = [
   },
 
   {
-    id: "node_4-2",
+    id: "node_4",
     node_number: "Node 4 ",
     lotNumber: "7",
     nodeSubtitle: 'RENSHAW NORTH',
@@ -55,7 +55,7 @@ const mapData = [
   },
 
   {
-    id: "node_5-2",
+    id: "node_5",
     node_number: "Node 5 ",
     lotNumber: "111",
     nodeSubtitle: 'RENSHAW SOUTH',
@@ -156,237 +156,252 @@ function renderTooltipContent(mapD) {
 // add fly to zoom logic only for mobile view 
 
 if (isMobile_devices) {
- 
-(() => {
-  /* -------------------------------------------------------------
-     1. GLOBALS & HELPERS
-     ------------------------------------------------------------- */
-  let previous_selected_element = null;
-  const map   = document.getElementById('ikr_svg');   // <svg>
-  const stage = document.getElementById('stage');    // <g> that gets transformed
+  (() => {
+    /* -------------------------------------------------------------
+       1. GLOBALS & HELPERS
+       ------------------------------------------------------------- */
+    let previous_selected_element = null;
+    const map   = document.getElementById('ikr_svg');   // <svg>
+    const stage = document.getElementById('stage');    // <g> that gets transformed
 
-  const transform = { x: 0, y: 0, scale: 1 };
-  let baseTransform = { x: 0, y: 0, scale: 1 };
+    const transform = { x: 0, y: 0, scale: 1 };
+    let baseTransform = { x: 0, y: 0, scale: 1 };
 
-  const isMobile = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isMobile = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-  function applyTransform() {
-    stage.setAttribute(
-      'transform',
-      `translate(${transform.x},${transform.y}) scale(${transform.scale})`
-    );
-  }
-
-  function animateTo(target, duration = 280, onUpdate = null, onDone = null) {
-    const start = { ...transform };
-    const dt = {
-      x: target.x - start.x,
-      y: target.y - start.y,
-      scale: target.scale - start.scale,
-    };
-    const t0 = performance.now();
-
-    function step(now) {
-      const p = Math.min((now - t0) / duration, 1);
-      const ease = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
-
-      transform.x = start.x + dt.x * ease;
-      transform.y = start.y + dt.y * ease;
-      transform.scale = start.scale + dt.scale * ease;
-
-      applyTransform();
-      if (onUpdate) onUpdate(ease);
-      if (p < 1) requestAnimationFrame(step);
-      else if (onDone) onDone();
-    }
-    requestAnimationFrame(step);
-  }
-
-  function computeFitTransform(bb, padding = 24) {
-    const svgW = 1105.28, svgH = 1545.45;
-    const scale = Math.min(
-      svgW / (bb.width + padding * 2),
-      svgH / (bb.height + padding * 2)
-    );
-    const cx = bb.x + bb.width / 2;
-    const cy = bb.y + bb.height / 2;
-    return { x: svgW / 2 - scale * cx, y: svgH / 2 - scale * cy, scale };
-  }
-
-  /* -------------------------------------------------------------
-     2. ZOOM MODULE
-     ------------------------------------------------------------- */
-  const ZoomModule = {
-    init() {
-      document.getElementById('zoom_in')
-        .addEventListener('click', () => this.zoom(1.25));
-      document.getElementById('zoom_out')
-        .addEventListener('click', () => this.zoom(0.8));
-      document.getElementById('reset')
-        .addEventListener('click', this.reset.bind(this));
-
-      map.addEventListener('wheel', e => {
-        e.preventDefault();
-        const r = map.getBoundingClientRect();
-        this.zoom(e.deltaY < 0 ? 1.1 : 0.9, e.clientX - r.left, e.clientY - r.top);
-      }, { passive: false });
-    },
-
-    zoom(factor, cx = 400, cy = 300) {
-      const oldScale = transform.scale;
-      const newScale = Math.max(0.1, Math.min(5, oldScale * factor));
-
-      // enable panning on the *first* zoom-in
-      if (oldScale === 1 && newScale > 1) PanModule.enable();
-
-      transform.x = cx - (cx - transform.x) * (newScale / oldScale);
-      transform.y = cy - (cy - transform.y) * (newScale / oldScale);
-      transform.scale = newScale;
-      applyTransform();
-    },
-
-    reset() {
-      const tgt = { x: 0, y: 0, scale: 1 };
-      animateTo(tgt, 280, null, () => {
-        baseTransform = { ...tgt };
-        PanModule.disable();               // <-- important: turn panning off
-      });
-    },
-  };
-
-  /* -------------------------------------------------------------
-     3. PAN MODULE – FAST & ALWAYS WORKS
-     ------------------------------------------------------------- */
-  const PAN_SPEED_FACTOR = 15;   // 1 = original, 2-4 = fast & easy
-
-  const PanModule = (function () {
-    let panEnabled = false;
-    let startX = 0, startY = 0;
-    let startTX = 0, startTY = 0;
-
-    function enable() {
-      panEnabled = true;
-      map.style.cursor = 'grab';
-    }
-    function disable() {
-      panEnabled = false;
-      map.style.cursor = 'default';
+    function applyTransform() {
+      stage.setAttribute(
+        'transform',
+        `translate(${transform.x},${transform.y}) scale(${transform.scale})`
+      );
     }
 
-    // ---------- Desktop ----------
-    function initDesktop() {
-      let panning = false;
-
-      map.addEventListener('mousedown', e => {
-        if (!panEnabled || e.button !== 0) return;
-        panning = true;
-        map.style.cursor = 'grabbing';
-
-        startX = e.clientX;
-        startY = e.clientY;
-        startTX = transform.x;
-        startTY = transform.y;
-      });
-
-      map.addEventListener('mousemove', e => {
-        if (!panning) return;
-        const dx = (e.clientX - startX) * PAN_SPEED_FACTOR / transform.scale;
-        const dy = (e.clientY - startY) * PAN_SPEED_FACTOR / transform.scale;
-
-        transform.x = startTX + dx;
-        transform.y = startTY + dy;
-        applyTransform();
-      });
-
-      const stop = () => {
-        panning = false;
-        if (panEnabled) map.style.cursor = 'grab';
+    /* -------------------------------------------------------------
+       2. SMART ANIMATION – duration ∝ distance
+       ------------------------------------------------------------- */
+    function animateTo(target, onUpdate = null, onDone = null) {
+      const start = { ...transform };
+      const dt = {
+        x: target.x - start.x,
+        y: target.y - start.y,
+        scale: target.scale - start.scale,
       };
-      map.addEventListener('mouseup', stop);
-      map.addEventListener('mouseleave', stop);
-    }
 
-    // ---------- Mobile ----------
-    function initMobile() {
-      let panId = null;
+      // Distance heuristic (px + scale*200)
+      const distance = Math.abs(dt.x) + Math.abs(dt.y) + Math.abs(dt.scale) * 200;
+      const duration = Math.min(400, 100 + distance / 4);   // 100-400 ms
 
-      map.addEventListener('touchstart', e => {
-        if (!panEnabled || e.touches.length !== 1) return;
-        const t = e.touches[0];
-        panId = t.identifier;
-        startX = t.clientX;
-        startY = t.clientY;
-        startTX = transform.x;
-        startTY = transform.y;
-      }, { passive: false });
+      // Add .animating class for low-quality image (mobile)
+      if (isMobile) map.classList.add('animating');
 
-      map.addEventListener('touchmove', e => {
-        if (!panEnabled || e.touches.length !== 1) return;
-        const t = Array.from(e.touches).find(tt => tt.identifier === panId);
-        if (!t) return;
-        e.preventDefault();
+      const t0 = performance.now();
 
-        const dx = (t.clientX - startX) * PAN_SPEED_FACTOR / transform.scale;
-        const dy = (t.clientY - startY) * PAN_SPEED_FACTOR / transform.scale;
+      function step(now) {
+        const p = Math.min((now - t0) / duration, 1);
+        const ease = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
 
-        transform.x = startTX + dx;
-        transform.y = startTY + dy;
+        transform.x = start.x + dt.x * ease;
+        transform.y = start.y + dt.y * ease;
+        transform.scale = start.scale + dt.scale * ease;
+
         applyTransform();
-      }, { passive: false });
+        if (onUpdate) onUpdate(ease);
 
-      map.addEventListener('touchend', () => (panId = null));
+        if (p < 1) requestAnimationFrame(step);
+        else {
+          if (isMobile) map.classList.remove('animating');
+          if (onDone) onDone();
+        }
+      }
+      requestAnimationFrame(step);
     }
 
-    return {
+    function computeFitTransform(bb, padding = 24) {
+      const svgW = 145.68 , svgH = 205.2;
+      const scale = Math.min(
+        svgW / (bb.width + padding * 2),
+        svgH / (bb.height + padding * 2)
+      );
+      const cx = bb.x + bb.width / 2;
+      const cy = bb.y + bb.height / 2;
+      return { x: svgW / 2 - scale * cx, y: svgH / 2 - scale * cy, scale };
+    }
+
+    /* -------------------------------------------------------------
+       3. ZOOM MODULE
+       ------------------------------------------------------------- */
+    const ZoomModule = {
       init() {
-        map.style.touchAction = 'none';
-        map.style.cursor = 'default';
-     PanModule.enable();
-        if (isMobile) initMobile();
-        else initDesktop();
+        document.getElementById('zoom_in')
+          .addEventListener('click', () => this.zoom(1.25));
+        document.getElementById('zoom_out')
+          .addEventListener('click', () => this.zoom(0.8));
+        document.getElementById('reset')
+          .addEventListener('click', this.reset.bind(this));
+
+        map.addEventListener('wheel', e => {
+          e.preventDefault();
+          const r = map.getBoundingClientRect();
+          this.zoom(e.deltaY < 0 ? 1.1 : 0.9, e.clientX - r.left, e.clientY - r.top);
+        }, { passive: false });
       },
-      enable,
-      disable,
-      get enabled() { return panEnabled; },
+
+      zoom(factor, cx = 400, cy = 300) {
+        const oldScale = transform.scale;
+        const newScale = Math.max(0.1, Math.min(5, oldScale * factor));
+
+        // Enable panning **only** on first zoom-in
+        if (oldScale === 1 && newScale > 1) PanModule.enable();
+
+        transform.x = cx - (cx - transform.x) * (newScale / oldScale);
+        transform.y = cy - (cy - transform.y) * (newScale / oldScale);
+        transform.scale = newScale;
+        applyTransform();
+      },
+
+      reset() {
+        const tgt = { x: 0, y: 0, scale: 1 };
+        animateTo(tgt, null, () => {
+          baseTransform = { ...tgt };
+          PanModule.disable();
+        });
+      },
     };
-  })();
 
-  /* -------------------------------------------------------------
-     4. FLY-TO-ZOOM & SHAPE BUTTONS
-     ------------------------------------------------------------- */
-  function flyToShape(shapeEl) {
-    const bb = shapeEl.getBBox();
-    const target = computeFitTransform(bb, 24);
-    animateTo(target, 300, null, () => {
-      baseTransform = { ...target };
-    });
-  }
+    /* -------------------------------------------------------------
+       4. PAN MODULE – FAST + LOW-QUALITY IMAGE WHILE DRAGGING
+       ------------------------------------------------------------- */
+    const PAN_SPEED_FACTOR = 1;
 
-  function createShapeButtons() {
-    mapData.forEach(item => {
-      const btn = document.createElement('button');
-      btn.textContent = `Zoom to ${item.id}`;
-      btn.dataset.targetId = item.id;
-      btn.addEventListener('click', () => {
-        const target = document.getElementById(btn.dataset.targetId);
-        if (target) {
-          applyStrokeHover(target);
-          previous_selected_element = target;
-          flyToShape(target);
-        }
+    const PanModule = (function () {
+      let panEnabled = false;
+      let startX = 0, startY = 0;
+      let startTX = 0, startTY = 0;
+
+      function enable() {
+        panEnabled = true;
+        map.style.cursor = 'grab';
+      }
+      function disable() {
+        panEnabled = false;
+        map.style.cursor = 'default';
+      }
+
+      // Desktop
+      function initDesktop() {
+        let panning = false;
+
+        map.addEventListener('mousedown', e => {
+          if (!panEnabled || e.button !== 0) return;
+          panning = true;
+          map.style.cursor = 'grabbing';
+          if (isMobile) map.classList.add('dragging');
+
+          startX = e.clientX; startY = e.clientY;
+          startTX = transform.x; startTY = transform.y;
+        });
+
+        map.addEventListener('mousemove', e => {
+          if (!panning) return;
+          const dx = (e.clientX - startX) * PAN_SPEED_FACTOR / transform.scale;
+          const dy = (e.clientY - startY) * PAN_SPEED_FACTOR / transform.scale;
+          transform.x = startTX + dx;
+          transform.y = startTY + dy;
+          applyTransform();
+        });
+
+        const stop = () => {
+          panning = false;
+          if (panEnabled) map.style.cursor = 'grab';
+          if (isMobile) map.classList.remove('dragging');
+        };
+        map.addEventListener('mouseup', stop);
+        map.addEventListener('mouseleave', stop);
+      }
+
+      // Mobile
+      function initMobile() {
+        let panId = null;
+
+        map.addEventListener('touchstart', e => {
+          if (!panEnabled || e.touches.length !== 1) return;
+          const t = e.touches[0];
+          panId = t.identifier;
+          map.classList.add('dragging');   // low-quality
+          startX = t.clientX; startY = t.clientY;
+          startTX = transform.x; startTY = transform.y;
+        }, { passive: false });
+
+        map.addEventListener('touchmove', e => {
+          if (!panEnabled || e.touches.length !== 1) return;
+          const t = Array.from(e.touches).find(tt => tt.identifier === panId);
+          if (!t) return;
+          e.preventDefault();
+
+          const dx = (t.clientX - startX) * PAN_SPEED_FACTOR / transform.scale;
+          const dy = (t.clientY - startY) * PAN_SPEED_FACTOR / transform.scale;
+          transform.x = startTX + dx;
+          transform.y = startTY + dy;
+          applyTransform();
+        }, { passive: false });
+
+        map.addEventListener('touchend', () => {
+          panId = null;
+          map.classList.remove('dragging');   // back to high-quality
+        });
+      }
+
+      return {
+        init() {
+          map.style.touchAction = 'none';
+          PanModule.enable();
+          map.style.cursor = 'default';
+          if (isMobile) initMobile();
+          else initDesktop();
+          // **DO NOT enable here**
+        },
+        enable,
+        disable,
+        get enabled() { return panEnabled; },
+      };
+    })();
+
+    /* -------------------------------------------------------------
+       5. FLY-TO-ZOOM & SHAPE BUTTONS
+       ------------------------------------------------------------- */
+    function flyToShape(shapeEl) {
+      const bb = shapeEl.getBBox();
+      const target = computeFitTransform(bb, 24);
+      animateTo(target, null, () => {
+        baseTransform = { ...target };
       });
-      shapeButtonsContainer.appendChild(btn);
-    });
-  }
+    }
 
-  /* -------------------------------------------------------------
-     5. INITIALISE
-     ------------------------------------------------------------- */
-  applyTransform();
-  createShapeButtons();
-  PanModule.init();   // <-- registers mouse / touch panning
-  ZoomModule.init();  // <-- wheel / button zoom
-})();
+    function createShapeButtons() {
+      mapData.forEach(item => {
+        const btn = document.createElement('button');
+        btn.textContent = `Zoom to ${item.id}`;
+        btn.dataset.targetId = item.id;
+        btn.addEventListener('click', () => {
+          const target = document.getElementById(btn.dataset.targetId);
+          if (target) {
+            applyStrokeHover(target);
+            previous_selected_element = target;
+            flyToShape(target);
+          }
+        });
+        shapeButtonsContainer.appendChild(btn);
+      });
+    }
+
+    /* -------------------------------------------------------------
+       6. INITIALISE
+       ------------------------------------------------------------- */
+    applyTransform();
+    createShapeButtons();
+    PanModule.init();   // listeners only
+    ZoomModule.init();  // zoom + wheel
+  })();
 }
 
 else{
