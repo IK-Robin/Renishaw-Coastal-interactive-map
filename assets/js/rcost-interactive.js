@@ -397,7 +397,7 @@ function renderTooltipContent(mapD) {
 
 if (isMobile_devices) {
    let previous_selected_element = null;
-console.log(mapData)
+
     // mapData.forEach(item =>{
     //         const shapes = document.querySelector(`#${item.id}`);
 
@@ -419,20 +419,20 @@ console.log(mapData)
 
         // apply the zoom function
           /* ---------- SHARED STATE & HELPERS ---------- */
-    const transform = { x:0, y:0, scale:1 };
+    const click_to_fly_transform = { x:0, y:0, scale:1 };
     let baseTransform = { x:0, y:0, scale:1 };
 
     const map   = document.getElementById('ikr_svg');
     const stage = document.getElementById('stage');
     
 
-    function applyTransform() {
+    function rcost_applyTransform() {
         stage.setAttribute('transform',
-            `translate(${transform.x},${transform.y}) scale(${transform.scale})`);
+            `translate(${click_to_fly_transform.x},${click_to_fly_transform.y}) scale(${click_to_fly_transform.scale})`);
     }
 
-    function animateTo(target, duration=280, onUpdate=null, onDone=null) {
-        const start = { ...transform };
+    function rcost_animateTo(target, duration=280, onUpdate=null, onDone=null) {
+        const start = { ...click_to_fly_transform };
         const dt = {
             x: target.x - start.x,
             y: target.y - start.y,
@@ -444,11 +444,11 @@ console.log(mapData)
             const p = Math.min((now-t0)/duration, 1);
             const ease = p<0.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2;
 
-            transform.x = start.x + dt.x * ease;
-            transform.y = start.y + dt.y * ease;
-            transform.scale = start.scale + dt.scale * ease;
+            click_to_fly_transform.x = start.x + dt.x * ease;
+            click_to_fly_transform.y = start.y + dt.y * ease;
+            click_to_fly_transform.scale = start.scale + dt.scale * ease;
 
-            applyTransform();
+            rcost_applyTransform();
             if (onUpdate) onUpdate(ease);
 
             if (p<1) requestAnimationFrame(step);
@@ -468,102 +468,14 @@ console.log(mapData)
         return { x:svgW/2-scale*cx, y:svgH/2-scale*cy, scale };
     }
 
-//     // /* ---------- ZOOM MODULE ---------- */
-    const ZoomModule = {
-        init() {
-            document.getElementById('zoom_in')
-                .addEventListener('click',()=>this.zoom(1.25));
-            document.getElementById('zoom_out')
-                .addEventListener('click',()=>this.zoom(0.8));
-            document.getElementById('reset')
-                .addEventListener('click',this.reset.bind(this));
-
-            map.addEventListener('wheel', e=>{
-                e.preventDefault();
-                const r = map.getBoundingClientRect();
-                this.zoom(e.deltaY<0?1.1:0.9, e.clientX-r.left, e.clientY-r.top);
-            },{passive:false});
-        },
-        zoom(factor, cx=400, cy=300) {
-            const newScale = Math.max(0.1, Math.min(5, transform.scale*factor));
-            transform.x = cx - (cx-transform.x)*(newScale/transform.scale);
-            transform.y = cy - (cy-transform.y)*(newScale/transform.scale);
-            transform.scale = newScale;
-            applyTransform();
-        },
-        reset() {
-            const tgt = {x:0,y:0,scale:1};
-            animateTo(tgt);
-            baseTransform = {...tgt};
-        }
-    };
-
-//     /* ---------- PAN MODULE ---------- */
-// /* ---------- PAN MODULE ---------- */
-
-/* ---------- PAN MODULE ---------- */
-
-const PANNING_SPEED_FACTOR = 5; // <--- ADD THIS CONSTANT (Use a value > 1 for faster panning)
-
-const PanModule = {
-    thresh:6,
-    state:{tracking:false,panning:false,id:null,startX:0,startY:0,lastX:0,lastY:0},
-    justDragged:false,
-
-    init() {
-        map.addEventListener('pointerdown', this.down.bind(this));
-        map.addEventListener('pointermove', this.move.bind(this));
-        map.addEventListener('pointerup',    this.up.bind(this));
-        map.addEventListener('pointercancel',this.up.bind(this));
-    },
-
-    down(e){
-        // ... (rest of the down function is unchanged)
-        if (!map.contains(e.target)) return;
-        this.state.tracking=true; this.state.panning=false;
-        this.state.id=e.pointerId;
-        this.state.startX=this.state.lastX=e.clientX;
-        this.state.startY=this.state.lastY=e.clientY;
-        map.setPointerCapture(e.pointerId);
-    },
-
-    move(e){
-        if(!this.state.tracking || e.pointerId!==this.state.id) return;
-        const dx0=e.clientX-this.state.startX;
-        const dy0=e.clientY-this.state.startY;
-        if(!this.state.panning && Math.hypot(dx0,dy0)>=this.thresh){
-            this.state.panning=true; this.justDragged=true;
-        }
-        if(!this.state.panning) return;
-        
-        const dx=e.clientX-this.state.lastX;
-        const dy=e.clientY-this.state.lastY;
-        
-        this.state.lastX=e.clientX; this.state.lastY=e.clientY;
-        
-        // --- MODIFIED LINES BELOW ---
-        // Increase the distance moved by multiplying by the factor
-        transform.x += dx * PANNING_SPEED_FACTOR; // <--- INCREASED SPEED HERE
-        transform.y += dy * PANNING_SPEED_FACTOR; // <--- INCREASED SPEED HERE
-        
-        applyTransform();
-    },
-
-    up(e){
-        // ... (rest of the up function is unchanged)
-        if(this.state.panning && e.pointerId===this.state.id)
-            map.releasePointerCapture(e.pointerId);
-        this.state={tracking:false,panning:false,id:null,startX:0,startY:0,lastX:0,lastY:0};
-        if(this.justDragged) setTimeout(()=>{this.justDragged=false;},0);
-    }
-};
+  
 
 /* ---------- FLY-TO-ZOOM (shared) ---------- */
     function flyToShape(shapeEl) {
         // if (PanModule.justDragged) return;
         const bb = shapeEl.getBBox();
         const target = computeFitTransform(bb, 24);
-        animateTo(target, 300, null, ()=>{ baseTransform={...target}; });
+        rcost_animateTo(target, 300, null, ()=>{ baseTransform={...target}; });
     }
 
     /* ---------- SHAPE BUTTONS ---------- */
@@ -577,18 +489,19 @@ const PanModule = {
             btn.dataset.targetId = item.id;
             btn.addEventListener('click', () => {
                 const target = document.getElementById(btn.dataset.targetId);
-
+                
                 //   if (previous_selected_element) {
-//     clearStrokeHover(previous_selected_element);
-//   }
- //   if (previous_selected_element) {
-//     clearStrokeHover(previous_selected_element);
-//   }
-            //  target.style.fill = "orange";  // Change fill color on click
-            //  target.style.fillOpacity = "1";  // Change fill color on click
-            applyStrokeHover(target);
-            previous_selected_element=target;  // store the previously selected element
-                if (target) flyToShape(target);
+                  //     clearStrokeHover(previous_selected_element);
+                  //   }
+                  //   if (previous_selected_element) {
+                    //     clearStrokeHover(previous_selected_element);
+                    //   }
+                    //  target.style.fill = "orange";  // Change fill color on click
+                    //  target.style.fillOpacity = "1";  // Change fill color on click
+                    applyStrokeHover(target);
+                    previous_selected_element=target;  // store the previously selected element
+                    if (target) flyToShape(target);
+                    
             });
             shapeButtonsContainer.appendChild(btn);
 
@@ -615,19 +528,222 @@ function redirectHandler(e) {
   const link = e.target.getAttribute("data-node-link");
   if (link) window.location.href = link;
 }
-    /* ---------- CLICK ON SHAPE (original behaviour) ---------- */
-    // stage.addEventListener('click', e => {
-    //     if (PanModule.justDragged) return;
-    //     const shape = e.target.closest('.shape');
-    //     if (shape) flyToShape(shape);
-    // });
 
+
+    function ikrZoom(ikrsvg) {
+      /* ---------- state ---------- */
+      const ts = { scale: 1, translate: { x: 0, y: 0 }, rotate: 0 };
+      let currentScale = 1;
+      const STEP = 0.2;
+      const MAX_SCALE = 8;
+      const MIN_SCALE = 1;
+
+      let panEnabled = false;
+
+      /* ---------- buttons ---------- */
+      const zoomInBtn = document.getElementById("zoom_in");
+      const zoomOutBtn = document.getElementById("zoom_out");
+      const resetBtn = document.getElementById("reset");
+
+      ikrsvg.style.touchAction = "none";
+      ikrsvg.style.cursor = "default";
+
+      /* ---------- apply transform ---------- */
+      function applyTransform() {
+        const t = `translate(${ts.translate.x}px, ${ts.translate.y}px) scale(${ts.scale})`;
+        ikrsvg.style.transform = t;
+      }
+
+      /* ---------- button actions ---------- */
+      zoomInBtn.addEventListener("click", () => {
+        currentScale = Math.min(MAX_SCALE, currentScale + STEP);
+        ts.scale = currentScale;
+
+        if (!panEnabled) {
+          panEnabled = true;
+          ikrsvg.style.cursor = "grab";
+
+          initPanning();
+        }
+
+        applyTransform();
+      });
+
+      zoomOutBtn.addEventListener("click", () => {
+        currentScale = Math.max(MIN_SCALE, currentScale - STEP);
+        ts.scale = currentScale;
+        applyTransform();
+      });
+
+      resetBtn.addEventListener("click", () => {
+        currentScale = 1;
+        ts.scale = 1;
+        ts.translate.x = ts.translate.y = 0;
+        panEnabled = false;
+        ikrsvg.style.cursor = "default";
+        stage.setAttribute('transform',
+              `translate(${0},${0}) scale(${1})`);
+        // removePanning(); // This will re-clone SVG and rebind mobile listeners
+        baseTransform = { x:0, y:0, scale:1 };
+        applyTransform();
+      });
+
+      /* ---------- panning ---------- */
+      let startX, startY, startTX, startTY;
+      const isMobileDevice =
+        /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        );
+
+      function initPanning() {
+        if (isMobileDevice) {
+          let panId = null;
+          ikrsvg.addEventListener(
+            "touchstart",
+            (e) => {
+              if (!panEnabled || e.touches.length !== 1) return;
+              const t = e.touches[0];
+              panId = t.identifier;
+              startX = t.clientX;
+              startY = t.clientY;
+              startTX = ts.translate.x;
+              startTY = ts.translate.y;
+            },
+            { passive: false }
+          );
+
+          ikrsvg.addEventListener(
+            "touchmove",
+            (e) => {
+              if (!panEnabled || e.touches.length !== 1) return;
+              const t = Array.from(e.touches).find(
+                (tt) => tt.identifier === panId
+              );
+              stage.setAttribute('transform',
+              `translate(${0},${0}) scale(${1})`);
+              if (!t) return;
+              e.preventDefault();
+              const dx = (t.clientX - startX) / ts.scale;
+              const dy = (t.clientY - startY) / ts.scale;
+              ts.translate.x = startTX + dx;
+              ts.translate.y = startTY + dy;
+              applyTransform();
+            },
+            { passive: false }
+          );
+
+          ikrsvg.addEventListener("touchend", () => (panId = null));
+        } else {
+          let panning = false;
+          ikrsvg.addEventListener("mousedown", (e) => {
+            if (!panEnabled || e.button !== 0) return;
+            panning = true;
+            ikrsvg.style.cursor = "grabbing";
+            startX = e.clientX;
+            startY = e.clientY;
+            startTX = ts.translate.x;
+            startTY = ts.translate.y;
+          });
+
+          ikrsvg.addEventListener("mousemove", (e) => {
+            if (!panning) return;
+            const dx = (e.clientX - startX) / ts.scale;
+            const dy = (e.clientY - startY) / ts.scale;
+            ts.translate.x = startTX + dx;
+            ts.translate.y = startTY + dy;
+            applyTransform();
+          });
+
+          const stop = () => {
+            panning = false;
+            if (panEnabled) ikrsvg.style.cursor = "grab";
+          };
+          ikrsvg.addEventListener("mouseup", stop);
+          ikrsvg.addEventListener("mouseleave", stop);
+        }
+      }
+
+      //     function removePanning() {
+      //   // Clone and replace SVG to remove pan listeners
+      //   const clone = ikrsvg.cloneNode(true);
+      //   ikrsvg.parentNode.replaceChild(clone, ikrsvg);
+
+      //   // Update reference
+      //   const newSvg = document.getElementById(ikrsvg.id);
+      //   ikrsvg = newSvg;
+      //   ikrsvg.style.touchAction = "none";
+      //   ikrsvg.style.cursor = "default";
+
+      //   // === CRITICAL: Rebind mobile tooltip listeners ===
+      //   if (isMobileDevice) {
+      //     // mapId.forEach((id) => {
+      //     //   const el = ikrsvg.querySelector(`#${id}`);
+      //     //   if (!el) return;
+
+      //     //   const mapD = mapData.find((d) => d.id === id);
+      //     //   if (!mapD) return;
+
+      //     //   // Remove old listeners if any (just in case)
+      //     //   el.replaceWith(el.cloneNode(true));
+      //     //   const freshEl = ikrsvg.querySelector(`#${id}`);
+
+      //     //   freshEl.addEventListener(
+      //     //     "touchstart",
+      //     //     (ev) => {
+      //     //       ev.preventDefault();
+      //     //       handleShow(ev, freshEl, mapD);
+      //     //     },
+      //     //     { passive: false }
+      //     //   );
+
+      //     //   freshEl.addEventListener("touchend", (ev) => {
+      //     //     handleHideOnMobile(freshEl);
+      //     //   });
+
+      //     //   freshEl.addEventListener("click", (ev) => {
+      //     //     handleShow(ev, freshEl, mapD);
+      //     //   });
+      //     // });
+      //   }else{
+      //       mapId.forEach((id) => {
+      //       console.log('hello')
+      //        const el = ikrsvg.querySelector(`#${id}`);
+      //       if (!el) return;
+
+      //       const mapD = mapData.find((d) => d.id === id);
+      //       if (!mapD) return;
+
+      //       // Remove old listeners if any (just in case)
+      //       el.replaceWith(el.cloneNode(true));
+      //       const freshEl = ikrsvg.querySelector(`#${id}`);
+      //        // Desktop: normal hover
+      //   freshEl.addEventListener("mouseenter", (ev) => handleShow(ev, freshEl, mapD));
+      //   freshEl.addEventListener("mousemove", (ev) => handleShow(ev, freshEl, mapD));
+      //   freshEl.addEventListener("mouseleave", () => handleHide(freshEl));
+      //   });
+      //   }
+      //   // === End of mobile rebind ===
+
+      //   applyTransform();
+      // }
+
+      /* ---------- initial render ---------- */
+      applyTransform();
+    }
+   
+
+  
     /* ---------- INITIALISE ---------- */
-    applyTransform();
-    ZoomModule.init();
-    PanModule.init();
-    createShapeButtons();   // <-- generates a button per id-ed shape
-}else{
+    const ikr_svg = document.getElementById('ikr_svg');
+    rcost_applyTransform();
+  
+    createShapeButtons(); 
+    ikrZoom(ikr_svg);
+    
+    // <-- generates a button per id-ed shape
+}
+
+else{
 
   // call the interactive map for desktop view
   
