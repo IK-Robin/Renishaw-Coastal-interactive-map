@@ -287,7 +287,7 @@ let mapId = [
 // });
 
 
-console.log(mapData)
+// console.log(mapData)
 // init_interactive_map({
 //     mapData, mapId, tooltipElementId: "ikr_toltipMove", // same as before
 //     svgElementId: "ikr_svg",           // same as before
@@ -377,22 +377,6 @@ function renderTooltipContent(mapD) {
 
 
 
-// Initialise map with tooltip + hover animation
-init_interactive_map({
-  mapData,
-  mapId,
-  tooltipElementId: "ikr_toltipMove",
-  svgElementId: "ikr_svg",
-  renderTooltipContent: renderTooltipContent,
-  tooltipLeft: 20,
-  tooltipTop: 10,
-  onLotHoverIn: (el, mapD, ev) => {
-    applyStrokeHover(el);
-  },
-  onLotHoverOut: (el, mapD, ev) => {
-    clearStrokeHover(el);
-  }
-});
 
 
 // create the node buttons for mobile view
@@ -412,22 +396,26 @@ init_interactive_map({
 // add fly to zoom logic only for mobile view 
 
 if (isMobile_devices) {
+   let previous_selected_element = null;
+console.log(mapData)
+    // mapData.forEach(item =>{
+    //         const shapes = document.querySelector(`#${item.id}`);
 
-    mapData.forEach(item =>{
-            const shapes = document.querySelector(`#${item.id}`);
+    //    const btn = document.createElement('button');
+    //         btn.textContent = `Zoom to ${item.id}`;
+    //         btn.dataset.targetId = item.id;
+         
+    //         btn.addEventListener('click', () => {
+    //             const target = document.getElementById(btn.dataset.targetId);
+    //             console.log(target)
+    //         //  target.style.fill = "orange";  // Change fill color on click
+    //         //  target.style.fillOpacity = "1";  // Change fill color on click
+    //          applyStrokeHover(target)
+    //             if (target) flyToShape(target);
+    //         });
+    //         shapeButtonsContainer.appendChild(btn);
 
-       const btn = document.createElement('button');
-            btn.textContent = `Zoom to ${item.id}`;
-            btn.dataset.targetId = item.id;
-            btn.addEventListener('click', () => {
-                const target = document.getElementById(btn.dataset.targetId);
-             target.style.fill = "orange";  // Change fill color on click
-             target.style.fillOpacity = "1";  // Change fill color on click
-                if (target) flyToShape(target);
-            });
-            shapeButtonsContainer.appendChild(btn);
-
-        });
+    //     });
 
         // apply the zoom function
           /* ---------- SHARED STATE & HELPERS ---------- */
@@ -513,6 +501,10 @@ if (isMobile_devices) {
 //     /* ---------- PAN MODULE ---------- */
 // /* ---------- PAN MODULE ---------- */
 
+/* ---------- PAN MODULE ---------- */
+
+const PANNING_SPEED_FACTOR = 5; // <--- ADD THIS CONSTANT (Use a value > 1 for faster panning)
+
 const PanModule = {
     thresh:6,
     state:{tracking:false,panning:false,id:null,startX:0,startY:0,lastX:0,lastY:0},
@@ -521,16 +513,13 @@ const PanModule = {
     init() {
         map.addEventListener('pointerdown', this.down.bind(this));
         map.addEventListener('pointermove', this.move.bind(this));
-        map.addEventListener('pointerup',    this.up.bind(this));
+        map.addEventListener('pointerup',    this.up.bind(this));
         map.addEventListener('pointercancel',this.up.bind(this));
     },
 
     down(e){
-        // ---- NEW CONDITION -------------------------------------------------
-        // Accept the <svg> itself OR any descendant of the map
+        // ... (rest of the down function is unchanged)
         if (!map.contains(e.target)) return;
-        // -------------------------------------------------------------------
-
         this.state.tracking=true; this.state.panning=false;
         this.state.id=e.pointerId;
         this.state.startX=this.state.lastX=e.clientX;
@@ -546,21 +535,28 @@ const PanModule = {
             this.state.panning=true; this.justDragged=true;
         }
         if(!this.state.panning) return;
+        
         const dx=e.clientX-this.state.lastX;
         const dy=e.clientY-this.state.lastY;
+        
         this.state.lastX=e.clientX; this.state.lastY=e.clientY;
-        transform.x+=dx; transform.y+=dy;
+        
+        // --- MODIFIED LINES BELOW ---
+        // Increase the distance moved by multiplying by the factor
+        transform.x += dx * PANNING_SPEED_FACTOR; // <--- INCREASED SPEED HERE
+        transform.y += dy * PANNING_SPEED_FACTOR; // <--- INCREASED SPEED HERE
+        
         applyTransform();
     },
 
     up(e){
+        // ... (rest of the up function is unchanged)
         if(this.state.panning && e.pointerId===this.state.id)
             map.releasePointerCapture(e.pointerId);
         this.state={tracking:false,panning:false,id:null,startX:0,startY:0,lastX:0,lastY:0};
         if(this.justDragged) setTimeout(()=>{this.justDragged=false;},0);
     }
 };
-   
 
 /* ---------- FLY-TO-ZOOM (shared) ---------- */
     function flyToShape(shapeEl) {
@@ -581,8 +577,17 @@ const PanModule = {
             btn.dataset.targetId = item.id;
             btn.addEventListener('click', () => {
                 const target = document.getElementById(btn.dataset.targetId);
-             target.style.fill = "orange";  // Change fill color on click
-             target.style.fillOpacity = "1";  // Change fill color on click
+
+                //   if (previous_selected_element) {
+//     clearStrokeHover(previous_selected_element);
+//   }
+ //   if (previous_selected_element) {
+//     clearStrokeHover(previous_selected_element);
+//   }
+            //  target.style.fill = "orange";  // Change fill color on click
+            //  target.style.fillOpacity = "1";  // Change fill color on click
+            applyStrokeHover(target);
+            previous_selected_element=target;  // store the previously selected element
                 if (target) flyToShape(target);
             });
             shapeButtonsContainer.appendChild(btn);
@@ -603,6 +608,13 @@ const PanModule = {
         // });
     }
 
+
+    // // Single redirect handler reused for add/remove
+function redirectHandler(e) {
+  const id = e.target.getAttribute("data-node-id");
+  const link = e.target.getAttribute("data-node-link");
+  if (link) window.location.href = link;
+}
     /* ---------- CLICK ON SHAPE (original behaviour) ---------- */
     // stage.addEventListener('click', e => {
     //     if (PanModule.justDragged) return;
@@ -616,6 +628,25 @@ const PanModule = {
     PanModule.init();
     createShapeButtons();   // <-- generates a button per id-ed shape
 }else{
+
+  // call the interactive map for desktop view
+  
+// Initialise map with tooltip + hover animation
+init_interactive_map({
+  mapData,
+  mapId,
+  tooltipElementId: "ikr_toltipMove",
+  svgElementId: "ikr_svg",
+  renderTooltipContent: renderTooltipContent,
+  tooltipLeft: 20,
+  tooltipTop: 10,
+  onLotHoverIn: (el, mapD, ev) => {
+    applyStrokeHover(el);
+  },
+  onLotHoverOut: (el, mapD, ev) => {
+    clearStrokeHover(el);
+  }
+});
 // apply zoom
 ikrZoom({
   ikrsvg: ikr_svg, tooltipElementId: 'ikr_toltipMove', mapData, mapId, onLotHoverIn: (el, mapD, ev) => {

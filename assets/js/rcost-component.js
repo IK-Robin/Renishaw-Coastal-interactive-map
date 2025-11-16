@@ -114,30 +114,30 @@ setupStrokeAnimation("ikr_svg");
    * @param {string} property     – property to use as button text (e.g. "node_number")
    * @param {string} containerId  – id of the element that will hold the buttons
    */
-function createNodeButtons(data, property, containerId) {
-  const button_container = document.getElementById(containerId);
-  if (!button_container) return console.error("Container not found");
+// function createNodeButtons(data, property, containerId) {
+//   const button_container = document.getElementById(containerId);
+//   if (!button_container) return console.error("Container not found");
 
-  // Clear any existing buttons
-  button_container.innerHTML = "";
+//   // Clear any existing buttons
+//   button_container.innerHTML = "";
 
-  data.forEach((node) => {
-    // 1. Get the text (trim whitespace)
-    const text = (node[property] || "").trim();
-    console.log(text);
+//   data.forEach((node) => {
+//     // 1. Get the text (trim whitespace)
+//     const text = (node[property] || "").trim();
+//     console.log(text);
 
-    // 2. Create button element
-    const btn = document.createElement("button");
-    btn.className = "plot-btn";
-    btn.textContent = text; // e.g. "Node 1" or "2"
+//     // 2. Create button element
+//     const btn = document.createElement("button");
+//     btn.className = "plot-btn";
+//     btn.textContent = text; // e.g. "Node 1" or "2"
 
-    // 3. Attach click – passes the **whole node object**
-    btn.addEventListener("click", () => handleNodeClick(node));
+//     // 3. Attach click – passes the **whole node object**
+//     btn.addEventListener("click", () => handleNodeClick(node));
 
-    // 4. Append to container
-    button_container.appendChild(btn);
-  });
-}
+//     // 4. Append to container
+//     button_container.appendChild(btn);
+//   });
+// }
 
 // ----- 3. CLICK HANDLER (receives the full object) -----
 // Store the previously clicked element globally
@@ -173,43 +173,43 @@ function createNodeButtons(data, property, containerId) {
 //   }
 // }
 
-let previous_selected_element = null;
+// let previous_selected_element = null;
 
-// Single redirect handler reused for add/remove
-function redirectHandler(e) {
-  const id = e.target.getAttribute("data-node-id");
-  const link = e.target.getAttribute("data-node-link");
-  if (link) window.location.href = link;
-}
-
-
-function redirectHandler(e) {
-  const link = e.target.getAttribute("data-node-link");
-  if (link) window.location.href = link;
-}
+// // Single redirect handler reused for add/remove
+// function redirectHandler(e) {
+//   const id = e.target.getAttribute("data-node-id");
+//   const link = e.target.getAttribute("data-node-link");
+//   if (link) window.location.href = link;
+// }
 
 
-
-function showTooltip(svgElement, text) {
-  const tooltip = document.getElementById("svgTooltip");
-  tooltip.innerText = text;
-
-  const bbox = svgElement.getBoundingClientRect();
-
-  // Correct center position with scroll support
-  const centerX = bbox.left + bbox.width / 2 + window.scrollX;
-  const centerY = bbox.top + bbox.height / 2 + window.scrollY;
-
-  tooltip.style.left = `${centerX}px`;
-  tooltip.style.top  = `${centerY}px`;
-
-  tooltip.style.display = "block";
-}
+// function redirectHandler(e) {
+//   const link = e.target.getAttribute("data-node-link");
+//   if (link) window.location.href = link;
+// }
 
 
-function hideTooltip() {
-  document.getElementById("svgTooltip").style.display = "none";
-}
+
+// function showTooltip(svgElement, text) {
+//   const tooltip = document.getElementById("svgTooltip");
+//   tooltip.innerText = text;
+
+//   const bbox = svgElement.getBoundingClientRect();
+
+//   // Correct center position with scroll support
+//   const centerX = bbox.left + bbox.width / 2 + window.scrollX;
+//   const centerY = bbox.top + bbox.height / 2 + window.scrollY;
+
+//   tooltip.style.left = `${centerX}px`;
+//   tooltip.style.top  = `${centerY}px`;
+
+//   tooltip.style.display = "block";
+// }
+
+
+// function hideTooltip() {
+//   document.getElementById("svgTooltip").style.display = "none";
+// }
 
 
 // ----- 4. RUN THE FUNCTION -----
@@ -274,34 +274,34 @@ function hideTooltip() {
 
 
     
-function handleNodeClick(node) {
-  const select_svg_element = document.getElementById(node.id);
-   if (!select_svg_element) return console.warn("Node not found:", node.id);
-  console.log("Selected node:", node);
+// function handleNodeClick(node) {
+//   const select_svg_element = document.getElementById(node.id);
+//    if (!select_svg_element) return console.warn("Node not found:", node.id);
+//   console.log("Selected node:", node);
 
-  /* ---- 1. Reset previous selection ---- */
-  if (previous_selected_element) {
-    clearStrokeHover(previous_selected_element);
-    previous_selected_element.removeEventListener("touchstart", redirectHandler);
-  }
+//   /* ---- 1. Reset previous selection ---- */
+//   if (previous_selected_element) {
+//     clearStrokeHover(previous_selected_element);
+//     previous_selected_element.removeEventListener("touchstart", redirectHandler);
+//   }
 
-  if (!select_svg_element) return;   // safety
+//   if (!select_svg_element) return;   // safety
 
-  /* ---- 2. Highlight new element ---- */
-  applyStrokeHover(select_svg_element);
-  previous_selected_element = select_svg_element;
+//   /* ---- 2. Highlight new element ---- */
+//   applyStrokeHover(select_svg_element);
+//   previous_selected_element = select_svg_element;
 
-  /* ---- 3. Store data for redirect ---- */
-  select_svg_element.setAttribute("data-node-id", node.id);
-  select_svg_element.setAttribute("data-node-link", node.link);
-  select_svg_element.addEventListener("touchstart", redirectHandler);
+//   /* ---- 3. Store data for redirect ---- */
+//   select_svg_element.setAttribute("data-node-id", node.id);
+//   select_svg_element.setAttribute("data-node-link", node.link);
+//   select_svg_element.addEventListener("touchstart", redirectHandler);
 
-  /* ---- 4. Show tooltip at element centre ---- */
-  showTooltip(select_svg_element, node.label ?? node.name ?? node.id);
+//   /* ---- 4. Show tooltip at element centre ---- */
+//   showTooltip(select_svg_element, node.label ?? node.name ?? node.id);
 
-  /* ---- 5. FLY-TO-ZOOM (center + fit) ---- */
-  // flyToElement(select_svg_element, 60);   // 40 px padding – tweak as you like
-}
+//   /* ---- 5. FLY-TO-ZOOM (center + fit) ---- */
+//   // flyToElement(select_svg_element, 60);   // 40 px padding – tweak as you like
+// }
 
 
 
