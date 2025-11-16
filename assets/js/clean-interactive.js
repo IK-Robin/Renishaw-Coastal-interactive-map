@@ -341,6 +341,7 @@ if (isMobile_devices) {
       init() {
         map.style.touchAction = 'none';
         map.style.cursor = 'default';
+     PanModule.enable();
         if (isMobile) initMobile();
         else initDesktop();
       },

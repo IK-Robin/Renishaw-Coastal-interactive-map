@@ -85,10 +85,10 @@
   width: 100%; /* SVG scales with container width */
   height: auto;
   // transform-origin: 0 0;   /* important for our math */
-  will-change: auto;
-  image-rendering: optimizeQuality;
-  shape-rendering: geometricPrecision;
-  text-rendering: geometricPrecision;
+  // will-change: auto;
+  // image-rendering: optimizeQuality;
+  // shape-rendering: geometricPrecision;
+  // text-rendering: geometricPrecision;
   margin: 0 auto;
 }
 
