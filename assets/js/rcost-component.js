@@ -305,203 +305,203 @@ function handleNodeClick(node) {
 
 
 
-function ikrZooms(ikrsvg) {
-      /* ---------- state ---------- */
-      const ts = { scale: 1, translate: { x: 0, y: 0 }, rotate: 0 };
-      let currentScale = 1;
-      const STEP = 0.2;
-      const MAX_SCALE = 8;
-      const MIN_SCALE = 1;
+// function ikrZooms(ikrsvg) {
+//       /* ---------- state ---------- */
+//       const ts = { scale: 1, translate: { x: 0, y: 0 }, rotate: 0 };
+//       let currentScale = 1;
+//       const STEP = 0.2;
+//       const MAX_SCALE = 8;
+//       const MIN_SCALE = 1;
 
-      let panEnabled = false;
+//       let panEnabled = false;
 
-      /* ---------- buttons ---------- */
-      const zoomInBtn = document.getElementById("zoom_in");
-      const zoomOutBtn = document.getElementById("zoom_out");
-      const resetBtn = document.getElementById("reset");
+//       /* ---------- buttons ---------- */
+//       const zoomInBtn = document.getElementById("zoom_in");
+//       const zoomOutBtn = document.getElementById("zoom_out");
+//       const resetBtn = document.getElementById("reset");
 
-      ikrsvg.style.touchAction = "none";
-      ikrsvg.style.cursor = "default";
+//       ikrsvg.style.touchAction = "none";
+//       ikrsvg.style.cursor = "default";
 
-      /* ---------- apply transform ---------- */
-      function applyTransform() {
-        const t = `translate(${ts.translate.x}px, ${ts.translate.y}px) scale(${ts.scale})`;
-        ikrsvg.style.transform = t;
-      }
+//       /* ---------- apply transform ---------- */
+//       function applyTransform() {
+//         const t = `translate(${ts.translate.x}px, ${ts.translate.y}px) scale(${ts.scale})`;
+//         ikrsvg.style.transform = t;
+//       }
 
-      /* ---------- button actions ---------- */
-      zoomInBtn.addEventListener("click", () => {
-        currentScale = Math.min(MAX_SCALE, currentScale + STEP);
-        ts.scale = currentScale;
+//       /* ---------- button actions ---------- */
+//       zoomInBtn.addEventListener("click", () => {
+//         currentScale = Math.min(MAX_SCALE, currentScale + STEP);
+//         ts.scale = currentScale;
 
-        if (!panEnabled) {
-          panEnabled = true;
-          ikrsvg.style.cursor = "grab";
-          initPanning();
-        }
+//         if (!panEnabled) {
+//           panEnabled = true;
+//           ikrsvg.style.cursor = "grab";
+//           initPanning();
+//         }
 
-        applyTransform();
-      });
+//         applyTransform();
+//       });
 
-      zoomOutBtn.addEventListener("click", () => {
-        currentScale = Math.max(MIN_SCALE, currentScale - STEP);
-        ts.scale = currentScale;
-        applyTransform();
-      });
+//       zoomOutBtn.addEventListener("click", () => {
+//         currentScale = Math.max(MIN_SCALE, currentScale - STEP);
+//         ts.scale = currentScale;
+//         applyTransform();
+//       });
 
-      resetBtn.addEventListener("click", () => {
-        currentScale = 1;
-        ts.scale = 1;
-        ts.translate.x = ts.translate.y = 0;
-        panEnabled = false;
-        ikrsvg.style.cursor = "default";
-        removePanning(); // This will re-clone SVG and rebind mobile listeners
-        applyTransform();
-      });
+//       resetBtn.addEventListener("click", () => {
+//         currentScale = 1;
+//         ts.scale = 1;
+//         ts.translate.x = ts.translate.y = 0;
+//         panEnabled = false;
+//         ikrsvg.style.cursor = "default";
+//         removePanning(); // This will re-clone SVG and rebind mobile listeners
+//         applyTransform();
+//       });
 
-      /* ---------- panning ---------- */
-      let startX, startY, startTX, startTY;
-      const isMobileDevice =
-        /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent
-        );
+//       /* ---------- panning ---------- */
+//       let startX, startY, startTX, startTY;
+//       const isMobileDevice =
+//         /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+//           navigator.userAgent
+//         );
 
-      function initPanning() {
-        if (isMobileDevice) {
-          let panId = null;
-          ikrsvg.addEventListener(
-            "touchstart",
-            (e) => {
-              if (!panEnabled || e.touches.length !== 1) return;
-              const t = e.touches[0];
-              panId = t.identifier;
-              startX = t.clientX;
-              startY = t.clientY;
-              startTX = ts.translate.x;
-              startTY = ts.translate.y;
-            },
-            { passive: false }
-          );
+//       function initPanning() {
+//         if (isMobileDevice) {
+//           let panId = null;
+//           ikrsvg.addEventListener(
+//             "touchstart",
+//             (e) => {
+//               if (!panEnabled || e.touches.length !== 1) return;
+//               const t = e.touches[0];
+//               panId = t.identifier;
+//               startX = t.clientX;
+//               startY = t.clientY;
+//               startTX = ts.translate.x;
+//               startTY = ts.translate.y;
+//             },
+//             { passive: false }
+//           );
 
-          ikrsvg.addEventListener(
-            "touchmove",
-            (e) => {
-              if (!panEnabled || e.touches.length !== 1) return;
-              const t = Array.from(e.touches).find(
-                (tt) => tt.identifier === panId
-              );
-              if (!t) return;
-              e.preventDefault();
-              const dx = (t.clientX - startX) / ts.scale;
-              const dy = (t.clientY - startY) / ts.scale;
-              ts.translate.x = startTX + dx;
-              ts.translate.y = startTY + dy;
-              applyTransform();
-            },
-            { passive: false }
-          );
+//           ikrsvg.addEventListener(
+//             "touchmove",
+//             (e) => {
+//               if (!panEnabled || e.touches.length !== 1) return;
+//               const t = Array.from(e.touches).find(
+//                 (tt) => tt.identifier === panId
+//               );
+//               if (!t) return;
+//               e.preventDefault();
+//               const dx = (t.clientX - startX) / ts.scale;
+//               const dy = (t.clientY - startY) / ts.scale;
+//               ts.translate.x = startTX + dx;
+//               ts.translate.y = startTY + dy;
+//               applyTransform();
+//             },
+//             { passive: false }
+//           );
 
-          ikrsvg.addEventListener("touchend", () => (panId = null));
-        } else {
-          let panning = false;
-          ikrsvg.addEventListener("mousedown", (e) => {
-            if (!panEnabled || e.button !== 0) return;
-            panning = true;
-            ikrsvg.style.cursor = "grabbing";
-            startX = e.clientX;
-            startY = e.clientY;
-            startTX = ts.translate.x;
-            startTY = ts.translate.y;
-          });
+//           ikrsvg.addEventListener("touchend", () => (panId = null));
+//         } else {
+//           let panning = false;
+//           ikrsvg.addEventListener("mousedown", (e) => {
+//             if (!panEnabled || e.button !== 0) return;
+//             panning = true;
+//             ikrsvg.style.cursor = "grabbing";
+//             startX = e.clientX;
+//             startY = e.clientY;
+//             startTX = ts.translate.x;
+//             startTY = ts.translate.y;
+//           });
 
-          ikrsvg.addEventListener("mousemove", (e) => {
-            if (!panning) return;
-            const dx = (e.clientX - startX) / ts.scale;
-            const dy = (e.clientY - startY) / ts.scale;
-            ts.translate.x = startTX + dx;
-            ts.translate.y = startTY + dy;
-            applyTransform();
-          });
+//           ikrsvg.addEventListener("mousemove", (e) => {
+//             if (!panning) return;
+//             const dx = (e.clientX - startX) / ts.scale;
+//             const dy = (e.clientY - startY) / ts.scale;
+//             ts.translate.x = startTX + dx;
+//             ts.translate.y = startTY + dy;
+//             applyTransform();
+//           });
 
-          const stop = () => {
-            panning = false;
-            if (panEnabled) ikrsvg.style.cursor = "grab";
-          };
-          ikrsvg.addEventListener("mouseup", stop);
-          ikrsvg.addEventListener("mouseleave", stop);
-        }
-      }
+//           const stop = () => {
+//             panning = false;
+//             if (panEnabled) ikrsvg.style.cursor = "grab";
+//           };
+//           ikrsvg.addEventListener("mouseup", stop);
+//           ikrsvg.addEventListener("mouseleave", stop);
+//         }
+//       }
 
-          function removePanning() {
-        // Clone and replace SVG to remove pan listeners
-        const clone = ikrsvg.cloneNode(true);
-        ikrsvg.parentNode.replaceChild(clone, ikrsvg);
+//           function removePanning() {
+//         // Clone and replace SVG to remove pan listeners
+//         const clone = ikrsvg.cloneNode(true);
+//         ikrsvg.parentNode.replaceChild(clone, ikrsvg);
 
-        // Update reference
-        const newSvg = document.getElementById(ikrsvg.id);
-        ikrsvg = newSvg;
-        ikrsvg.style.touchAction = "none";
-        ikrsvg.style.cursor = "default";
+//         // Update reference
+//         const newSvg = document.getElementById(ikrsvg.id);
+//         ikrsvg = newSvg;
+//         ikrsvg.style.touchAction = "none";
+//         ikrsvg.style.cursor = "default";
 
-        // === CRITICAL: Rebind mobile tooltip listeners ===
-        if (isMobileDevice) {
-          mapId.forEach((id) => {
-            const el = ikrsvg.querySelector(`#${id}`);
-            if (!el) return;
+//         // === CRITICAL: Rebind mobile tooltip listeners ===
+//         if (isMobileDevice) {
+//           mapId.forEach((id) => {
+//             const el = ikrsvg.querySelector(`#${id}`);
+//             if (!el) return;
 
-            const mapD = mapData.find((d) => d.id === id);
-            if (!mapD) return;
+//             const mapD = mapData.find((d) => d.id === id);
+//             if (!mapD) return;
 
-            // Remove old listeners if any (just in case)
-            el.replaceWith(el.cloneNode(true));
-            const freshEl = ikrsvg.querySelector(`#${id}`);
+//             // Remove old listeners if any (just in case)
+//             el.replaceWith(el.cloneNode(true));
+//             const freshEl = ikrsvg.querySelector(`#${id}`);
 
-            freshEl.addEventListener(
-              "touchstart",
-              (ev) => {
-                ev.preventDefault();
-                handleShow(ev, freshEl, mapD);
-              },
-              { passive: false }
-            );
+//             freshEl.addEventListener(
+//               "touchstart",
+//               (ev) => {
+//                 ev.preventDefault();
+//                 handleShow(ev, freshEl, mapD);
+//               },
+//               { passive: false }
+//             );
 
-            freshEl.addEventListener("touchend", (ev) => {
-              handleHideOnMobile(freshEl);
-            });
+//             freshEl.addEventListener("touchend", (ev) => {
+//               handleHideOnMobile(freshEl);
+//             });
 
-            freshEl.addEventListener("click", (ev) => {
-              handleShow(ev, freshEl, mapD);
-            });
-          });
-        }else{
-            mapId.forEach((id) => {
-            console.log('hello')
-             const el = ikrsvg.querySelector(`#${id}`);
-            if (!el) return;
+//             freshEl.addEventListener("click", (ev) => {
+//               handleShow(ev, freshEl, mapD);
+//             });
+//           });
+//         }else{
+//             mapId.forEach((id) => {
+//             console.log('hello')
+//              const el = ikrsvg.querySelector(`#${id}`);
+//             if (!el) return;
 
-            const mapD = mapData.find((d) => d.id === id);
-            if (!mapD) return;
+//             const mapD = mapData.find((d) => d.id === id);
+//             if (!mapD) return;
 
-            // Remove old listeners if any (just in case)
-            el.replaceWith(el.cloneNode(true));
-            const freshEl = ikrsvg.querySelector(`#${id}`);
-             // Desktop: normal hover
-        freshEl.addEventListener("mouseenter", (ev) => handleShow(ev, freshEl, mapD));
-        freshEl.addEventListener("mousemove", (ev) => handleShow(ev, freshEl, mapD));
-        freshEl.addEventListener("mouseleave", () => handleHide(freshEl));
-        });
-        }
-        // === End of mobile rebind ===
+//             // Remove old listeners if any (just in case)
+//             el.replaceWith(el.cloneNode(true));
+//             const freshEl = ikrsvg.querySelector(`#${id}`);
+//              // Desktop: normal hover
+//         freshEl.addEventListener("mouseenter", (ev) => handleShow(ev, freshEl, mapD));
+//         freshEl.addEventListener("mousemove", (ev) => handleShow(ev, freshEl, mapD));
+//         freshEl.addEventListener("mouseleave", () => handleHide(freshEl));
+//         });
+//         }
+//         // === End of mobile rebind ===
 
-        applyTransform();
-      }
+//         applyTransform();
+//       }
 
-      /* ---------- initial render ---------- */
-      applyTransform();
-    }
+//       /* ---------- initial render ---------- */
+//       applyTransform();
+//     }
 
-    const ikrsvgs = document.querySelector('#ikr_svg');
+//     const ikrsvgs = document.querySelector('#ikr_svg');
   
-    ikrZooms(ikrsvgs);
+//     ikrZooms(ikrsvgs);
  
 

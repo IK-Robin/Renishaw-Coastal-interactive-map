@@ -393,17 +393,239 @@ init_interactive_map({
     clearStrokeHover(el);
   }
 });
-// // apply zoom
-// ikrZoom({
-//   ikrsvg: ikr_svg, tooltipElementId: 'ikr_toltipMove', mapData, mapId, onLotHoverIn: (el, mapD, ev) => {
-//     applyStrokeHover(el);
-//   },
-//   onLotHoverOut: (el, mapD, ev) => {
-//     clearStrokeHover(el);
-//   },
-//   max_zoom:3,
-// });
+
 
 // create the node buttons for mobile view
 
-   createNodeButtons(mapData, "node_number", "buttonsContainer");
+  //  createNodeButtons(mapData, "node_number", "buttonsContainer");
+
+  const shapeButtonsContainer = document.getElementById('shapeButtons');
+
+
+  
+
+
+
+
+
+
+// add fly to zoom logic only for mobile view 
+
+if (isMobile_devices) {
+
+    mapData.forEach(item =>{
+            const shapes = document.querySelector(`#${item.id}`);
+
+       const btn = document.createElement('button');
+            btn.textContent = `Zoom to ${item.id}`;
+            btn.dataset.targetId = item.id;
+            btn.addEventListener('click', () => {
+                const target = document.getElementById(btn.dataset.targetId);
+             target.style.fill = "orange";  // Change fill color on click
+             target.style.fillOpacity = "1";  // Change fill color on click
+                if (target) flyToShape(target);
+            });
+            shapeButtonsContainer.appendChild(btn);
+
+        });
+
+        // apply the zoom function
+          /* ---------- SHARED STATE & HELPERS ---------- */
+    const transform = { x:0, y:0, scale:1 };
+    let baseTransform = { x:0, y:0, scale:1 };
+
+    const map   = document.getElementById('ikr_svg');
+    const stage = document.getElementById('stage');
+    
+
+    function applyTransform() {
+        stage.setAttribute('transform',
+            `translate(${transform.x},${transform.y}) scale(${transform.scale})`);
+    }
+
+    function animateTo(target, duration=280, onUpdate=null, onDone=null) {
+        const start = { ...transform };
+        const dt = {
+            x: target.x - start.x,
+            y: target.y - start.y,
+            scale: target.scale - start.scale
+        };
+        const t0 = performance.now();
+
+        function step(now) {
+            const p = Math.min((now-t0)/duration, 1);
+            const ease = p<0.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2;
+
+            transform.x = start.x + dt.x * ease;
+            transform.y = start.y + dt.y * ease;
+            transform.scale = start.scale + dt.scale * ease;
+
+            applyTransform();
+            if (onUpdate) onUpdate(ease);
+
+            if (p<1) requestAnimationFrame(step);
+            else if (onDone) onDone();
+        }
+        requestAnimationFrame(step);
+    }
+
+    function computeFitTransform(bb, padding=24) {
+        const svgW=1105.28 , svgH=1545.45;
+        const scale = Math.min(
+            svgW/(bb.width+padding*2),
+            svgH/(bb.height+padding*2)
+        );
+        const cx = bb.x + bb.width/2;
+        const cy = bb.y + bb.height/2;
+        return { x:svgW/2-scale*cx, y:svgH/2-scale*cy, scale };
+    }
+
+//     // /* ---------- ZOOM MODULE ---------- */
+    const ZoomModule = {
+        init() {
+            document.getElementById('zoom_in')
+                .addEventListener('click',()=>this.zoom(1.25));
+            document.getElementById('zoom_out')
+                .addEventListener('click',()=>this.zoom(0.8));
+            document.getElementById('reset')
+                .addEventListener('click',this.reset.bind(this));
+
+            map.addEventListener('wheel', e=>{
+                e.preventDefault();
+                const r = map.getBoundingClientRect();
+                this.zoom(e.deltaY<0?1.1:0.9, e.clientX-r.left, e.clientY-r.top);
+            },{passive:false});
+        },
+        zoom(factor, cx=400, cy=300) {
+            const newScale = Math.max(0.1, Math.min(5, transform.scale*factor));
+            transform.x = cx - (cx-transform.x)*(newScale/transform.scale);
+            transform.y = cy - (cy-transform.y)*(newScale/transform.scale);
+            transform.scale = newScale;
+            applyTransform();
+        },
+        reset() {
+            const tgt = {x:0,y:0,scale:1};
+            animateTo(tgt);
+            baseTransform = {...tgt};
+        }
+    };
+
+//     /* ---------- PAN MODULE ---------- */
+// /* ---------- PAN MODULE ---------- */
+
+const PanModule = {
+    thresh:6,
+    state:{tracking:false,panning:false,id:null,startX:0,startY:0,lastX:0,lastY:0},
+    justDragged:false,
+
+    init() {
+        map.addEventListener('pointerdown', this.down.bind(this));
+        map.addEventListener('pointermove', this.move.bind(this));
+        map.addEventListener('pointerup',    this.up.bind(this));
+        map.addEventListener('pointercancel',this.up.bind(this));
+    },
+
+    down(e){
+        // ---- NEW CONDITION -------------------------------------------------
+        // Accept the <svg> itself OR any descendant of the map
+        if (!map.contains(e.target)) return;
+        // -------------------------------------------------------------------
+
+        this.state.tracking=true; this.state.panning=false;
+        this.state.id=e.pointerId;
+        this.state.startX=this.state.lastX=e.clientX;
+        this.state.startY=this.state.lastY=e.clientY;
+        map.setPointerCapture(e.pointerId);
+    },
+
+    move(e){
+        if(!this.state.tracking || e.pointerId!==this.state.id) return;
+        const dx0=e.clientX-this.state.startX;
+        const dy0=e.clientY-this.state.startY;
+        if(!this.state.panning && Math.hypot(dx0,dy0)>=this.thresh){
+            this.state.panning=true; this.justDragged=true;
+        }
+        if(!this.state.panning) return;
+        const dx=e.clientX-this.state.lastX;
+        const dy=e.clientY-this.state.lastY;
+        this.state.lastX=e.clientX; this.state.lastY=e.clientY;
+        transform.x+=dx; transform.y+=dy;
+        applyTransform();
+    },
+
+    up(e){
+        if(this.state.panning && e.pointerId===this.state.id)
+            map.releasePointerCapture(e.pointerId);
+        this.state={tracking:false,panning:false,id:null,startX:0,startY:0,lastX:0,lastY:0};
+        if(this.justDragged) setTimeout(()=>{this.justDragged=false;},0);
+    }
+};
+   
+
+/* ---------- FLY-TO-ZOOM (shared) ---------- */
+    function flyToShape(shapeEl) {
+        // if (PanModule.justDragged) return;
+        const bb = shapeEl.getBBox();
+        const target = computeFitTransform(bb, 24);
+        animateTo(target, 300, null, ()=>{ baseTransform={...target}; });
+    }
+
+    /* ---------- SHAPE BUTTONS ---------- */
+    function createShapeButtons() {
+
+        mapData.forEach(item =>{
+            const shapes = document.querySelector(`#${item.id}`);
+
+       const btn = document.createElement('button');
+            btn.textContent = `Zoom to ${item.id}`;
+            btn.dataset.targetId = item.id;
+            btn.addEventListener('click', () => {
+                const target = document.getElementById(btn.dataset.targetId);
+             target.style.fill = "orange";  // Change fill color on click
+             target.style.fillOpacity = "1";  // Change fill color on click
+                if (target) flyToShape(target);
+            });
+            shapeButtonsContainer.appendChild(btn);
+
+        });
+
+
+
+        // shapes.forEach(shape => {
+        //     const btn = document.createElement('button');
+        //     btn.textContent = `Zoom to ${shape.id}`;
+        //     btn.dataset.targetId = shape.id;
+        //     btn.addEventListener('click', () => {
+        //         const target = document.getElementById(btn.dataset.targetId);
+        //         if (target) flyToShape(target);
+        //     });
+        //     shapeButtonsContainer.appendChild(btn);
+        // });
+    }
+
+    /* ---------- CLICK ON SHAPE (original behaviour) ---------- */
+    // stage.addEventListener('click', e => {
+    //     if (PanModule.justDragged) return;
+    //     const shape = e.target.closest('.shape');
+    //     if (shape) flyToShape(shape);
+    // });
+
+    /* ---------- INITIALISE ---------- */
+    applyTransform();
+    ZoomModule.init();
+    PanModule.init();
+    createShapeButtons();   // <-- generates a button per id-ed shape
+}else{
+// apply zoom
+ikrZoom({
+  ikrsvg: ikr_svg, tooltipElementId: 'ikr_toltipMove', mapData, mapId, onLotHoverIn: (el, mapD, ev) => {
+    applyStrokeHover(el);
+  },
+  onLotHoverOut: (el, mapD, ev) => {
+    clearStrokeHover(el);
+  },
+  max_zoom:3,
+});
+}
+
+        
