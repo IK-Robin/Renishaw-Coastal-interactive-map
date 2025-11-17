@@ -782,28 +782,128 @@ const svgH = parts[3];
       });
     }
 
-    function createShapeButtons() {
-      mapData.forEach(item => {
-        const btn = document.createElement('button');
-        btn.textContent = `Zoom to ${item.id}`;
-        btn.dataset.targetId = item.id;
-        btn.addEventListener('click', () => {
-          const target = document.getElementById(btn.dataset.targetId);
-          if (target) {
-            applyStrokeHover(target);
-            previous_selected_element = target;
-            flyToShape(target);
-          }
-        });
-        shapeButtonsContainer.appendChild(btn);
-      });
-    }
+    // function createShapeButtons() {
+    //   mapData.forEach(item => {
+    //     const btn = document.createElement('button');
+    //     btn.textContent = `Zoom to ${item.id}`;
+    //     btn.dataset.targetId = item.id;
+    //     btn.addEventListener('click', () => {
+    //       const target = document.getElementById(btn.dataset.targetId);
+    //       if (target) {
+    //         applyStrokeHover(target);
+    //         previous_selected_element = target;
+    //         flyToShape(target);
+    //       }
+    //     });
+    //     shapeButtonsContainer.appendChild(btn);
+    //   });
+    // }
+
+
+    // render the buttons for each node 
+    function createNodeButtons(data, property, containerId) {
+  const button_container = document.getElementById(containerId);
+  if (!button_container) return console.error("Container not found");
+
+  // Clear any existing buttons
+  button_container.innerHTML = "";
+
+  data.forEach((node) => {
+    // 1. Get the text (trim whitespace)
+    const text = (node[property] || "").trim();
+    console.log(text);
+
+    // 2. Create button element
+    const btn = document.createElement("button");
+    btn.className = "plot-btn";
+    btn.textContent = text; // e.g. "Node 1" or "2"
+
+    // 3. Attach click – passes the **whole node object**
+    btn.addEventListener("click", () => handleNodeClick(node));
+
+    // 4. Append to container
+    button_container.appendChild(btn);
+  });
+}
+
+
+// ----- 3. CLICK HANDLER (receives the full object) -----
+// Store the previously clicked element globally
+
+
+// ----- 3. CLICK HANDLER (receives the full object) -----
+function handleNodeClick(node) {
+  console.log("Selected node:", node);
+
+  const select_svg_element = document.getElementById(node.id);
+  // console.log(select_svg_element);
+
+  // 1. Remove stroke from previously selected element
+  if (previous_selected_element) {
+    clearStrokeHover(previous_selected_element);
+  }
+
+  // 2. If clicking the same element again -> remove stroke & deselect
+  // if (previous_selected_element === select_svg_element) {
+  //   previous_selected_element = null; // reset selection
+  //   return; // stop here
+  // }
+
+  // 3. Apply stroke on newly selected element
+  if (select_svg_element) {
+    applyStrokeHover(select_svg_element);
+    previous_selected_element = select_svg_element; // store it
+    flyToShape(select_svg_element);
+    // add click event to redirect to node page
+    select_svg_element.addEventListener("touchstart", () => {
+      window.location.href = node.link; // No ../ needed
+    });
+  }
+}
+
+
+
+// Single redirect handler reused for add/remove
+function redirectHandler(e) {
+  const id = e.target.getAttribute("data-node-id");
+  const link = e.target.getAttribute("data-node-link");
+  if (link) window.location.href = link;
+}
+
+
+function redirectHandler(e) {
+  const link = e.target.getAttribute("data-node-link");
+  if (link) window.location.href = link;
+}
+
+
+
+function showTooltip(svgElement, text) {
+  const tooltip = document.getElementById("svgTooltip");
+  tooltip.innerText = text;
+
+  const bbox = svgElement.getBoundingClientRect();
+
+  // Correct center position with scroll support
+  const centerX = bbox.left + bbox.width / 2 + window.scrollX;
+  const centerY = bbox.top + bbox.height / 2 + window.scrollY;
+
+  tooltip.style.left = `${centerX}px`;
+  tooltip.style.top  = `${centerY}px`;
+
+  tooltip.style.display = "block";
+}
+
+
+function hideTooltip() {
+  document.getElementById("svgTooltip").style.display = "none";
+}
 
     /* -------------------------------------------------------------
        6. INITIALISE
        ------------------------------------------------------------- */
     applyTransform();
-    createShapeButtons();
+createNodeButtons(mapData, 'node_number', 'buttonsContainer');
     PanModule.init();   // listeners only
     ZoomModule.init();  // zoom + wheel
   })();
