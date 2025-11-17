@@ -294,6 +294,7 @@ const svgH = parts[3];
     if (transform.scale <= 2) return 3;
     if (transform.scale <= 3) return 4;
     if (transform.scale <= 4) return 4;
+    if (transform.scale <= 6) return 6;
     return 5; // for scale > 2
   }
 
