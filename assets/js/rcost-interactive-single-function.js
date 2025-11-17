@@ -82,6 +82,7 @@ function placeSmartInContainer(el, ev, pad = 8) {
 
     function handleShow(ev, ct, mapD) {
       if (!mapD || !renderTooltipContent) return;
+    
 
       tooltipMove.innerHTML = renderTooltipContent(mapD);
       tooltipMove.style.display = "block";

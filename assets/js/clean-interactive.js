@@ -70,11 +70,11 @@ const mapData = [
 
 let mapId = [
 
-  "node_2-2",
-  "node_3-2",
-  "node_1-2",
-  "node_5-2",
-  "node_4-2"
+  "node_2",
+  "node_3",
+  "node_1",
+  "node_5",
+  "node_4"
 
 
 ];
