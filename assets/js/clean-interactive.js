@@ -217,7 +217,17 @@ if (isMobile_devices) {
     }
 
     function computeFitTransform(bb, padding = 24) {
-      const svgW = 145.68 , svgH = 205.2;
+
+      // get the viewBox attribute
+const viewBox =map.getAttribute("viewBox");  // "0 0 640 640"
+
+// split into numbers
+const parts = viewBox.split(" ").map(Number);
+
+// last two values = width and height
+const svgW = parts[2];
+const svgH = parts[3];
+    
       const scale = Math.min(
         svgW / (bb.width + padding * 2),
         svgH / (bb.height + padding * 2)
