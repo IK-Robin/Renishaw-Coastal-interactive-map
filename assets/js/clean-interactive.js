@@ -283,98 +283,105 @@ const svgH = parts[3];
        ------------------------------------------------------------- */
     const PAN_SPEED_FACTOR = 1;
 
-    const PanModule = (function () {
-      let panEnabled = false;
-      let startX = 0, startY = 0;
-      let startTX = 0, startTY = 0;
+   const PanModule = (function () {
+  let panEnabled = false;
+  let startX = 0, startY = 0;
+  let startTX = 0, startTY = 0;
 
-      function enable() {
-        panEnabled = true;
-        map.style.cursor = 'grab';
-      }
-      function disable() {
-        panEnabled = false;
-        map.style.cursor = 'default';
-      }
+  // Dynamic speed factor based on current zoom level
+  function getPanSpeedFactor() {
+    if (transform.scale <= 1) return 1;
+    if (transform.scale <= 2) return 3;
+    if (transform.scale <= 3) return 4;
+    if (transform.scale <= 4) return 4;
+    return 5; // for scale > 2
+  }
 
-      // Desktop
-      function initDesktop() {
-        let panning = false;
+  function enable() {
+    panEnabled = true;
+    map.style.cursor = 'grab';
+  }
+  function disable() {
+    panEnabled = false;
+    map.style.cursor = 'default';
+  }
 
-        map.addEventListener('mousedown', e => {
-          if (!panEnabled || e.button !== 0) return;
-          panning = true;
-          map.style.cursor = 'grabbing';
-          if (isMobile) map.classList.add('dragging');
+  // Desktop
+  function initDesktop() {
+    let panning = false;
+    map.addEventListener('mousedown', e => {
+      if (!panEnabled || e.button !== 0) return;
+      panning = true;
+      map.style.cursor = 'grabbing';
+      if (isMobile) map.classList.add('dragging');
+      startX = e.clientX; startY = e.clientY;
+      startTX = transform.x; startTY = transform.y;
+    });
 
-          startX = e.clientX; startY = e.clientY;
-          startTX = transform.x; startTY = transform.y;
-        });
+    map.addEventListener('mousemove', e => {
+      if (!panning) return;
+      const speed = getPanSpeedFactor();
+      const dx = (e.clientX - startX) * speed / transform.scale;
+      const dy = (e.clientY - startY) * speed / transform.scale;
+      transform.x = startTX + dx;
+      transform.y = startTY + dy;
+      applyTransform();
+    });
 
-        map.addEventListener('mousemove', e => {
-          if (!panning) return;
-          const dx = (e.clientX - startX) * PAN_SPEED_FACTOR / transform.scale;
-          const dy = (e.clientY - startY) * PAN_SPEED_FACTOR / transform.scale;
-          transform.x = startTX + dx;
-          transform.y = startTY + dy;
-          applyTransform();
-        });
+    const stop = () => {
+      panning = false;
+      if (panEnabled) map.style.cursor = 'grab';
+      if (isMobile) map.classList.remove('dragging');
+    };
+    map.addEventListener('mouseup', stop);
+    map.addEventListener('mouseleave', stop);
+  }
 
-        const stop = () => {
-          panning = false;
-          if (panEnabled) map.style.cursor = 'grab';
-          if (isMobile) map.classList.remove('dragging');
-        };
-        map.addEventListener('mouseup', stop);
-        map.addEventListener('mouseleave', stop);
-      }
+  // Mobile
+  function initMobile() {
+    let panId = null;
+    map.addEventListener('touchstart', e => {
+      if (!panEnabled || e.touches.length !== 1) return;
+      const t = e.touches[0];
+      panId = t.identifier;
+      map.classList.add('dragging');
+      startX = t.clientX; startY = t.clientY;
+      startTX = transform.x; startTY = transform.y;
+    }, { passive: false });
 
-      // Mobile
-      function initMobile() {
-        let panId = null;
+    map.addEventListener('touchmove', e => {
+      if (!panEnabled || e.touches.length !== 1) return;
+      const t = Array.from(e.touches).find(tt => tt.identifier === panId);
+      if (!t) return;
+      e.preventDefault();
 
-        map.addEventListener('touchstart', e => {
-          if (!panEnabled || e.touches.length !== 1) return;
-          const t = e.touches[0];
-          panId = t.identifier;
-          map.classList.add('dragging');   // low-quality
-          startX = t.clientX; startY = t.clientY;
-          startTX = transform.x; startTY = transform.y;
-        }, { passive: false });
+      const speed = getPanSpeedFactor();
+      const dx = (t.clientX - startX) * speed / transform.scale;
+      const dy = (t.clientY - startY) * speed / transform.scale;
+      transform.x = startTX + dx;
+      transform.y = startTY + dy;
+      applyTransform();
+    }, { passive: false });
 
-        map.addEventListener('touchmove', e => {
-          if (!panEnabled || e.touches.length !== 1) return;
-          const t = Array.from(e.touches).find(tt => tt.identifier === panId);
-          if (!t) return;
-          e.preventDefault();
+    map.addEventListener('touchend', () => {
+      panId = null;
+      map.classList.remove('dragging');
+    });
+  }
 
-          const dx = (t.clientX - startX) * PAN_SPEED_FACTOR / transform.scale;
-          const dy = (t.clientY - startY) * PAN_SPEED_FACTOR / transform.scale;
-          transform.x = startTX + dx;
-          transform.y = startTY + dy;
-          applyTransform();
-        }, { passive: false });
-
-        map.addEventListener('touchend', () => {
-          panId = null;
-          map.classList.remove('dragging');   // back to high-quality
-        });
-      }
-
-      return {
-        init() {
-          map.style.touchAction = 'none';
-          PanModule.enable();
-          map.style.cursor = 'default';
-          if (isMobile) initMobile();
-          else initDesktop();
-          // **DO NOT enable here**
-        },
-        enable,
-        disable,
-        get enabled() { return panEnabled; },
-      };
-    })();
+  return {
+    init() {
+      map.style.touchAction = 'none';
+      PanModule.enable();
+      map.style.cursor = 'default';
+      if (isMobile) initMobile();
+      else initDesktop();
+    },
+    enable,
+    disable,
+    get enabled() { return panEnabled; },
+  };
+})();
 
     /* -------------------------------------------------------------
        5. FLY-TO-ZOOM & SHAPE BUTTONS
