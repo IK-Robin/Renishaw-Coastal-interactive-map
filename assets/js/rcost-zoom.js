@@ -856,7 +856,13 @@ function handleNodeClick(node) {
     flyToShape(select_svg_element);
     // add click event to redirect to node page
     select_svg_element.addEventListener("touchstart", () => {
-      window.location.href = node.link; // No ../ needed
+    const homeURL = window.location.origin + "/";
+const finalURL = homeURL + node.link;
+
+console.log(finalURL);
+    // window.location.href = finalURL;
+    window.location.href = 'all-nodes/node-1.html';
+
     });
   }
 }
