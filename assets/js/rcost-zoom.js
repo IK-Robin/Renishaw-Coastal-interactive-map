@@ -801,27 +801,24 @@ const svgH = parts[3];
 
 
     // render the buttons for each node 
-    function createNodeButtons(data, property, containerId) {
+function createNodeButtons(data, property, containerId, btnClass = "plot-btn") {
   const button_container = document.getElementById(containerId);
   if (!button_container) return console.error("Container not found");
 
-  // Clear any existing buttons
   button_container.innerHTML = "";
 
   data.forEach((node) => {
-    // 1. Get the text (trim whitespace)
     const text = (node[property] || "").trim();
-    console.log(text);
 
-    // 2. Create button element
     const btn = document.createElement("button");
-    btn.className = "plot-btn";
-    btn.textContent = text; // e.g. "Node 1" or "2"
+    btn.className = btnClass;
+    btn.textContent = text;
 
-    // 3. Attach click – passes the **whole node object**
+    // 🔥 Store node ID on button
+    btn.setAttribute("data-node-id", node.id);
+
     btn.addEventListener("click", () => handleNodeClick(node));
 
-    // 4. Append to container
     button_container.appendChild(btn);
   });
 }
@@ -831,56 +828,60 @@ const svgH = parts[3];
 // Store the previously clicked element globally
 
 
+
+
 // ----- 3. CLICK HANDLER (receives the full object) -----
 function handleNodeClick(node) {
   console.log("Selected node:", node);
 
   const select_svg_element = document.getElementById(node.id);
-  // console.log(select_svg_element);
 
-  // 1. Remove stroke from previously selected element
+  // 🔥 Remove active class from previously active button
+  const allBtns = document.querySelectorAll(".plot-btn");
+  allBtns.forEach(btn => btn.classList.remove("active-btn"));
+
+  // 🔥 Add active class to the clicked button
+  const currentBtn = document.querySelector(`[data-node-id="${node.id}"]`);
+  if (currentBtn) currentBtn.classList.add("active-btn");
+
+  // ----------------------------
+  // REMOVE redirect from previous SVG element
+  // ----------------------------
   if (previous_selected_element) {
+    previous_selected_element.removeEventListener("touchstart", redirectHandler);
     clearStrokeHover(previous_selected_element);
   }
 
-  // 2. If clicking the same element again -> remove stroke & deselect
-  // if (previous_selected_element === select_svg_element) {
-  //   previous_selected_element = null; // reset selection
-  //   return; // stop here
-  // }
-
-  // 3. Apply stroke on newly selected element
+  // ----------------------------
+  // APPLY redirect to the new selected SVG element
+  // ----------------------------
   if (select_svg_element) {
     applyStrokeHover(select_svg_element);
-    previous_selected_element = select_svg_element; // store it
     flyToShape(select_svg_element);
-    // add click event to redirect to node page
-    select_svg_element.addEventListener("touchstart", () => {
-    const homeURL = window.location.origin + "/";
-const finalURL = homeURL + node.link;
 
-console.log(finalURL);
-    // window.location.href = finalURL;
-    window.location.href = 'all-nodes/node-1.html';
+    // Store the link inside the element
+    select_svg_element.dataset.nodeLink = node.link;
 
-    });
+    // Add redirect only to the active node
+    select_svg_element.addEventListener("touchstart", redirectHandler);
+
+    previous_selected_element = select_svg_element;
   }
 }
 
 
-
-// Single redirect handler reused for add/remove
+// ✅ Single universal redirect handler
 function redirectHandler(e) {
-  const id = e.target.getAttribute("data-node-id");
-  const link = e.target.getAttribute("data-node-link");
-  if (link) window.location.href = link;
+  const link = e.currentTarget.dataset.nodeLink;
+  if (!link) return;
+
+  const homeURL = window.location.origin + "/";
+  const finalURL = homeURL + link.replace(/^\//, "");
+
+  console.log("Redirecting to:", finalURL);
+  window.location.href = finalURL;
 }
 
-
-function redirectHandler(e) {
-  const link = e.target.getAttribute("data-node-link");
-  if (link) window.location.href = link;
-}
 
 
 
@@ -909,7 +910,7 @@ function hideTooltip() {
        6. INITIALISE
        ------------------------------------------------------------- */
     applyTransform();
-createNodeButtons(mapData, 'node_number', 'buttonsContainer');
+createNodeButtons(mapData, 'node_number', 'buttonsContainer','plot-btn all-nodes-btn');
     PanModule.init();   // listeners only
     ZoomModule.init();  // zoom + wheel
   })();
