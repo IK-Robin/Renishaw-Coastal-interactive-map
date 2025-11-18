@@ -855,14 +855,22 @@ function handleNodeClick(node) {
   // ----------------------------
   if (previous_selected_element) {
     previous_selected_element.removeEventListener("touchstart", redirectHandler);
-    clearStrokeHover(previous_selected_element);
+    clearStrokeHover(previous_selected_element,'node_lot_highlight');
   }
 
   // ----------------------------
   // APPLY redirect to the new selected SVG element
   // ----------------------------
   if (select_svg_element) {
-    applyStrokeHover(select_svg_element);
+    // ✅ 1) Smooth-scroll page to where this SVG element is
+    select_svg_element.scrollIntoView({
+      behavior: "smooth",
+      block: "center",   // center vertically
+      inline: "center"   // center horizontally (if horizontally scrollable)
+    });
+
+    // ✅ 2) Your existing SVG zoom / highlight logic
+    applyStrokeHover(select_svg_element,'node_lot_highlight');
     flyToShape(select_svg_element);
 
     // Store the link inside the element
@@ -874,6 +882,7 @@ function handleNodeClick(node) {
     previous_selected_element = select_svg_element;
   }
 }
+
 
 
 // ✅ Single universal redirect handler

@@ -183,19 +183,19 @@ init_interactive_map({
   tooltipLeft: 20,
   tooltipTop: 10,
   onLotHoverIn: (el, mapD, ev) => {
-    applyStrokeHover(el);
+    applyStrokeHover(el,'highlight');
   },
   onLotHoverOut: (el, mapD, ev) => {
-    clearStrokeHover(el);
+    clearStrokeHover(el,'highlight');
   }
 });
 // apply zoom
 ikrZoom({
   ikrsvg: ikr_svg, tooltipElementId: 'ikr_toltipMove', mapData, mapId, onLotHoverIn: (el, mapD, ev) => {
-    applyStrokeHover(el);
+    applyStrokeHover(el,'highlight');
   },
   onLotHoverOut: (el, mapD, ev) => {
-    clearStrokeHover(el);
+    clearStrokeHover(el,'highlight');
   },
   max_zoom:3,
 });

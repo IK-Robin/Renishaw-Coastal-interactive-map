@@ -70,7 +70,7 @@ function setupStrokeAnimation(svgId) {
   });
 }
 
-function applyStrokeHover(el) {
+function applyStrokeHover(el,hover_class='highlight') {
   if (!el.classList.contains("anim-path")) return;
 
   if (typeof el.getTotalLength === "function") {
@@ -79,20 +79,20 @@ function applyStrokeHover(el) {
     el.style.strokeDasharray = len;
   }
 
-  el.style.fill = "#ffffff";
-  el.style.fillOpacity = "0.3";
+  // el.style.fill = "#ffffff";
+  // el.style.fillOpacity = "0.5";
 
-  el.classList.remove("draw", "highlight");
+  el.classList.remove("draw", hover_class);
   // restart animation
   void el.offsetWidth;
-  el.classList.add("highlight", "draw");
+  el.classList.add(hover_class, "draw");
 }
 
-function clearStrokeHover(el) {
+function clearStrokeHover(el,hover_class='highlight') {
   if (!el.classList.contains("anim-path")) return;
 
-  el.style.fillOpacity = "0";
-  el.classList.remove("draw", "highlight");
+  // el.style.fillOpacity = "0";
+  el.classList.remove("draw", hover_class);
   // Optionally revert fill color completely
   // el.style.removeProperty("fill");
 }
