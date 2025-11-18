@@ -491,6 +491,16 @@ add animation to the  svg path
         stroke-width: var(--stroke-w, 1);
         /* change this value! */
         stroke-linecap: round;
+        fill: #fff;
+        fill-opacity: .6;
+      }
+     .anim-path.node_lot_highlight{
+         stroke: #ffffff;
+        stroke-width: var(--stroke-w, 1);
+        /* change this value! */
+        stroke-linecap: round;
+        fill: #ec0000;
+        fill-opacity: 1;
       }
 
       /* ---------- Draw animation (forward only) ---------- */
