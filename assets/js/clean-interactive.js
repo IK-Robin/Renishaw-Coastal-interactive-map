@@ -162,7 +162,9 @@ if (isMobile_devices) {
     stage_id: 'stage',
     mapId,
     mapData,
-    ploat_btn_class:"plot-btn all-nodes-btn"
+    ploat_btn_class:"plot-btn all-nodes-btn",
+    data_proprty_to_create_button:"node_number",
+
       
   });
 }

@@ -541,14 +541,15 @@ function ikrZoom({
 
 // zoom for mobile deviceas 
 function mobileZoom({
-  ikrsvg_id,stage_id,mapId,mapData,ploat_btn_class ="plot-btn"
+  ikrsvg_id,stage_id,mapId,mapData,ploat_btn_class ="plot-btn",data_proprty_to_create_button="lotNumber"
 }){
     (() => {
     /* -------------------------------------------------------------
        1. GLOBALS & HELPERS
        ------------------------------------------------------------- */
+      //  console.log(ikrsvg_id,stage_id,mapId,mapData,ploat_btn_class ,data_proprty_to_create_button)
     let previous_selected_element = null;
-    const map   = document.getElementById(ikrsvg_id);   // <svg>
+    const svgId   = document.getElementById(ikrsvg_id);   // <svg>
     const stage = document.getElementById(stage_id);    // <g> that gets transformed
 
     const transform = { x: 0, y: 0, scale: 1 };
@@ -579,7 +580,7 @@ function mobileZoom({
       const duration = Math.min(400, 100 + distance / 4);   // 100-400 ms
 
       // Add .animating class for low-quality image (mobile)
-      if (isMobile) map.classList.add('animating');
+      if (isMobile) svgId.classList.add('animating');
 
       const t0 = performance.now();
 
@@ -596,7 +597,7 @@ function mobileZoom({
 
         if (p < 1) requestAnimationFrame(step);
         else {
-          if (isMobile) map.classList.remove('animating');
+          if (isMobile) svgId.classList.remove('animating');
           if (onDone) onDone();
         }
       }
@@ -606,7 +607,7 @@ function mobileZoom({
     function computeFitTransform(bb, padding = 24) {
 
       // get the viewBox attribute
-const viewBox =map.getAttribute("viewBox");  // "0 0 640 640"
+const viewBox =svgId.getAttribute("viewBox");  // "0 0 640 640"
 
 // split into numbers
 const parts = viewBox.split(" ").map(Number);
@@ -636,9 +637,9 @@ const svgH = parts[3];
         document.getElementById('reset')
           .addEventListener('click', this.reset.bind(this));
 
-        map.addEventListener('wheel', e => {
+        svgId.addEventListener('wheel', e => {
           e.preventDefault();
-          const r = map.getBoundingClientRect();
+          const r = svgId.getBoundingClientRect();
           this.zoom(e.deltaY < 0 ? 1.1 : 0.9, e.clientX - r.left, e.clientY - r.top);
         }, { passive: false });
       },
@@ -687,26 +688,26 @@ const svgH = parts[3];
 
   function enable() {
     panEnabled = true;
-    map.style.cursor = 'grab';
+    svgId.style.cursor = 'grab';
   }
   function disable() {
     panEnabled = false;
-    map.style.cursor = 'default';
+    svgId.style.cursor = 'default';
   }
 
   // Desktop
   function initDesktop() {
     let panning = false;
-    map.addEventListener('mousedown', e => {
+    svgId.addEventListener('mousedown', e => {
       if (!panEnabled || e.button !== 0) return;
       panning = true;
-      map.style.cursor = 'grabbing';
-      if (isMobile) map.classList.add('dragging');
+      svgId.style.cursor = 'grabbing';
+      if (isMobile) svgId.classList.add('dragging');
       startX = e.clientX; startY = e.clientY;
       startTX = transform.x; startTY = transform.y;
     });
 
-    map.addEventListener('mousemove', e => {
+    svgId.addEventListener('mousemove', e => {
       if (!panning) return;
       const speed = getPanSpeedFactor();
       const dx = (e.clientX - startX) * speed / transform.scale;
@@ -718,26 +719,26 @@ const svgH = parts[3];
 
     const stop = () => {
       panning = false;
-      if (panEnabled) map.style.cursor = 'grab';
-      if (isMobile) map.classList.remove('dragging');
+      if (panEnabled) svgId.style.cursor = 'grab';
+      if (isMobile) svgId.classList.remove('dragging');
     };
-    map.addEventListener('mouseup', stop);
-    map.addEventListener('mouseleave', stop);
+    svgId.addEventListener('mouseup', stop);
+    svgId.addEventListener('mouseleave', stop);
   }
 
   // Mobile
   function initMobile() {
     let panId = null;
-    map.addEventListener('touchstart', e => {
+    svgId.addEventListener('touchstart', e => {
       if (!panEnabled || e.touches.length !== 1) return;
       const t = e.touches[0];
       panId = t.identifier;
-      map.classList.add('dragging');
+      svgId.classList.add('dragging');
       startX = t.clientX; startY = t.clientY;
       startTX = transform.x; startTY = transform.y;
     }, { passive: false });
 
-    map.addEventListener('touchmove', e => {
+    svgId.addEventListener('touchmove', e => {
       if (!panEnabled || e.touches.length !== 1) return;
       const t = Array.from(e.touches).find(tt => tt.identifier === panId);
       if (!t) return;
@@ -751,17 +752,17 @@ const svgH = parts[3];
       applyTransform();
     }, { passive: false });
 
-    map.addEventListener('touchend', () => {
+    svgId.addEventListener('touchend', () => {
       panId = null;
-      map.classList.remove('dragging');
+      svgId.classList.remove('dragging');
     });
   }
 
   return {
     init() {
-      map.style.touchAction = 'none';
+      svgId.style.touchAction = 'none';
       PanModule.enable();
-      map.style.cursor = 'default';
+      svgId.style.cursor = 'default';
       if (isMobile) initMobile();
       else initDesktop();
     },
@@ -801,19 +802,23 @@ const svgH = parts[3];
 
 
     // render the buttons for each node 
-function createNodeButtons(data, property, containerId, btnClass) {
-  console.log(btnClass)
+function createNodeButtons(data, containerId, btnClass) {
+  console.log(data_proprty_to_create_button)
   const button_container = document.getElementById(containerId);
+  console.log(button_container)
   if (!button_container) return console.error("Container not found");
 
   button_container.innerHTML = "";
 
   data.forEach((node) => {
-    const text = (node[property] || "").trim();
+ const lotNumber = node[data_proprty_to_create_button];
+    // console.log(lotNumber)
+    const text = lotNumber
 
     const btn = document.createElement("button");
     btn.className = btnClass;
     btn.textContent = text;
+
 
     // 🔥 Store node ID on button
     btn.setAttribute("data-node-id", node.id);
@@ -911,7 +916,7 @@ function hideTooltip() {
        6. INITIALISE
        ------------------------------------------------------------- */
     applyTransform();
-createNodeButtons(mapData, 'node_number', 'buttonsContainer',ploat_btn_class);
+createNodeButtons(mapData, 'buttonsContainer',ploat_btn_class);
     PanModule.init();   // listeners only
     ZoomModule.init();  // zoom + wheel
   })();
