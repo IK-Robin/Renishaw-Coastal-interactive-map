@@ -85,10 +85,10 @@
   width: 100%; /* SVG scales with container width */
   height: auto;
   // transform-origin: 0 0;   /* important for our math */
-  // will-change: auto;
-  // image-rendering: optimizeQuality;
-  // shape-rendering: geometricPrecision;
-  // text-rendering: geometricPrecision;
+  will-change: auto;
+  image-rendering: optimizeQuality;
+  shape-rendering: geometricPrecision;
+  text-rendering: geometricPrecision;
   margin: 0 auto;
 }
 
@@ -111,10 +111,10 @@
 /* The raster image inside the SVG */
 #ikr_svg image {
   /* Prefer quality in Chromium */
-  // image-rendering: -webkit-optimize-contrast;
-  // /* Fallbacks for other engines */
-  // image-rendering: crisp-edges;
-  // image-rendering: optimizeQuality;
+  image-rendering: -webkit-optimize-contrast;
+  /* Fallbacks for other engines */
+  image-rendering: crisp-edges;
+  image-rendering: optimizeQuality;
 }
 .ikr_svg_container {
   width: 100%;
@@ -424,7 +424,6 @@ create the mobile view layout and  button
 }
 .plot-btn {
   flex: 0 0 calc(50% - 0.3rem);
-  background: #dc3545;
   color: #fff;
   border: none;
   padding: 0.75rem;
@@ -433,11 +432,17 @@ create the mobile view layout and  button
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.2s;
+  -webkit-transition: background 0.2s;
+  -moz-transition: background 0.2s;
+  -ms-transition: background 0.2s;
+  -o-transition: background 0.2s;
+ 
 }
-.plot-btn:hover,
-.plot-btn:active {
-  background: #c82333;
+ .active-btn {
+  background-color: #0d514d  !important;
+  color: #fff;
 }
+
 
 /*===========================
 create the mobile view layout and  button 
