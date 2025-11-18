@@ -541,7 +541,7 @@ function ikrZoom({
 
 // zoom for mobile deviceas 
 function mobileZoom({
-  ikrsvg_id,stage_id,mapId,mapData
+  ikrsvg_id,stage_id,mapId,mapData,ploat_btn_class ="plot-btn"
 }){
     (() => {
     /* -------------------------------------------------------------
@@ -801,7 +801,8 @@ const svgH = parts[3];
 
 
     // render the buttons for each node 
-function createNodeButtons(data, property, containerId, btnClass = "plot-btn") {
+function createNodeButtons(data, property, containerId, btnClass) {
+  console.log(btnClass)
   const button_container = document.getElementById(containerId);
   if (!button_container) return console.error("Container not found");
 
@@ -910,7 +911,7 @@ function hideTooltip() {
        6. INITIALISE
        ------------------------------------------------------------- */
     applyTransform();
-createNodeButtons(mapData, 'node_number', 'buttonsContainer','plot-btn all-nodes-btn');
+createNodeButtons(mapData, 'node_number', 'buttonsContainer',ploat_btn_class);
     PanModule.init();   // listeners only
     ZoomModule.init();  // zoom + wheel
   })();

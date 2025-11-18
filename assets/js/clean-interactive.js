@@ -161,7 +161,8 @@ if (isMobile_devices) {
     ikrsvg_id: 'ikr_svg',
     stage_id: 'stage',
     mapId,
-    mapData
+    mapData,
+    ploat_btn_class:"plot-btn all-nodes-btn"
       
   });
 }
