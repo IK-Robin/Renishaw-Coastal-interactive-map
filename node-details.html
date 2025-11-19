@@ -1,11 +1,532 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Unit 14 — One on Seaton (Clone)</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+
+  <style>
+    :root{
+      --bg: #111111;
+      --panel: #2b2b2b;
+      --card: #222;
+      --muted: #8a8a8a;
+      --accent: #c5a47e;
+      --white: #ffffff;
+      --shadow: rgba(0,0,0,0.55);
+      --radius-lg: 20px;
+      --radius-md: 12px;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family: "Inter",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      background: var(--bg);
+      color: var(--white);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      min-height:100vh;
+      line-height:1.35;
+    }
+
+    /* ---------- Header ---------- */
+    header{
+      display:flex;
+      align-items:center;
+      gap:20px;
+      padding:22px 40px;
+      background:#000;
+      border-bottom:1px solid rgba(255,255,255,0.02);
+    }
+    .logo{height:52px; width:auto; display:block; user-select:none}
+    .breadcrumbs{color:var(--muted); font-size:0.95rem}
+    .breadcrumbs a{color:var(--muted); text-decoration:none; opacity:0.95}
+    .breadcrumbs span{color:var(--accent); font-weight:600}
+
+    .container{
+      max-width: 1140px;
+      margin: 0 auto;
+    }
+    /* ---------- Layout ---------- */
+    .wrap{
+      max-width:1360px;
+      margin:28px auto;
+      padding:0 20px;
+    }
+
+    .main {
+      display:grid;
+      grid-template-columns:120px 1fr 420px;
+      gap:32px;
+      min-height: calc(100vh - 160px); /* header + footer note area */
+      align-items:stretch;
+    }
+
+    /* ---------- Left Thumbs ---------- */
+    .thumbnails{
+      background:var(--panel);
+      padding:28px 12px;
+      border-radius:12px;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      align-items:center;
+      overflow-y:auto;
+      box-shadow: 0 10px 30px var(--shadow);
+    }
+    .thumb{
+      width:90px;
+      height:90px;
+      border-radius:12px;
+      object-fit:cover;
+      display:block;
+      cursor:pointer;
+      transition: transform .28s cubic-bezier(.2,.9,.2,1), box-shadow .25s, border-color .25s;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+      border:3px solid transparent;
+      flex:0 0 auto;
+    }
+    .thumb:hover{ transform:scale(1.06); border-color:rgba(197,164,126,0.25) }
+    .thumb.active{
+      transform:scale(1.08);
+      border-color: var(--accent);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.75);
+    }
+
+    /* ---------- Center Area ---------- */
+    .center-image{
+      background: #000;
+      border-radius: var(--radius-lg);
+      padding:36px;
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      box-shadow: 0 24px 50px rgba(0,0,0,0.65);
+      min-height:520px;
+    }
+
+    /* main single image */
+    .single-image{
+      width:100%;
+      height:100%;
+      max-height:720px;
+      border-radius:16px;
+      object-fit:cover;
+      display:block;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      transition: transform .45s cubic-bezier(.2,.9,.2,1), filter .45s;
+      user-select:none;
+    }
+
+    /* small subtle zoom-in on hover for desktop */
+    .single-image:hover{ transform: scale(1.01); filter:brightness(1.02) }
+
+    /* Swiper area (hidden by default) */
+    .swiper-wrap{
+      width:100%;
+      height:100%;
+      border-radius:16px;
+      overflow:hidden;
+      display:none;
+      position:relative;
+    }
+
+    .swiper-slide img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      user-select:none;
+    }
+
+    /* Swiper controls styling */
+    .swiper-button-next, .swiper-button-prev{
+      width:52px; height:52px;
+      border-radius:50%;
+      background: rgba(0,0,0,0.45);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    }
+    .swiper-button-next::after, .swiper-button-prev::after{
+      font-size:18px;
+      color:var(--white);
+    }
+    .swiper-pagination-bullet{ background: rgba(255,255,255,0.35) }
+    .swiper-pagination-bullet-active{ background: var(--accent) }
+
+    /* ---------- Right Panel ---------- */
+    .rightUnitSide{
+      background: var(--panel);
+      border-radius: 20px;
+      padding:56px 44px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      justify-content:flex-start;
+      box-shadow: -14px 10px 40px rgba(0,0,0,0.45);
+      position:relative;
+      min-height:440px;
+    }
+    .unitRow{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px }
+    h1.title{
+      font-size:48px;
+      margin:0;
+      font-weight:800;
+      letter-spacing:-0.6px;
+      color: #fff;
+    }
+    .price{
+      font-size:42px;
+      font-weight:700;
+      color:var(--accent);
+      text-align:right;
+      line-height:1;
+    }
+    .small-meta{ color:var(--muted); font-size:18px; margin-top:6px }
+    .unitType{ color: #dcd6cf; font-weight:600; font-size:18px; margin-top:6px }
+
+    .reserveUnit{
+      display:inline-block;
+      margin-top:28px;
+      padding:16px 42px;
+      border-radius:50px;
+      background:#fff;
+      color:#000;
+      font-weight:700;
+      text-decoration:none;
+      transition: transform .18s, box-shadow .18s;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      align-self:flex-start;
+    }
+    .reserveUnit:hover{ transform: translateY(-3px); box-shadow: 0 18px 40px rgba(0,0,0,0.35) }
+
+    /* accordion */
+    .unitAccordian{ margin-top:18px }
+    .card{
+      background:#383838;
+      border-radius:12px;
+      overflow:hidden;
+      margin-bottom:12px;
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    .card-link{
+      display:block;
+      padding:18px 22px;
+      color:#fff;
+      text-decoration:none;
+      font-weight:700;
+      font-size:18px;
+      position:relative;
+      cursor:pointer;
+    }
+    .card-link::after{
+      content:"\2193"; /* down arrow */
+      position:absolute;
+      right:18px;
+      top:50%;
+      transform:translateY(-50%);
+      transition: transform .24s;
+      font-size:20px;
+      opacity:0.95;
+    }
+    .card-link[aria-expanded="true"]::after{ transform:translateY(-50%) rotate(180deg); }
+
+    .card-body{
+      padding:20px;
+      color: #e9e9e9;
+      background:#2f2f2f;
+      display:none;
+    }
+    .card-body.show{ display:block }
+
+    .unitSheduleAreInfo{
+      display:flex;
+      gap:18px;
+      justify-content:flex-start;
+      align-items:center;
+      color:var(--muted);
+    }
+    .cardIcon{
+      background:transparent;
+      padding:6px 12px;
+      border-radius:8px;
+      text-align:center;
+    }
+    .cardIcon::before{ display:block; font-size:26px; margin-bottom:6px }
+    .cardIcon-bed::before{ content:"🛏️" }
+    .cardIcon-bath::before{ content:"🛁" }
+    .cardIcon-area::before{ content:"📐" }
+
+    /* footer note (outside the main grid, anchored bottom-left on big screens) */
+    .footer-note{
+      color:#a0a0a0;
+      font-size:0.9rem;
+      margin:22px 40px 48px;
+      text-align:left;
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width:1100px){
+      .main{ grid-template-columns: 1fr; grid-template-rows: auto 520px auto; gap:18px }
+      .thumbnails{ flex-direction:row; padding:16px; border-radius:12px; order:1; justify-content:center }
+      .thumb{ width:120px; height:120px; border-radius:14px }
+      .center-image{ padding:18px; order:2; min-height:420px; border-radius:16px }
+      .rightUnitSide{ order:3; border-radius:16px; padding:28px 20px }
+      .wrap{ padding:0 14px }
+      .footer-note{ margin:20px 14px 36px; text-align:center }
+    }
+
+    @media (max-width:640px){
+      header{ padding:16px }
+      .logo{ height:44px }
+      .rightUnitSide{ padding:20px }
+      h1.title{ font-size:32px }
+      .price{ font-size:28px }
+      .center-image{ min-height:360px }
+    }
+
+    /* tiny helpers */
+    .visually-hidden{ position:absolute!important; height:1px; width:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap }
+  </style>
 </head>
 <body>
-    hello
+
+
+
+ <div class="container">
+   <div class="wrap">
+    <div class="main">
+      <!-- LEFT: Thumbnails -->
+      <aside class="thumbnails" aria-label="Gallery thumbnails">
+        <img class="thumb active" src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/view/view-14.webp"
+             data-type="image" data-src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/view/view-14.webp"
+             alt="Exterior view — Unit 14" loading="lazy">
+
+        <img class="thumb" src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/unit-page/render-thumb1.webp"
+             data-type="slider" alt="Interior renders — gallery" loading="lazy">
+
+        <img class="thumb" src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/unit-page/type-C.webp"
+             data-type="image" data-src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/unit-page/type-C.webp"
+             alt="Unit type C" loading="lazy">
+
+        <img class="thumb" src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/BB-floor.webp"
+             data-type="image" data-src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/BB-floor.webp"
+             alt="Floor Plan" loading="lazy">
+      </aside>
+
+      <!-- CENTER: Main visual -->
+      <main class="center-image" id="centerContainer" aria-live="polite">
+        <!-- Single image (default) -->
+        <img id="singleImage" class="single-image"
+             src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/view/view-14.webp"
+             alt="Unit 14 exterior view" loading="eager" />
+
+        <!-- Swiper gallery (hidden until slider thumb clicked) -->
+        <div id="swiperWrapper" class="swiper-wrap" aria-hidden="true">
+          <div class="swiper" id="thumbSwiper">
+            <div class="swiper-wrapper">
+              <div class="swiper-slide"><img src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/unit-page/render-car1.webp" alt="Render 1" loading="lazy"></div>
+              <div class="swiper-slide"><img src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/unit-page/render-car6.webp" alt="Render 2" loading="lazy"></div>
+              <div class="swiper-slide"><img src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/unit-page/render-car5.webp" alt="Render 3" loading="lazy"></div>
+              <div class="swiper-slide"><img src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/unit-page/render-car4.webp" alt="Render 4" loading="lazy"></div>
+              <div class="swiper-slide"><img src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/unit-page/render-car3.webp" alt="Render 5" loading="lazy"></div>
+              <div class="swiper-slide"><img src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/unit-page/render-car2.webp" alt="Render 6" loading="lazy"></div>
+            </div>
+
+            <!-- controls -->
+            <div class="swiper-button-next" aria-label="Next slide" role="button" tabindex="0"></div>
+            <div class="swiper-button-prev" aria-label="Previous slide" role="button" tabindex="0"></div>
+            <div class="swiper-pagination" aria-hidden="false"></div>
+          </div>
+        </div>
+      </main>
+
+      <!-- RIGHT: Info panel -->
+      <aside class="rightUnitSide" aria-labelledby="unitTitle">
+        <div class="unitRow">
+          <h1 id="unitTitle" class="title">Unit 14</h1>
+          <div class="price">R 5 599 999</div>
+        </div>
+
+        <div class="unitRow" style="margin-top:6px">
+          <div class="small-meta">Floor 0</div>
+          <div class="small-meta">Block B</div>
+        </div>
+
+        <div style="margin-top:6px">
+          <div class="unitType">Unit type C</div>
+          <div class="unitType" style="margin-top:6px">3 Bed - 3 Bath</div>
+        </div>
+
+        <a class="reserveUnit" href="https://oneonseaton.co.za/contact-us" rel="noopener" target="_blank">Enquire now</a>
+
+        <div id="accordion" class="unitAccordian" aria-hidden="false">
+          <div class="card">
+            <a class="card-link" aria-expanded="true" href="#collapseOne">Schedule of Areas</a>
+            <div id="collapseOne" class="card-body show">
+              <div class="unitSheduleAreInfo" role="list">
+                <div role="listitem" style="text-align:center">
+                  <div class="cardIcon cardIcon-bed">3</div>
+                  <div style="color:var(--muted); margin-top:6px">Bedrooms</div>
+                </div>
+                <div role="listitem" style="text-align:center">
+                  <div class="cardIcon cardIcon-bath">3</div>
+                  <div style="color:var(--muted); margin-top:6px">Bathrooms</div>
+                </div>
+                <div role="listitem" style="text-align:center">
+                  <div class="cardIcon cardIcon-area">193 m<sup>2</sup></div>
+                  <div style="color:var(--muted); margin-top:6px">Internal area</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+    </div> <!-- /main -->
+  </div> <!-- /wrap -->
+ </div>
+
+  <div class="footer-note">
+    The depictions herein are subject to change without prior notice.
+  </div>
+
+  <!-- Swiper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script>
+    // Elements
+    const thumbs = Array.from(document.querySelectorAll('.thumb'));
+    const singleImage = document.getElementById('singleImage');
+    const swiperWrapper = document.getElementById('swiperWrapper');
+    const swiperContainerEl = document.querySelector('#thumbSwiper');
+    let swiperInstance = null;
+    let activeThumb = document.querySelector('.thumb.active');
+
+    // Initialize a minimal Swiper but keep it inactive until needed
+    function createSwiper(){
+      if(swiperInstance) return;
+      swiperInstance = new Swiper('#thumbSwiper', {
+        loop: true,
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev'
+        },
+        pagination: { el: '.swiper-pagination', clickable: true },
+        grabCursor: true,
+        keyboard: { enabled: true },
+        speed: 550,
+        slidesPerView: 1,
+        preloadImages: true,
+        lazy: false,
+        effect: 'slide'
+      });
+    }
+
+    // Thumbnails click handler
+    thumbs.forEach(t => {
+      t.addEventListener('click', function(){
+        // update active state
+        if(activeThumb) activeThumb.classList.remove('active');
+        t.classList.add('active');
+        activeThumb = t;
+
+        const type = t.dataset.type;
+        if(type === 'slider'){
+          // show swiper, hide single image
+          singleImage.style.display = 'none';
+          swiperWrapper.style.display = 'block';
+          swiperWrapper.setAttribute('aria-hidden','false');
+
+          // init swiper if needed and force update
+          createSwiper();
+          setTimeout(()=> { swiperInstance.update(); swiperInstance.slideToLoop(0, 200); }, 30);
+        } else {
+          // show single image, hide swiper
+          const src = t.dataset.src || t.src;
+          singleImage.src = src;
+          singleImage.alt = t.alt || "Unit image";
+          singleImage.style.display = 'block';
+          // hide swiper
+          if(swiperInstance) {
+            // pause autoplay if any (none), leave instance
+          }
+          swiperWrapper.style.display = 'none';
+          swiperWrapper.setAttribute('aria-hidden','true');
+        }
+      });
+
+      // keyboard accessibility for thumbs
+      t.setAttribute('tabindex','0');
+      t.addEventListener('keydown', (ev) => {
+        if(ev.key === 'Enter' || ev.key === ' ') {
+          ev.preventDefault();
+          t.click();
+        }
+      });
+    });
+
+    // Make first slide remain visible in case JS loads after render
+    document.addEventListener('DOMContentLoaded', () => {
+      // ensure active thumb is set
+      activeThumb = document.querySelector('.thumb.active') || thumbs[0];
+      if(activeThumb){
+        const type = activeThumb.dataset.type;
+        if(type === 'slider'){
+          singleImage.style.display = 'none';
+          swiperWrapper.style.display = 'block';
+          createSwiper();
+        } else {
+          swiperWrapper.style.display = 'none';
+          singleImage.style.display = 'block';
+        }
+      }
+    });
+
+    // Simple accordion toggle (no bootstrap)
+    const cardLink = document.querySelector('.card-link');
+    const cardBody = document.querySelector('.card-body');
+
+    cardLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      const expanded = cardLink.getAttribute('aria-expanded') === 'true';
+      cardLink.setAttribute('aria-expanded', String(!expanded));
+      cardBody.classList.toggle('show');
+    });
+
+    // Optional: make clicking main image open slider if available
+    singleImage.addEventListener('click', () => {
+      // If a slider thumb exists, open it
+      const sliderThumb = thumbs.find(t => t.dataset.type === 'slider');
+      if(sliderThumb){
+        sliderThumb.click();
+      }
+    });
+
+    // Accessibility: allow left/right arrow to navigate when swiper visible
+    document.addEventListener('keydown', (ev) => {
+      if(!swiperInstance) return;
+      if(swiperWrapper.style.display === 'block'){
+        if(ev.key === 'ArrowRight') swiperInstance.slideNext();
+        if(ev.key === 'ArrowLeft') swiperInstance.slidePrev();
+      }
+    });
+
+    // Prevent image dragging ghost
+    document.querySelectorAll('img').forEach(img=>{
+      img.addEventListener('dragstart', e => e.preventDefault());
+    });
+  </script>
 </body>
 </html>
