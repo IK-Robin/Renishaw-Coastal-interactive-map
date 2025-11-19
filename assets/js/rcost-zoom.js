@@ -545,7 +545,7 @@ function ikrZoom({
 
 
 
-// zoom for mobile deviceas 
+// zoom for mobile deviceas p
 function mobileZoom({
   ikrsvg_id, stage_id, mapId, mapData, ploat_btn_class = "plot-btn", data_proprty_to_create_button = "lotNumber", animation_class = 'highlight'
 }) {
@@ -843,51 +843,87 @@ function mobileZoom({
 
 
     // ----- 3. CLICK HANDLER (receives the full object) -----
-    function handleNodeClick(node) {
-      console.log("Selected node:", node);
+   
+    
 
-      const select_svg_element = document.getElementById(node.id);
+function handleNodeClick(node) {
+  const select_svg_element = document.getElementById(node.id);
+  if (!select_svg_element) return;
 
-      // 🔥 Remove active class from previously active button
-      const allBtns = document.querySelectorAll(".plot-btn");
-      allBtns.forEach(btn => btn.classList.remove("active-btn"));
+  // ==============================================================
+  // 1. Put the PREVIOUSLY selected element back to its original place
+  // ==============================================================
+  if (previous_selected_element && previous_selected_element.parentNode) {
+    const savedNextSibling = previous_selected_element.originalNextSibling;
 
-      // 🔥 Add active class to the clicked button
-      const currentBtn = document.querySelector(`[data-node-id="${node.id}"]`);
-      if (currentBtn) currentBtn.classList.add("active-btn");
-
-      // ----------------------------
-      // REMOVE redirect from previous SVG element
-      // ----------------------------
-      if (previous_selected_element) {
-        previous_selected_element.removeEventListener("touchstart", redirectHandler);
-        clearStrokeHover(previous_selected_element, animation_class);
-      }
-
-      // ----------------------------
-      // APPLY redirect to the new selected SVG element
-      // ----------------------------
-      if (select_svg_element) {
-        // ✅ 1) Smooth-scroll page to where this SVG element is
-        select_svg_element.scrollIntoView({
-          behavior: "smooth",
-          block: "center",   // center vertically
-          inline: "center"   // center horizontally (if horizontally scrollable)
-        });
-
-        // ✅ 2) Your existing SVG zoom / highlight logic
-        applyStrokeHover(select_svg_element, animation_class);
-        flyToShape(select_svg_element);
-
-        // Store the link inside the element
-        select_svg_element.dataset.nodeLink = node.link;
-
-        // Add redirect only to the active node
-        select_svg_element.addEventListener("touchstart", redirectHandler);
-
-        previous_selected_element = select_svg_element;
-      }
+    if (savedNextSibling && savedNextSibling.parentNode) {
+      // Insert exactly where it was before
+      previous_selected_element.parentNode.insertBefore(previous_selected_element, savedNextSibling);
+    } else {
+      // It was the last child → just append it again (still correct order)
+      previous_selected_element.parentNode.appendChild(previous_selected_element);
     }
+
+    // Clean up visual styles
+    previous_selected_element.classList.remove("selected-node");
+    clearStrokeHover(previous_selected_element, animation_class);
+    previous_selected_element.removeEventListener("touchstart", redirectHandler);
+  }
+
+  // ==============================================================
+  // 2. Bring the NEW clicked element to the very front
+  // ==============================================================
+  // Remember where it was (so we can restore later)
+  select_svg_element.originalNextSibling = select_svg_element.nextSibling;
+
+  // THIS is the magic line → moves it to the end = draws on top of everything
+  select_svg_element.parentNode.appendChild(select_svg_element);
+
+  // Visual feedback so you really see it’s on top
+  select_svg_element.classList.add("selected-node");
+
+  // Your existing logic
+  select_svg_element.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+  applyStrokeHover(select_svg_element, animation_class);
+  flyToShape(select_svg_element);
+
+  select_svg_element.dataset.nodeLink = node.link;
+  select_svg_element.addEventListener("touchstart", redirectHandler);
+
+  // Button active state
+  document.querySelectorAll(".plot-btn").forEach(btn => btn.classList.remove("active-btn"));
+  const currentBtn = document.querySelector(`[data-node-id="${node.id}"]`);
+  if (currentBtn) currentBtn.classList.add("active-btn");
+
+  // Remember it for next click
+  previous_selected_element = select_svg_element;
+}
+
+// ==============================================================
+// Optional: Deselect everything (e.g. click outside, close button, etc.)
+// ==============================================================
+function deselectAll() {
+  if (!previous_selected_element) return;
+
+  const el = previous_selected_element;
+  const savedNextSibling = el.originalNextSibling;
+
+  if (savedNextSibling && savedNextSibling.parentNode) {
+    el.parentNode.insertBefore(el, savedNextSibling);
+  } else {
+    el.parentNode.appendChild(el);
+  }
+
+  // Clean everything
+  el.classList.remove("selected-node");
+  clearStrokeHover(el, animation_class);
+  el.removeEventListener("touchstart", redirectHandler);
+
+  // Also remove active button
+  document.querySelectorAll(".plot-btn").forEach(btn => btn.classList.remove("active-btn"));
+
+  previous_selected_element = null;
+}
 
 
 

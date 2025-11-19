@@ -532,4 +532,19 @@ add animation to the  svg path
 
  ============================*/
 
+ .selected-node {
+  /* Makes it clearly visible on top */
+  stroke: #007bff !important;
+  stroke-width: 6 !important;
+  filter: drop-shadow(0 0 10px rgba(0, 123, 255, 0.7));
+  cursor: pointer;
+}
+
+/* Optional: slightly enlarge on select (looks even better) */
+.selected-node {
+  transform: scale(1.02);
+  transform-origin: center;
+  transition: transform 0.2s ease;
+}
+
 
