@@ -929,14 +929,21 @@ function deselectAll() {
 
     // ✅ Single universal redirect handler
     function redirectHandler(e) {
-      const link = e.currentTarget.dataset.nodeLink;
-      if (!link) return;
+      const target_id = e.currentTarget.id;
+     
+      // if (!link) return;
 
       const homeURL = window.location.origin + "/";
-      const finalURL = homeURL + link.replace(/^\//, "");
 
-      console.log("Redirecting to:", finalURL);
-      window.location.href = finalURL;
+        mapData.forEach((item) => {
+          if (item.id === target_id && item.link) {
+            console.log(item.link)
+            window.location.href =  homeURL + item.link.replace(/^\//, "");
+          }});
+
+      // const finalURL = homeURL + link.replace(/^\//, "");
+
+      // console.log("Redirecting to:", finalURL);
     }
 
 
