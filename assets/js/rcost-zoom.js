@@ -400,7 +400,7 @@ function ikrZoom({
         freshEl.addEventListener("touchend", (ev) => {
           handleHideOnMobile(freshEl);
         });
-// hide click for mobile devices
+        // hide click for mobile devices
         // freshEl.addEventListener("click", (ev) => {
         //   // handleShow(ev, freshEl, mapD);
         // });
@@ -522,11 +522,17 @@ function ikrZoom({
       // example: just log instead of redirect
       console.log("Clicked lot:", mapD.id, "->", mapD.link);
       // window.location.href = mapD.link;
-      window.location.href = 'all-nodes/node-1.html';  // No ../ needed
+
+      const homeURL = window.location.origin + "/";
+      const finalURL = homeURL + mapD.link.replace(/^\//, "");
+
+      console.log("Redirecting to:", finalURL);
+      window.location.href = finalURL;
+      // window.location.href = 'all-nodes/node-1.html';  // No ../ needed
       // get the home url  
 
 
-   
+
     }
   }
 
@@ -541,15 +547,15 @@ function ikrZoom({
 
 // zoom for mobile deviceas 
 function mobileZoom({
-  ikrsvg_id,stage_id,mapId,mapData,ploat_btn_class ="plot-btn",data_proprty_to_create_button="lotNumber"
-}){
-    (() => {
+  ikrsvg_id, stage_id, mapId, mapData, ploat_btn_class = "plot-btn", data_proprty_to_create_button = "lotNumber", animation_class = 'highlight'
+}) {
+  (() => {
     /* -------------------------------------------------------------
        1. GLOBALS & HELPERS
        ------------------------------------------------------------- */
-      //  console.log(ikrsvg_id,stage_id,mapId,mapData,ploat_btn_class ,data_proprty_to_create_button)
+    //  console.log(ikrsvg_id,stage_id,mapId,mapData,ploat_btn_class ,data_proprty_to_create_button)
     let previous_selected_element = null;
-    const svgId   = document.getElementById(ikrsvg_id);   // <svg>
+    const svgId = document.getElementById(ikrsvg_id);   // <svg>
     const stage = document.getElementById(stage_id);    // <g> that gets transformed
 
     const transform = { x: 0, y: 0, scale: 1 };
@@ -607,15 +613,15 @@ function mobileZoom({
     function computeFitTransform(bb, padding = 24) {
 
       // get the viewBox attribute
-const viewBox =svgId.getAttribute("viewBox");  // "0 0 640 640"
+      const viewBox = svgId.getAttribute("viewBox");  // "0 0 640 640"
 
-// split into numbers
-const parts = viewBox.split(" ").map(Number);
+      // split into numbers
+      const parts = viewBox.split(" ").map(Number);
 
-// last two values = width and height
-const svgW = parts[2];
-const svgH = parts[3];
-    
+      // last two values = width and height
+      const svgW = parts[2];
+      const svgH = parts[3];
+
       const scale = Math.min(
         svgW / (bb.width + padding * 2),
         svgH / (bb.height + padding * 2)
@@ -671,106 +677,106 @@ const svgH = parts[3];
        ------------------------------------------------------------- */
     const PAN_SPEED_FACTOR = 1;
 
-   const PanModule = (function () {
-  let panEnabled = false;
-  let startX = 0, startY = 0;
-  let startTX = 0, startTY = 0;
+    const PanModule = (function () {
+      let panEnabled = false;
+      let startX = 0, startY = 0;
+      let startTX = 0, startTY = 0;
 
-  // Dynamic speed factor based on current zoom level
-  function getPanSpeedFactor() {
-    if (transform.scale <= 1) return 1;
-    if (transform.scale <= 2) return 3;
-    if (transform.scale <= 3) return 4;
-    if (transform.scale <= 4) return 4;
-    if (transform.scale <= 6) return 6;
-    return 5; // for scale > 2
-  }
+      // Dynamic speed factor based on current zoom level
+      function getPanSpeedFactor() {
+        if (transform.scale <= 1) return 1;
+        if (transform.scale <= 2) return 3;
+        if (transform.scale <= 3) return 4;
+        if (transform.scale <= 4) return 4;
+        if (transform.scale <= 6) return 6;
+        return 5; // for scale > 2
+      }
 
-  function enable() {
-    panEnabled = true;
-    svgId.style.cursor = 'grab';
-  }
-  function disable() {
-    panEnabled = false;
-    svgId.style.cursor = 'default';
-  }
+      function enable() {
+        panEnabled = true;
+        svgId.style.cursor = 'grab';
+      }
+      function disable() {
+        panEnabled = false;
+        svgId.style.cursor = 'default';
+      }
 
-  // Desktop
-  function initDesktop() {
-    let panning = false;
-    svgId.addEventListener('mousedown', e => {
-      if (!panEnabled || e.button !== 0) return;
-      panning = true;
-      svgId.style.cursor = 'grabbing';
-      if (isMobile) svgId.classList.add('dragging');
-      startX = e.clientX; startY = e.clientY;
-      startTX = transform.x; startTY = transform.y;
-    });
+      // Desktop
+      function initDesktop() {
+        let panning = false;
+        svgId.addEventListener('mousedown', e => {
+          if (!panEnabled || e.button !== 0) return;
+          panning = true;
+          svgId.style.cursor = 'grabbing';
+          if (isMobile) svgId.classList.add('dragging');
+          startX = e.clientX; startY = e.clientY;
+          startTX = transform.x; startTY = transform.y;
+        });
 
-    svgId.addEventListener('mousemove', e => {
-      if (!panning) return;
-      const speed = getPanSpeedFactor();
-      const dx = (e.clientX - startX) * speed / transform.scale;
-      const dy = (e.clientY - startY) * speed / transform.scale;
-      transform.x = startTX + dx;
-      transform.y = startTY + dy;
-      applyTransform();
-    });
+        svgId.addEventListener('mousemove', e => {
+          if (!panning) return;
+          const speed = getPanSpeedFactor();
+          const dx = (e.clientX - startX) * speed / transform.scale;
+          const dy = (e.clientY - startY) * speed / transform.scale;
+          transform.x = startTX + dx;
+          transform.y = startTY + dy;
+          applyTransform();
+        });
 
-    const stop = () => {
-      panning = false;
-      if (panEnabled) svgId.style.cursor = 'grab';
-      if (isMobile) svgId.classList.remove('dragging');
-    };
-    svgId.addEventListener('mouseup', stop);
-    svgId.addEventListener('mouseleave', stop);
-  }
+        const stop = () => {
+          panning = false;
+          if (panEnabled) svgId.style.cursor = 'grab';
+          if (isMobile) svgId.classList.remove('dragging');
+        };
+        svgId.addEventListener('mouseup', stop);
+        svgId.addEventListener('mouseleave', stop);
+      }
 
-  // Mobile
-  function initMobile() {
-    let panId = null;
-    svgId.addEventListener('touchstart', e => {
-      if (!panEnabled || e.touches.length !== 1) return;
-      const t = e.touches[0];
-      panId = t.identifier;
-      svgId.classList.add('dragging');
-      startX = t.clientX; startY = t.clientY;
-      startTX = transform.x; startTY = transform.y;
-    }, { passive: false });
+      // Mobile
+      function initMobile() {
+        let panId = null;
+        svgId.addEventListener('touchstart', e => {
+          if (!panEnabled || e.touches.length !== 1) return;
+          const t = e.touches[0];
+          panId = t.identifier;
+          svgId.classList.add('dragging');
+          startX = t.clientX; startY = t.clientY;
+          startTX = transform.x; startTY = transform.y;
+        }, { passive: false });
 
-    svgId.addEventListener('touchmove', e => {
-      if (!panEnabled || e.touches.length !== 1) return;
-      const t = Array.from(e.touches).find(tt => tt.identifier === panId);
-      if (!t) return;
-      e.preventDefault();
+        svgId.addEventListener('touchmove', e => {
+          if (!panEnabled || e.touches.length !== 1) return;
+          const t = Array.from(e.touches).find(tt => tt.identifier === panId);
+          if (!t) return;
+          e.preventDefault();
 
-      const speed = getPanSpeedFactor();
-      const dx = (t.clientX - startX) * speed / transform.scale;
-      const dy = (t.clientY - startY) * speed / transform.scale;
-      transform.x = startTX + dx;
-      transform.y = startTY + dy;
-      applyTransform();
-    }, { passive: false });
+          const speed = getPanSpeedFactor();
+          const dx = (t.clientX - startX) * speed / transform.scale;
+          const dy = (t.clientY - startY) * speed / transform.scale;
+          transform.x = startTX + dx;
+          transform.y = startTY + dy;
+          applyTransform();
+        }, { passive: false });
 
-    svgId.addEventListener('touchend', () => {
-      panId = null;
-      svgId.classList.remove('dragging');
-    });
-  }
+        svgId.addEventListener('touchend', () => {
+          panId = null;
+          svgId.classList.remove('dragging');
+        });
+      }
 
-  return {
-    init() {
-      svgId.style.touchAction = 'none';
-      PanModule.enable();
-      svgId.style.cursor = 'default';
-      if (isMobile) initMobile();
-      else initDesktop();
-    },
-    enable,
-    disable,
-    get enabled() { return panEnabled; },
-  };
-})();
+      return {
+        init() {
+          svgId.style.touchAction = 'none';
+          PanModule.enable();
+          svgId.style.cursor = 'default';
+          if (isMobile) initMobile();
+          else initDesktop();
+        },
+        enable,
+        disable,
+        get enabled() { return panEnabled; },
+      };
+    })();
 
     /* -------------------------------------------------------------
        5. FLY-TO-ZOOM & SHAPE BUTTONS
@@ -802,130 +808,130 @@ const svgH = parts[3];
 
 
     // render the buttons for each node 
-function createNodeButtons(data, containerId, btnClass) {
-  console.log(data_proprty_to_create_button)
-  const button_container = document.getElementById(containerId);
-  console.log(button_container)
-  if (!button_container) return console.error("Container not found");
+    function createNodeButtons(data, containerId, btnClass) {
+      console.log(data_proprty_to_create_button)
+      const button_container = document.getElementById(containerId);
+      console.log(button_container)
+      if (!button_container) return console.error("Container not found");
 
-  button_container.innerHTML = "";
+      button_container.innerHTML = "";
 
-  data.forEach((node) => {
- const lotNumber = node[data_proprty_to_create_button];
-    // console.log(lotNumber)
-    const text = lotNumber
+      data.forEach((node) => {
+        const lotNumber = node[data_proprty_to_create_button];
+        // console.log(lotNumber)
+        const text = lotNumber
 
-    const btn = document.createElement("button");
-    btn.className = btnClass;
-    btn.textContent = text;
-
-
-    // 🔥 Store node ID on button
-    btn.setAttribute("data-node-id", node.id);
-
-    btn.addEventListener("click", () => handleNodeClick(node));
-
-    button_container.appendChild(btn);
-  });
-}
+        const btn = document.createElement("button");
+        btn.className = btnClass;
+        btn.textContent = text;
 
 
-// ----- 3. CLICK HANDLER (receives the full object) -----
-// Store the previously clicked element globally
+        // 🔥 Store node ID on button
+        btn.setAttribute("data-node-id", node.id);
+
+        btn.addEventListener("click", () => handleNodeClick(node));
+
+        button_container.appendChild(btn);
+      });
+    }
 
 
-
-
-// ----- 3. CLICK HANDLER (receives the full object) -----
-function handleNodeClick(node) {
-  console.log("Selected node:", node);
-
-  const select_svg_element = document.getElementById(node.id);
-
-  // 🔥 Remove active class from previously active button
-  const allBtns = document.querySelectorAll(".plot-btn");
-  allBtns.forEach(btn => btn.classList.remove("active-btn"));
-
-  // 🔥 Add active class to the clicked button
-  const currentBtn = document.querySelector(`[data-node-id="${node.id}"]`);
-  if (currentBtn) currentBtn.classList.add("active-btn");
-
-  // ----------------------------
-  // REMOVE redirect from previous SVG element
-  // ----------------------------
-  if (previous_selected_element) {
-    previous_selected_element.removeEventListener("touchstart", redirectHandler);
-    clearStrokeHover(previous_selected_element,'node_lot_highlight');
-  }
-
-  // ----------------------------
-  // APPLY redirect to the new selected SVG element
-  // ----------------------------
-  if (select_svg_element) {
-    // ✅ 1) Smooth-scroll page to where this SVG element is
-    select_svg_element.scrollIntoView({
-      behavior: "smooth",
-      block: "center",   // center vertically
-      inline: "center"   // center horizontally (if horizontally scrollable)
-    });
-
-    // ✅ 2) Your existing SVG zoom / highlight logic
-    applyStrokeHover(select_svg_element,'node_lot_highlight');
-    flyToShape(select_svg_element);
-
-    // Store the link inside the element
-    select_svg_element.dataset.nodeLink = node.link;
-
-    // Add redirect only to the active node
-    select_svg_element.addEventListener("touchstart", redirectHandler);
-
-    previous_selected_element = select_svg_element;
-  }
-}
-
-
-
-// ✅ Single universal redirect handler
-function redirectHandler(e) {
-  const link = e.currentTarget.dataset.nodeLink;
-  if (!link) return;
-
-  const homeURL = window.location.origin + "/";
-  const finalURL = homeURL + link.replace(/^\//, "");
-
-  console.log("Redirecting to:", finalURL);
-  window.location.href = finalURL;
-}
+    // ----- 3. CLICK HANDLER (receives the full object) -----
+    // Store the previously clicked element globally
 
 
 
 
-function showTooltip(svgElement, text) {
-  const tooltip = document.getElementById("svgTooltip");
-  tooltip.innerText = text;
+    // ----- 3. CLICK HANDLER (receives the full object) -----
+    function handleNodeClick(node) {
+      console.log("Selected node:", node);
 
-  const bbox = svgElement.getBoundingClientRect();
+      const select_svg_element = document.getElementById(node.id);
 
-  // Correct center position with scroll support
-  const centerX = bbox.left + bbox.width / 2 + window.scrollX;
-  const centerY = bbox.top + bbox.height / 2 + window.scrollY;
+      // 🔥 Remove active class from previously active button
+      const allBtns = document.querySelectorAll(".plot-btn");
+      allBtns.forEach(btn => btn.classList.remove("active-btn"));
 
-  tooltip.style.left = `${centerX}px`;
-  tooltip.style.top  = `${centerY}px`;
+      // 🔥 Add active class to the clicked button
+      const currentBtn = document.querySelector(`[data-node-id="${node.id}"]`);
+      if (currentBtn) currentBtn.classList.add("active-btn");
 
-  tooltip.style.display = "block";
-}
+      // ----------------------------
+      // REMOVE redirect from previous SVG element
+      // ----------------------------
+      if (previous_selected_element) {
+        previous_selected_element.removeEventListener("touchstart", redirectHandler);
+        clearStrokeHover(previous_selected_element, animation_class);
+      }
+
+      // ----------------------------
+      // APPLY redirect to the new selected SVG element
+      // ----------------------------
+      if (select_svg_element) {
+        // ✅ 1) Smooth-scroll page to where this SVG element is
+        select_svg_element.scrollIntoView({
+          behavior: "smooth",
+          block: "center",   // center vertically
+          inline: "center"   // center horizontally (if horizontally scrollable)
+        });
+
+        // ✅ 2) Your existing SVG zoom / highlight logic
+        applyStrokeHover(select_svg_element, animation_class);
+        flyToShape(select_svg_element);
+
+        // Store the link inside the element
+        select_svg_element.dataset.nodeLink = node.link;
+
+        // Add redirect only to the active node
+        select_svg_element.addEventListener("touchstart", redirectHandler);
+
+        previous_selected_element = select_svg_element;
+      }
+    }
 
 
-function hideTooltip() {
-  document.getElementById("svgTooltip").style.display = "none";
-}
+
+    // ✅ Single universal redirect handler
+    function redirectHandler(e) {
+      const link = e.currentTarget.dataset.nodeLink;
+      if (!link) return;
+
+      const homeURL = window.location.origin + "/";
+      const finalURL = homeURL + link.replace(/^\//, "");
+
+      console.log("Redirecting to:", finalURL);
+      window.location.href = finalURL;
+    }
+
+
+
+
+    function showTooltip(svgElement, text) {
+      const tooltip = document.getElementById("svgTooltip");
+      tooltip.innerText = text;
+
+      const bbox = svgElement.getBoundingClientRect();
+
+      // Correct center position with scroll support
+      const centerX = bbox.left + bbox.width / 2 + window.scrollX;
+      const centerY = bbox.top + bbox.height / 2 + window.scrollY;
+
+      tooltip.style.left = `${centerX}px`;
+      tooltip.style.top = `${centerY}px`;
+
+      tooltip.style.display = "block";
+    }
+
+
+    function hideTooltip() {
+      document.getElementById("svgTooltip").style.display = "none";
+    }
 
     /* -------------------------------------------------------------
        6. INITIALISE
        ------------------------------------------------------------- */
     applyTransform();
-createNodeButtons(mapData, 'buttonsContainer',ploat_btn_class);
+    createNodeButtons(mapData, 'buttonsContainer', ploat_btn_class);
     PanModule.init();   // listeners only
     ZoomModule.init();  // zoom + wheel
   })();

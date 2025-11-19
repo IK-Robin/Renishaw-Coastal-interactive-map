@@ -3973,6 +3973,7 @@ if (isMobile_devices) {
     mapData: node_1_data,
     ploat_btn_class: "plot-btn all-nodes-btn",
     data_proprty_to_create_button:'lotNumber',
+    animation_class: 'node_lot_highlight',
 
   });
 

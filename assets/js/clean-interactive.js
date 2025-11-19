@@ -164,6 +164,7 @@ if (isMobile_devices) {
     mapData,
     ploat_btn_class:"plot-btn all-nodes-btn",
     data_proprty_to_create_button:"node_number",
+    animation_class:'highlight'
 
       
   });

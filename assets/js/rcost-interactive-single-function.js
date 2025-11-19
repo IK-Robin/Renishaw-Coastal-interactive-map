@@ -106,6 +106,11 @@ function placeSmartInContainer(el, ev, pad = 8) {
     //  window.location.href = 'all-nodes/node-1.html';  // No ../ needed
       // get the home url  
 
+       const homeURL = window.location.origin + "/";
+      const finalURL = homeURL + mapD.link.replace(/^\//, "");
+
+      console.log("Redirecting to:", finalURL);
+      window.location.href = finalURL;
        
 
     }
