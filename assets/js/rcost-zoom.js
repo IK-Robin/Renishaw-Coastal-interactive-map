@@ -836,6 +836,49 @@ function mobileZoom({
     }
 
 
+    // NEW: Create a <select> dropdown with the same nodes
+function createNodeSelect(data, containerId, selectClass = "node-select") {
+  const container = document.getElementById(containerId);
+  if (!container) return console.error("Container not found");
+
+  // Remove old select if exists
+  const oldSelect = container.querySelector(`.${selectClass}`);
+  if (oldSelect) oldSelect.remove();
+
+  const select = document.createElement("select");
+  select.className = selectClass;
+
+  // Optional: placeholder option
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = `Select a ${data_proprty_to_create_button}`;
+   placeholder.disabled = true;
+  placeholder.selected = true;
+  select.appendChild(placeholder);
+
+  data.forEach((node) => {
+    const lotNumber = node[data_proprty_to_create_button];
+    const option = document.createElement("option");
+    option.value = node.id;                 // store the node id
+    option.textContent = lotNumber;         // what user sees
+    option.dataset.node = JSON.stringify(node); // store full node (optional but handy)
+    select.appendChild(option);
+  });
+
+  // This is the key: when user selects an option → trigger the same logic
+  select.addEventListener("change", (e) => {
+    if (!e.target.value) return; // ignore placeholder
+
+    const selectedNodeId = e.target.value;
+    const selectedNode = data.find(n => n.id === selectedNodeId);
+
+    if (selectedNode) {
+      handleNodeClick(selectedNode); // ← EXACT same behavior as button click!
+    }
+  });
+
+  container.appendChild(select);
+}
     // ----- 3. CLICK HANDLER (receives the full object) -----
     // Store the previously clicked element globally
 
@@ -974,7 +1017,10 @@ function deselectAll() {
        6. INITIALISE
        ------------------------------------------------------------- */
     applyTransform();
-    createNodeButtons(mapData, 'buttonsContainer', ploat_btn_class);
+    // createNodeButtons(mapData, 'buttonsContainer', ploat_btn_class);
+    // createNodeButtons(mapData, 'buttonsContainer', ploat_btn_class);
+
+ createNodeSelect(mapData, "buttonsContainer", "node-select"); // same container
     PanModule.init();   // listeners only
     ZoomModule.init();  // zoom + wheel
   })();
