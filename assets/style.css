@@ -379,6 +379,20 @@ create the mobile view layout and  button
     background: #fff;
     overflow-y: auto;
   }
+  .node-select {
+    padding: 10px;
+    font-size: 16px;
+    margin: 10px 0;
+    width: 100%;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+  }
+  .node-select:focus {
+    outline: none;
+    border: 2px solid #000;
+  }
 }
 @media (max-width: 480px) {
   .map-section {
@@ -504,6 +518,7 @@ add animation to the  svg path
 add animation to the  svg path 
 
  ============================*/
+/* Optional: slightly enlarge on select (looks even better) */
 .rhill-serchMenu {
   position: sticky;
   top: 0;

@@ -390,6 +390,25 @@ create the mobile view layout and  button
     background: #fff;
     overflow-y: auto;
   }
+
+  // add css for plot select options
+  .node-select {
+  padding: 10px;
+  font-size: 16px;
+  margin: 10px 0;
+  width: 100%;
+  // max-width: 300px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+  &:focus {
+outline: none;
+border: 2px solid #000;
+}
+}
+
+
 }
 @media (max-width: 480px) {
   .map-section {
@@ -532,19 +551,19 @@ add animation to the  svg path
 
  ============================*/
 
- .selected-node {
-  /* Makes it clearly visible on top */
-  stroke: #007bff !important;
-  stroke-width: 6 !important;
-  filter: drop-shadow(0 0 10px rgba(0, 123, 255, 0.7));
-  cursor: pointer;
-}
+//  .selected-node {
+//   /* Makes it clearly visible on top */
+//   stroke: #007bff !important;
+//   stroke-width: 6 !important;
+//   filter: drop-shadow(0 0 10px rgba(0, 123, 255, 0.7));
+//   cursor: pointer;
+// }
 
 /* Optional: slightly enlarge on select (looks even better) */
-.selected-node {
-  transform: scale(1.02);
-  transform-origin: center;
-  transition: transform 0.2s ease;
-}
+// .selected-node {
+//   transform: scale(1.02);
+//   transform-origin: center;
+//   transition: transform 0.2s ease;
+// }
 
 
