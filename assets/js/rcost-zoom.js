@@ -547,14 +547,16 @@ function ikrZoom({
 
 // zoom for mobile deviceas p
 function mobileZoom({
-  ikrsvg_id, stage_id, mapId, mapData, ploat_btn_class = "plot-btn", data_proprty_to_create_button = "lotNumber", animation_class = 'highlight'
+  ikrsvg_id, stage_id, mapId, mapData, ploat_btn_class = "plot-btn", 
+  data_proprty_to_create_button = "lotNumber", animation_class = 'highlight'
 }) {
   (() => {
     /* -------------------------------------------------------------
        1. GLOBALS & HELPERS
        ------------------------------------------------------------- */
-    //  console.log(ikrsvg_id,stage_id,mapId,mapData,ploat_btn_class ,data_proprty_to_create_button)
     let previous_selected_element = null;
+    let maxAllowedZoom = 10;  // ← Will increase dynamically after flyToShape
+
     const svgId = document.getElementById(ikrsvg_id);   // <svg>
     const stage = document.getElementById(stage_id);    // <g> that gets transformed
 
@@ -581,11 +583,9 @@ function mobileZoom({
         scale: target.scale - start.scale,
       };
 
-      // Distance heuristic (px + scale*200)
       const distance = Math.abs(dt.x) + Math.abs(dt.y) + Math.abs(dt.scale) * 200;
-      const duration = Math.min(400, 100 + distance / 4);   // 100-400 ms
+      const duration = Math.min(400, 100 + distance / 4);
 
-      // Add .animating class for low-quality image (mobile)
       if (isMobile) svgId.classList.add('animating');
 
       const t0 = performance.now();
@@ -611,14 +611,8 @@ function mobileZoom({
     }
 
     function computeFitTransform(bb, padding = 24) {
-
-      // get the viewBox attribute
-      const viewBox = svgId.getAttribute("viewBox");  // "0 0 640 640"
-
-      // split into numbers
+      const viewBox = svgId.getAttribute("viewBox");
       const parts = viewBox.split(" ").map(Number);
-
-      // last two values = width and height
       const svgW = parts[2];
       const svgH = parts[3];
 
@@ -632,16 +626,13 @@ function mobileZoom({
     }
 
     /* -------------------------------------------------------------
-       3. ZOOM MODULE
+       3. ZOOM MODULE (with dynamic max zoom)
        ------------------------------------------------------------- */
     const ZoomModule = {
       init() {
-        document.getElementById('zoom_in')
-          .addEventListener('click', () => this.zoom(1.25));
-        document.getElementById('zoom_out')
-          .addEventListener('click', () => this.zoom(0.8));
-        document.getElementById('reset')
-          .addEventListener('click', this.reset.bind(this));
+        document.getElementById('zoom_in')?.addEventListener('click', () => this.zoom(1.25));
+        document.getElementById('zoom_out')?.addEventListener('click', () => this.zoom(0.8));
+        document.getElementById('reset')?.addEventListener('click', this.reset.bind(this));
 
         svgId.addEventListener('wheel', e => {
           e.preventDefault();
@@ -652,9 +643,11 @@ function mobileZoom({
 
       zoom(factor, cx = 400, cy = 300) {
         const oldScale = transform.scale;
-        const newScale = Math.max(0.1, Math.min(5, oldScale * factor));
+        const desiredScale = oldScale * factor;
 
-        // Enable panning **only** on first zoom-in
+        // ← DYNAMIC MAX ZOOM (with buffer)
+        const newScale = Math.max(0.1, Math.min(maxAllowedZoom * 1.6, desiredScale));
+
         if (oldScale === 1 && newScale > 1) PanModule.enable();
 
         transform.x = cx - (cx - transform.x) * (newScale / oldScale);
@@ -673,23 +666,31 @@ function mobileZoom({
     };
 
     /* -------------------------------------------------------------
-       4. PAN MODULE – FAST + LOW-QUALITY IMAGE WHILE DRAGGING
+       4. PAN MODULE – Speed scales with zoom (even at 30x+)
        ------------------------------------------------------------- */
-    const PAN_SPEED_FACTOR = 1;
-
     const PanModule = (function () {
       let panEnabled = false;
       let startX = 0, startY = 0;
       let startTX = 0, startTY = 0;
 
-      // Dynamic speed factor based on current zoom level
+      // ← NEW: Pan speed grows with scale (perfect even at 30x)
       function getPanSpeedFactor() {
-        if (transform.scale <= 1) return 1;
-        if (transform.scale <= 2) return 3;
-        if (transform.scale <= 3) return 4;
-        if (transform.scale <= 4) return 4;
-        if (transform.scale <= 6) return 6;
-        return 5; // for scale > 2
+        if (transform.scale <= 10) {
+          // Keep your original comfortable speed at low zoom
+          if (transform.scale <= 1) return 1;
+          if (transform.scale <= 2) return 3;
+          if (transform.scale <= 4) return 4;
+          if (transform.scale <= 5) return 4;
+          if (transform.scale <= 6) return 6;
+          if (transform.scale <= 7) return 7;
+          if (transform.scale <= 8) return 10;
+          if (transform.scale <= 9) return 15;
+          if (transform.scale <= 10) return   16;
+          return 6;
+        } else {
+          // High zoom: speed = current scale + 2 → feels natural
+          return Math.floor(transform.scale) + 3;
+        }
       }
 
       function enable() {
@@ -784,244 +785,146 @@ function mobileZoom({
     function flyToShape(shapeEl) {
       const bb = shapeEl.getBBox();
       const target = computeFitTransform(bb, 24);
+
+      // ← UPDATE MAX ZOOM based on this fly-to (allow going much further)
+      maxAllowedZoom = Math.max(maxAllowedZoom, target.scale * 1.8);
+
       animateTo(target, null, () => {
         baseTransform = { ...target };
       });
     }
 
-    // function createShapeButtons() {
-    //   mapData.forEach(item => {
-    //     const btn = document.createElement('button');
-    //     btn.textContent = `Zoom to ${item.id}`;
-    //     btn.dataset.targetId = item.id;
-    //     btn.addEventListener('click', () => {
-    //       const target = document.getElementById(btn.dataset.targetId);
-    //       if (target) {
-    //         applyStrokeHover(target);
-    //         previous_selected_element = target;
-    //         flyToShape(target);
-    //       }
-    //     });
-    //     shapeButtonsContainer.appendChild(btn);
-    //   });
-    // }
-
-
-    // render the buttons for each node 
+    // Render buttons (optional – you can keep both)
     function createNodeButtons(data, containerId, btnClass) {
-      console.log(data_proprty_to_create_button)
       const button_container = document.getElementById(containerId);
-      console.log(button_container)
       if (!button_container) return console.error("Container not found");
-
       button_container.innerHTML = "";
 
       data.forEach((node) => {
         const lotNumber = node[data_proprty_to_create_button];
-        // console.log(lotNumber)
-        const text = lotNumber
-
         const btn = document.createElement("button");
         btn.className = btnClass;
-        btn.textContent = text;
-
-
-        // 🔥 Store node ID on button
+        btn.textContent = lotNumber;
         btn.setAttribute("data-node-id", node.id);
-
         btn.addEventListener("click", () => handleNodeClick(node));
-
         button_container.appendChild(btn);
       });
     }
 
+    // SELECT DROPDOWN (fully synced)
+    function createNodeSelect(data, containerId, selectClass = "node-select") {
+      const container = document.getElementById(containerId);
+      if (!container) return console.error("Container not found");
 
-    // NEW: Create a <select> dropdown with the same nodes
-function createNodeSelect(data, containerId, selectClass = "node-select") {
-  const container = document.getElementById(containerId);
-  if (!container) return console.error("Container not found");
+      const oldSelect = container.querySelector(`.${selectClass}`);
+      if (oldSelect) oldSelect.remove();
 
-  // Remove old select if exists
-  const oldSelect = container.querySelector(`.${selectClass}`);
-  if (oldSelect) oldSelect.remove();
+      const select = document.createElement("select");
+      select.className = selectClass;
 
-  const select = document.createElement("select");
-  select.className = selectClass;
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = `Select ${data_proprty_to_create_button}`;
+      placeholder.disabled = true;
+      placeholder.selected = true;
+      select.appendChild(placeholder);
 
-  // Optional: placeholder option
-  const placeholder = document.createElement("option");
-  placeholder.value = "";
-  placeholder.textContent = `Select a ${data_proprty_to_create_button}`;
-   placeholder.disabled = true;
-  placeholder.selected = true;
-  select.appendChild(placeholder);
+      data.forEach((node) => {
+        const lotNumber = node[data_proprty_to_create_button];
+        const option = document.createElement("option");
+        option.value = node.id;
+        option.textContent = lotNumber;
+        select.appendChild(option);
+      });
 
-  data.forEach((node) => {
-    const lotNumber = node[data_proprty_to_create_button];
-    const option = document.createElement("option");
-    option.value = node.id;                 // store the node id
-    option.textContent = lotNumber;         // what user sees
-    option.dataset.node = JSON.stringify(node); // store full node (optional but handy)
-    select.appendChild(option);
-  });
+      select.addEventListener("change", (e) => {
+        if (!e.target.value) return;
+        const selectedNode = data.find(n => n.id === e.target.value);
+        if (selectedNode) handleNodeClick(selectedNode);
+      });
 
-  // This is the key: when user selects an option → trigger the same logic
-  select.addEventListener("change", (e) => {
-    if (!e.target.value) return; // ignore placeholder
-
-    const selectedNodeId = e.target.value;
-    const selectedNode = data.find(n => n.id === selectedNodeId);
-
-    if (selectedNode) {
-      handleNodeClick(selectedNode); // ← EXACT same behavior as button click!
-    }
-  });
-
-  container.appendChild(select);
-}
-    // ----- 3. CLICK HANDLER (receives the full object) -----
-    // Store the previously clicked element globally
-
-
-
-
-    // ----- 3. CLICK HANDLER (receives the full object) -----
-   
-    
-
-function handleNodeClick(node) {
-  const select_svg_element = document.getElementById(node.id);
-  if (!select_svg_element) return;
-
-  // ==============================================================
-  // 1. Put the PREVIOUSLY selected element back to its original place
-  // ==============================================================
-  if (previous_selected_element && previous_selected_element.parentNode) {
-    const savedNextSibling = previous_selected_element.originalNextSibling;
-
-    if (savedNextSibling && savedNextSibling.parentNode) {
-      // Insert exactly where it was before
-      previous_selected_element.parentNode.insertBefore(previous_selected_element, savedNextSibling);
-    } else {
-      // It was the last child → just append it again (still correct order)
-      previous_selected_element.parentNode.appendChild(previous_selected_element);
+      container.appendChild(select);
     }
 
-    // Clean up visual styles
-    previous_selected_element.classList.remove("selected-node");
-    clearStrokeHover(previous_selected_element, animation_class);
-    previous_selected_element.removeEventListener("touchstart", redirectHandler);
-  }
+    // Main click handler
+    function handleNodeClick(node) {
+      const select_svg_element = document.getElementById(node.id);
+      if (!select_svg_element) return;
 
-  // ==============================================================
-  // 2. Bring the NEW clicked element to the very front
-  // ==============================================================
-  // Remember where it was (so we can restore later)
-  select_svg_element.originalNextSibling = select_svg_element.nextSibling;
+      // Restore previous
+      if (previous_selected_element && previous_selected_element.parentNode) {
+        const savedNextSibling = previous_selected_element.originalNextSibling;
+        if (savedNextSibling && savedNextSibling.parentNode) {
+          previous_selected_element.parentNode.insertBefore(previous_selected_element, savedNextSibling);
+        } else {
+          previous_selected_element.parentNode.appendChild(previous_selected_element);
+        }
+        previous_selected_element.classList.remove("selected-node");
+        clearStrokeHover(previous_selected_element, animation_class);
+        previous_selected_element.removeEventListener("touchstart", redirectHandler);
+      }
 
-  // THIS is the magic line → moves it to the end = draws on top of everything
-  select_svg_element.parentNode.appendChild(select_svg_element);
+      // Bring new to front
+      select_svg_element.originalNextSibling = select_svg_element.nextSibling;
+      select_svg_element.parentNode.appendChild(select_svg_element);
+      select_svg_element.classList.add("selected-node");
+      select_svg_element.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+      applyStrokeHover(select_svg_element, animation_class);
+      flyToShape(select_svg_element);
+      select_svg_element.dataset.nodeLink = node.link;
+      select_svg_element.addEventListener("touchstart", redirectHandler);
 
-  // Visual feedback so you really see it’s on top
-  select_svg_element.classList.add("selected-node");
+      // Button active state
+      document.querySelectorAll(".plot-btn").forEach(btn => btn.classList.remove("active-btn"));
+      const currentBtn = document.querySelector(`[data-node-id="${node.id}"]`);
+      if (currentBtn) currentBtn.classList.add("active-btn");
 
-  // Your existing logic
-  select_svg_element.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
-  applyStrokeHover(select_svg_element, animation_class);
-  flyToShape(select_svg_element);
+      // ← Sync select dropdown
+      const selectEl = document.querySelector(".node-select");
+      if (selectEl) selectEl.value = node.id;
 
-  select_svg_element.dataset.nodeLink = node.link;
-  select_svg_element.addEventListener("touchstart", redirectHandler);
+      previous_selected_element = select_svg_element;
+    }
 
-  // Button active state
-  document.querySelectorAll(".plot-btn").forEach(btn => btn.classList.remove("active-btn"));
-  const currentBtn = document.querySelector(`[data-node-id="${node.id}"]`);
-  if (currentBtn) currentBtn.classList.add("active-btn");
-
-  // Remember it for next click
-  previous_selected_element = select_svg_element;
-}
-
-// ==============================================================
-// Optional: Deselect everything (e.g. click outside, close button, etc.)
-// ==============================================================
-function deselectAll() {
-  if (!previous_selected_element) return;
-
-  const el = previous_selected_element;
-  const savedNextSibling = el.originalNextSibling;
-
-  if (savedNextSibling && savedNextSibling.parentNode) {
-    el.parentNode.insertBefore(el, savedNextSibling);
-  } else {
-    el.parentNode.appendChild(el);
-  }
-
-  // Clean everything
-  el.classList.remove("selected-node");
-  clearStrokeHover(el, animation_class);
-  el.removeEventListener("touchstart", redirectHandler);
-
-  // Also remove active button
-  document.querySelectorAll(".plot-btn").forEach(btn => btn.classList.remove("active-btn"));
-
-  previous_selected_element = null;
-}
-
-
-
-    // ✅ Single universal redirect handler
+    // Redirect on touch
     function redirectHandler(e) {
       const target_id = e.currentTarget.id;
-     
-      // if (!link) return;
-
-      const homeURL = window.location.origin + "/";
-
-        mapData.forEach((item) => {
-          if (item.id === target_id && item.link) {
-            console.log(item.link)
-            window.location.href =  homeURL + item.link.replace(/^\//, "");
-          }});
-
-      // const finalURL = homeURL + link.replace(/^\//, "");
-
-      // console.log("Redirecting to:", finalURL);
+      const item = mapData.find(i => i.id === target_id);
+      if (item?.link) {
+        const homeURL = window.location.origin + "/";
+        window.location.href = homeURL + item.link.replace(/^\//, "");
+      }
     }
 
-
-
-
-    function showTooltip(svgElement, text) {
-      const tooltip = document.getElementById("svgTooltip");
-      tooltip.innerText = text;
-
-      const bbox = svgElement.getBoundingClientRect();
-
-      // Correct center position with scroll support
-      const centerX = bbox.left + bbox.width / 2 + window.scrollX;
-      const centerY = bbox.top + bbox.height / 2 + window.scrollY;
-
-      tooltip.style.left = `${centerX}px`;
-      tooltip.style.top = `${centerY}px`;
-
-      tooltip.style.display = "block";
-    }
-
-
-    function hideTooltip() {
-      document.getElementById("svgTooltip").style.display = "none";
+    // Optional: clear selection
+    function deselectAll() {
+      if (!previous_selected_element) return;
+      const el = previous_selected_element;
+      const saved = el.originalNextSibling;
+      if (saved && saved.parentNode) {
+        el.parentNode.insertBefore(el, saved);
+      } else {
+        el.parentNode.appendChild(el);
+      }
+      el.classList.remove("selected-node");
+      clearStrokeHover(el, animation_class);
+      el.removeEventListener("touchstart", redirectHandler);
+      document.querySelectorAll(".plot-btn").forEach(b => b.classList.remove("active-btn"));
+      const selectEl = document.querySelector(".node-select");
+      if (selectEl) selectEl.value = "";
+      previous_selected_element = null;
     }
 
     /* -------------------------------------------------------------
        6. INITIALISE
        ------------------------------------------------------------- */
     applyTransform();
-    // createNodeButtons(mapData, 'buttonsContainer', ploat_btn_class);
-    // createNodeButtons(mapData, 'buttonsContainer', ploat_btn_class);
 
- createNodeSelect(mapData, "buttonsContainer", "node-select"); // same container
-    PanModule.init();   // listeners only
-    ZoomModule.init();  // zoom + wheel
+    // Choose one or both:
+    // createNodeButtons(mapData, 'buttonsContainer', ploat_btn_class);
+    createNodeSelect(mapData, "buttonsContainer", "node-select");
+
+    PanModule.init();
+    ZoomModule.init();
   })();
 }
