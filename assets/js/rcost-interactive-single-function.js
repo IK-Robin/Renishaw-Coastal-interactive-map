@@ -94,6 +94,54 @@ function placeSmartInContainer(el, ev, pad = 8) {
       tooltipMove.innerHTML = "";
     }
 
+    let currentlyHoveredElement = null; // tracks the element currently on top due to hover
+
+/**
+ * Bring SVG element to the very top (same trick as click)
+ * @param {Element} el - The SVG element (path, rect, etc.)
+ */
+function bringToTopOnHover(el) {
+  if (!el || !(el instanceof Element)) return;
+
+  // If something else is already hovered → restore it first
+  if (currentlyHoveredElement && currentlyHoveredElement !== el) {
+    restoreOriginalPosition(currentlyHoveredElement);
+  }
+
+  // Save where it was
+  el.originalNextSibling = el.nextSibling;
+
+  // Move to the end → draws on top of everything
+  el.parentNode.appendChild(el);
+
+  // Optional: add a class for styling (glow, thicker stroke, etc.)
+  el.classList.add("hover-top");
+
+  currentlyHoveredElement = el;
+}
+
+/**
+ * Restore SVG element to its exact original DOM position
+ * @param {Element} el - The SVG element to restore
+ */
+function restoreOriginalPosition(el) {
+  if (!el || !el.parentNode || !el.originalNextSibling) return;
+
+  const savedNextSibling = el.originalNextSibling;
+
+  if (savedNextSibling && savedNextSibling.parentNode) {
+    el.parentNode.insertBefore(el, savedNextSibling);
+  } else {
+    // It was the last child
+    el.parentNode.appendChild(el);
+  }
+
+  // Clean up
+  delete el.originalNextSibling;
+  el.classList.remove("hover-top");
+  currentlyHoveredElement = null;
+}
+
     function handleHideOnMobile(ct) {
       // could call handleHide(ct) if you want
     }
@@ -166,6 +214,7 @@ function placeSmartInContainer(el, ev, pad = 8) {
           if (typeof onLotHoverIn === "function") {
             onLotHoverIn(el, mapD, ev);
           }
+          bringToTopOnHover(el);
           handleShow(ev, el, mapD);
         });
 
@@ -178,6 +227,7 @@ function placeSmartInContainer(el, ev, pad = 8) {
             onLotHoverOut(el, mapD, ev);
           }
           handleHide(el);
+          restoreOriginalPosition(el);
         });
 
         el.addEventListener("click", (ev) => {
