@@ -237,2000 +237,1962 @@ const node1_id = [
 const node_1_data = [
   {
     "id": "node_1_2",
-    "lotNumber": 2,
+    "lot": "PLOT NO. 2",
     "size": "910m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 4492343
   },
   {
     "id": "node_1_3",
-    "lotNumber": 3,
+    "lot": "PLOT NO. 3",
     "size": "336m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2212896
   },
   {
     "id": "node_1_4",
-    "lotNumber": 4,
+    "lot": "PLOT NO. 4",
     "size": "371m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2428626
   },
   {
     "id": "node_1_5",
-    "lotNumber": 5,
+    "lot": "PLOT NO. 5",
     "size": "499m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1810487
   },
   {
     "id": "node_1_6",
-    "lotNumber": 6,
+    "lot": "PLOT NO. 6",
     "size": "906m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5406672
   },
   {
     "id": "node_1_7",
-    "lotNumber": 7,
+    "lot": "PLOT NO. 7",
     "size": "1206m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 7521380
   },
   {
     "id": "node_1_8",
-    "lotNumber": 8,
+    "lot": "PLOT NO. 8",
     "size": "374m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1258113
   },
-  
-  
   {
     "id": "node_1_9",
-    "lotNumber": 9,
+    "lot": "PLOT NO. 9",
     "size": "76252m²",
     "description": "Portion 9 of Portion 1 of Erf 1 Renishaw",
     "landUse": "Private Conservation Reserve",
     "developmentType": null,
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 319901615
   },
- 
   {
     "id": "node_1_10",
-    "lotNumber": 10,
+    "lot": "PLOT NO. 10",
     "size": "186434m²",
     "description": "Portion 10 of Portion 1 of Erf 1 Renishaw",
     "landUse": "Private Conservation Reserve",
     "developmentType": null,
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1076636443
   },
- 
   {
     "id": "node_1_12",
-    "lotNumber": 12,
+    "lot": "PLOT NO. 12",
     "size": "622m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2662249
   },
- 
   {
     "id": "node_1_13",
-    "lotNumber": 13,
+    "lot": "PLOT NO. 13",
     "size": "545m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1665345
   },
   {
     "id": "node_1_13",
-    "lotNumber": 13,
+    "lot": "PLOT NO. 13",
     "size": "1585m²",
     "description": "Portion 13 of Portion 6 of Erf 1 Renishaw",
     "developmentType": "MUNICIPAL AND GOVERNMENT",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 8198241
   },
   {
     "id": "node_1_14",
-    "lotNumber": 14,
+    "lot": "PLOT NO. 14",
     "size": "52530m²",
     "description": "Portion 14 of Portion 6 of Erf 1 Renishaw",
     "developmentType": "MEDIUM DENSITY RESIDENTIAL 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 310099979
   },
   {
     "id": "node_1_15",
-    "lotNumber": 15,
+    "lot": "PLOT NO. 15",
     "size": "155329m²",
     "description": "Portion 15 of Portion 6 of Erf 1 Renishaw",
     "landUse": "Private Conservation Reserve",
     "developmentType": null,
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1034060546
   },
   {
     "id": "node_1_16",
-    "lotNumber": 16,
+    "lot": "PLOT NO. 16",
     "size": null,
     "description": "Portion 16 of Portion 6 of Erf 1 Renishaw",
     "landUse": "Private Conservation Reserve",
     "developmentType": null,
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1215216
   },
   {
     "id": "node_1_20",
-    "lotNumber": 20,
+    "lot": "PLOT NO. 20",
     "size": "402m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1474605
   },
   {
     "id": "node_1_21",
-    "lotNumber": 21,
+    "lot": "PLOT NO. 21",
     "size": "385m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2336019
   },
   {
     "id": "node_1_22",
-    "lotNumber": 22,
+    "lot": "PLOT NO. 22",
     "size": "295m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1362711
   },
   {
     "id": "node_1_23",
-    "lotNumber": 23,
+    "lot": "PLOT NO. 23",
     "size": "217m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 864970
   },
   {
     "id": "node_1_24",
-    "lotNumber": 24,
+    "lot": "PLOT NO. 24",
     "size": "226m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 811150
   },
   {
     "id": "node_1_25",
-    "lotNumber": 25,
+    "lot": "PLOT NO. 25",
     "size": "217m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1237014
   },
   {
     "id": "node_1_26",
-    "lotNumber": 26,
+    "lot": "PLOT NO. 26",
     "size": "211m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 769029
   },
   {
     "id": "node_1_27",
-    "lotNumber": 27,
+    "lot": "PLOT NO. 27",
     "size": "167m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 850122
   },
   {
     "id": "node_1_28",
-    "lotNumber": 28,
+    "lot": "PLOT NO. 28",
     "size": "278m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1385109
   },
   {
     "id": "node_1_29",
-    "lotNumber": 29,
+    "lot": "PLOT NO. 29",
     "size": "233m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1518776
   },
   {
     "id": "node_1_30",
-    "lotNumber": 30,
+    "lot": "PLOT NO. 30",
     "size": "210m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 772733
   },
   {
     "id": "node_1_31",
-    "lotNumber": 31,
+    "lot": "PLOT NO. 31",
     "size": "216m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1055530
   },
   {
     "id": "node_1_32",
-    "lotNumber": 32,
+    "lot": "PLOT NO. 32",
     "size": "207m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 809467
   },
   {
     "id": "node_1_33",
-    "lotNumber": 33,
+    "lot": "PLOT NO. 33",
     "size": "176m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 655036
   },
   {
     "id": "node_1_34",
-    "lotNumber": 34,
+    "lot": "PLOT NO. 34",
     "size": "158m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1082860
   },
   {
     "id": "node_1_35",
-    "lotNumber": 35,
+    "lot": "PLOT NO. 35",
     "size": "157m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 911744
   },
   {
     "id": "node_1_36",
-    "lotNumber": 36,
+    "lot": "PLOT NO. 36",
     "size": "178m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 948761
   },
   {
     "id": "node_1_37",
-    "lotNumber": 37,
+    "lot": "PLOT NO. 37",
     "size": "102m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 332553
   },
   {
     "id": "node_1_38",
-    "lotNumber": 38,
+    "lot": "PLOT NO. 38",
     "size": "145m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 678789
   },
   {
     "id": "node_1_39",
-    "lotNumber": 39,
+    "lot": "PLOT NO. 39",
     "size": "197m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 735043
   },
   {
     "id": "node_1_40",
-    "lotNumber": 40,
+    "lot": "PLOT NO. 40",
     "size": "137m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 916075
   },
   {
     "id": "node_1_41",
-    "lotNumber": 41,
+    "lot": "PLOT NO. 41",
     "size": "248m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1331669
   },
   {
     "id": "node_1_42",
-    "lotNumber": 42,
+    "lot": "PLOT NO. 42",
     "size": "228m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1247950
   },
   {
     "id": "node_1_43",
-    "lotNumber": 43,
+    "lot": "PLOT NO. 43",
     "size": "132m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 520780
   },
   {
     "id": "node_1_44",
-    "lotNumber": 44,
+    "lot": "PLOT NO. 44",
     "size": "171m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 589218
   },
   {
     "id": "node_1_45",
-    "lotNumber": 45,
+    "lot": "PLOT NO. 45",
     "size": "178m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 546391
   },
   {
     "id": "node_1_46",
-    "lotNumber": 46,
+    "lot": "PLOT NO. 46",
     "size": "193m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 601511
   },
   {
     "id": "node_1_47",
-    "lotNumber": 47,
+    "lot": "PLOT NO. 47",
     "size": "221m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1400579
   },
   {
     "id": "node_1_48",
-    "lotNumber": 48,
+    "lot": "PLOT NO. 48",
     "size": "285m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1270371
   },
   {
     "id": "node_1_49",
-    "lotNumber": 49,
+    "lot": "PLOT NO. 49",
     "size": "425m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1899076
   },
   {
     "id": "node_1_50",
-    "lotNumber": 50,
+    "lot": "PLOT NO. 50",
     "size": "446m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2237789
   },
   {
     "id": "node_1_51",
-    "lotNumber": 51,
+    "lot": "PLOT NO. 51",
     "size": "312m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2080664
   },
   {
     "id": "node_1_52",
-    "lotNumber": 52,
+    "lot": "PLOT NO. 52",
     "size": "381m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1704119
   },
   {
     "id": "node_1_53",
-    "lotNumber": 53,
+    "lot": "PLOT NO. 53",
     "size": "381m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1452868
   },
   {
     "id": "node_1_54",
-    "lotNumber": 54,
+    "lot": "PLOT NO. 54",
     "size": "478m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2329505
   },
   {
     "id": "node_1_55",
-    "lotNumber": 55,
+    "lot": "PLOT NO. 55",
     "size": "538m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2328775
   },
   {
     "id": "node_1_56",
-    "lotNumber": 56,
+    "lot": "PLOT NO. 56",
     "size": "699m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 4213508
   },
   {
     "id": "node_1_57",
-    "lotNumber": 57,
+    "lot": "PLOT NO. 57",
     "size": "489m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2150833
   },
   {
     "id": "node_1_58",
-    "lotNumber": 58,
+    "lot": "PLOT NO. 58",
     "size": "418m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2154424
   },
   {
     "id": "node_1_59",
-    "lotNumber": 59,
+    "lot": "PLOT NO. 59",
     "size": "408m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1288386
   },
   {
     "id": "node_1_66",
-    "lotNumber": 66,
+    "lot": "PLOT NO. 66",
     "size": "300m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1888034
   },
   {
     "id": "node_1_67",
-    "lotNumber": 67,
+    "lot": "PLOT NO. 67",
     "size": "432m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2428177
   },
   {
     "id": "node_1_68",
-    "lotNumber": 68,
+    "lot": "PLOT NO. 68",
     "size": "409m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2194729
   },
   {
     "id": "node_1_69",
-    "lotNumber": 69,
+    "lot": "PLOT NO. 69",
     "size": "300m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1657794
   },
   {
     "id": "node_1_70",
-    "lotNumber": 70,
+    "lot": "PLOT NO. 70",
     "size": "232m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1051582
   },
   {
     "id": "node_1_71",
-    "lotNumber": 71,
+    "lot": "PLOT NO. 71",
     "size": "257m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1224991
   },
   {
     "id": "node_1_72",
-    "lotNumber": 72,
+    "lot": "PLOT NO. 72",
     "size": "279m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1343252
   },
   {
     "id": "node_1_73",
-    "lotNumber": 73,
+    "lot": "PLOT NO. 73",
     "size": "279m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1519581
   },
   {
     "id": "node_1_74",
-    "lotNumber": 74,
+    "lot": "PLOT NO. 74",
     "size": "288m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1020259
   },
   {
     "id": "node_1_75",
-    "lotNumber": 75,
+    "lot": "PLOT NO. 75",
     "size": "288m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1202161
   },
   {
     "id": "node_1_76",
-    "lotNumber": 76,
+    "lot": "PLOT NO. 76",
     "size": "366m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1952036
   },
   {
     "id": "node_1_77",
-    "lotNumber": 77,
+    "lot": "PLOT NO. 77",
     "size": "779m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2478737
   },
   {
     "id": "node_1_78",
-    "lotNumber": 78,
+    "lot": "PLOT NO. 78",
     "size": "980m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5107108
   },
   {
     "id": "node_1_79",
-    "lotNumber": 79,
+    "lot": "PLOT NO. 79",
     "size": "1269m²",
     "developmentType": "RESIDENTIAL ONLY 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 4301272
   },
   {
     "id": "node_1_80",
-    "lotNumber": 80,
+    "lot": "PLOT NO. 80",
     "size": "6865m²",
     "developmentType": "INSTITUTION",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 25286189
   },
   {
     "id": "node_1_91",
-    "lotNumber": 91,
+    "lot": "PLOT NO. 91",
     "size": "1450m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 10142662
   },
   {
     "id": "node_1_92",
-    "lotNumber": 92,
+    "lot": "PLOT NO. 92",
     "size": "1772m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 7038425
   },
   {
     "id": "node_1_93",
-    "lotNumber": 93,
+    "lot": "PLOT NO. 93",
     "size": "1514m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 9942027
   },
   {
     "id": "node_1_94",
-    "lotNumber": 94,
+    "lot": "PLOT NO. 94",
     "size": "1333m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 6157290
   },
   {
     "id": "node_1_95",
-    "lotNumber": 95,
+    "lot": "PLOT NO. 95",
     "size": "1186m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 7047687
   },
   {
     "id": "node_1_96",
-    "lotNumber": 96,
+    "lot": "PLOT NO. 96",
     "size": "1421m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 8144171
   },
   {
     "id": "node_1_97",
-    "lotNumber": 97,
+    "lot": "PLOT NO. 97",
     "size": "1247m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 8076426
   },
   {
     "id": "node_1_98",
-    "lotNumber": 98,
+    "lot": "PLOT NO. 98",
     "size": "1747m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 8905184
   },
   {
     "id": "node_1_99",
-    "lotNumber": 99,
+    "lot": "PLOT NO. 99",
     "size": "939m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5275475
   },
   {
     "id": "node_1_100",
-    "lotNumber": 100,
+    "lot": "PLOT NO. 100",
     "size": "830m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 3055264
   },
   {
     "id": "node_1_101",
-    "lotNumber": 101,
+    "lot": "PLOT NO. 101",
     "size": "1571m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 10037136
   },
   {
     "id": "node_1_102",
-    "lotNumber": 102,
+    "lot": "PLOT NO. 102",
     "size": "1717m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 11992110
   },
   {
     "id": "node_1_103",
-    "lotNumber": 103,
+    "lot": "PLOT NO. 103",
     "size": "1607m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 6189702
   },
   {
     "id": "node_1_104",
-    "lotNumber": 104,
+    "lot": "PLOT NO. 104",
     "size": "3015m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 15186231
   },
   {
     "id": "node_1_109",
-    "lotNumber": 109,
+    "lot": "PLOT NO. 109",
     "size": "1057m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5571856
   },
   {
     "id": "node_1_110",
-    "lotNumber": 110,
+    "lot": "PLOT NO. 110",
     "size": "15239m²",
     "label": "INSTITUTION",
     "developmentType": "INSTITUTION",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 67996111
   },
   {
     "id": "node_1_111",
-    "lotNumber": 111,
+    "lot": "PLOT NO. 111",
     "size": "941m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5830774
   },
   {
     "id": "node_1_112",
-    "lotNumber": 112,
+    "lot": "PLOT NO. 112",
     "size": "3368m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 20588970
   },
   {
     "id": "node_1_113",
-    "lotNumber": 113,
+    "lot": "PLOT NO. 113",
     "size": "903m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5945979
   },
   {
     "id": "node_1_114",
-    "lotNumber": 114,
+    "lot": "PLOT NO. 114",
     "size": "773m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2987663
   },
   {
     "id": "node_1_115",
-    "lotNumber": 115,
+    "lot": "PLOT NO. 115",
     "size": "945m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 3117065
   },
   {
     "id": "node_1_116",
-    "lotNumber": 116,
+    "lot": "PLOT NO. 116",
     "size": "1007m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 4330710
   },
   {
     "id": "node_1_117",
-    "lotNumber": 117,
+    "lot": "PLOT NO. 117",
     "size": "1467m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 7003084
   },
   {
     "id": "node_1_118",
-    "lotNumber": 118,
+    "lot": "PLOT NO. 118",
     "size": "1149m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 4113686
   },
   {
     "id": "node_1_119",
-    "lotNumber": 119,
+    "lot": "PLOT NO. 119",
     "size": "1430m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5857044
   },
   {
     "id": "node_1_120",
-    "lotNumber": 120,
+    "lot": "PLOT NO. 120",
     "size": "1672m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 7577844
   },
   {
     "id": "node_1_121",
-    "lotNumber": 121,
+    "lot": "PLOT NO. 121",
     "size": "1836m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 11855303
   },
   {
     "id": "node_1_122",
-    "lotNumber": 122,
+    "lot": "PLOT NO. 122",
     "size": "1489m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 9062125
   },
   {
     "id": "node_1_123",
-    "lotNumber": 123,
+    "lot": "PLOT NO. 123",
     "size": "832m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5316980
   },
   {
     "id": "node_1_124",
-    "lotNumber": 124,
+    "lot": "PLOT NO. 124",
     "size": "2576m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 16368432
   },
   {
     "id": "node_1_125",
-    "lotNumber": 125,
+    "lot": "PLOT NO. 125",
     "size": "3451m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 12902886
   },
   {
     "id": "node_1_126",
-    "lotNumber": 126,
+    "lot": "PLOT NO. 126",
     "size": "33512m²",
     "developmentType": "MEDIUM DENSITY RESIDENTIAL 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 174388265
   },
   {
     "id": "node_1_127",
-    "lotNumber": 127,
+    "lot": "PLOT NO. 127",
     "size": "850m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2841522
   },
   {
     "id": "node_1_128",
-    "lotNumber": 128,
+    "lot": "PLOT NO. 128",
     "size": "1054m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5294434
   },
   {
     "id": "node_1_129",
-    "lotNumber": 129,
+    "lot": "PLOT NO. 129",
     "size": "2032m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 10776173
   },
   {
     "id": "node_1_130",
-    "lotNumber": 130,
+    "lot": "PLOT NO. 130",
     "size": "1073m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5563056
   },
   {
     "id": "node_1_131",
-    "lotNumber": 131,
+    "lot": "PLOT NO. 131",
     "size": "1038m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 4831207
   },
   {
     "id": "node_1_132",
-    "lotNumber": 132,
+    "lot": "PLOT NO. 132",
     "size": "1269m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 8361776
   },
   {
     "id": "node_1_133",
-    "lotNumber": 133,
+    "lot": "PLOT NO. 133",
     "size": "228m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1065473
   },
   {
     "id": "node_1_134",
-    "lotNumber": 134,
+    "lot": "PLOT NO. 134",
     "size": "6768m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 21798852
   },
   {
     "id": "node_1_135",
-    "lotNumber": 135,
+    "lot": "PLOT NO. 135",
     "size": "1738m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5676637
   },
   {
     "id": "node_1_136",
-    "lotNumber": 136,
+    "lot": "PLOT NO. 136",
     "size": "1416m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5540911
   },
   {
     "id": "node_1_137",
-    "lotNumber": 137,
+    "lot": "PLOT NO. 137",
     "size": "1370m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 4402925
   },
   {
     "id": "node_1_138",
-    "lotNumber": 138,
+    "lot": "PLOT NO. 138",
     "size": "1263m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5492848
   },
   {
     "id": "node_1_139",
-    "lotNumber": 139,
+    "lot": "PLOT NO. 139",
     "size": "2660m²",
     "developmentType": "MUNICIPAL AND GOVERNMENT",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 9453809
   },
   {
     "id": "node_1_140",
-    "lotNumber": 140,
+    "lot": "PLOT NO. 140",
     "size": "1939m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 9226203
   },
   {
     "id": "node_1_141",
-    "lotNumber": 141,
+    "lot": "PLOT NO. 141",
     "size": "961m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2980029
   },
   {
     "id": "node_1_142",
-    "lotNumber": 142,
+    "lot": "PLOT NO. 142",
     "size": "914m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 3753533
   },
   {
     "id": "node_1_143",
-    "lotNumber": 143,
+    "lot": "PLOT NO. 143",
     "size": "906m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5037025
   },
   {
     "id": "node_1_144",
-    "lotNumber": 144,
+    "lot": "PLOT NO. 144",
     "size": "916m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 4456585
   },
   {
     "id": "node_1_145",
-    "lotNumber": 145,
+    "lot": "PLOT NO. 145",
     "size": "999m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 4064913
   },
   {
     "id": "node_1_146",
-    "lotNumber": 146,
+    "lot": "PLOT NO. 146",
     "size": "1527m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 6746820
   },
   {
     "id": "node_1_147",
-    "lotNumber": 147,
+    "lot": "PLOT NO. 147",
     "size": "1191m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 6800680
   },
   {
     "id": "node_1_148",
-    "lotNumber": 148,
+    "lot": "PLOT NO. 148",
     "size": "1262m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 8190239
   },
   {
     "id": "node_1_149",
-    "lotNumber": 149,
+    "lot": "PLOT NO. 149",
     "size": "1479m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 6041926
   },
   {
     "id": "node_1_150",
-    "lotNumber": 150,
+    "lot": "PLOT NO. 150",
     "size": "1111m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 6232487
   },
   {
     "id": "node_1_150",
-    "lotNumber": 150,
+    "lot": "PLOT NO. 150",
     "size": "1358m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5422588
   },
   {
     "id": "node_1_151",
-    "lotNumber": 151,
+    "lot": "PLOT NO. 151",
     "size": "2068m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 10966235
   },
   {
     "id": "node_1_152",
-    "lotNumber": 152,
+    "lot": "PLOT NO. 152",
     "size": "2513m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 7632706
   },
   {
     "id": "node_1_153",
-    "lotNumber": 153,
+    "lot": "PLOT NO. 153",
     "size": "1432m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 9003105
   },
   {
     "id": "node_1_154",
-    "lotNumber": 154,
+    "lot": "PLOT NO. 154",
     "size": "1768m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 10571653
   },
   {
     "id": "node_1_155",
-    "lotNumber": 155,
+    "lot": "PLOT NO. 155",
     "size": "1698m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 7065456
   },
   {
     "id": "node_1_156",
-    "lotNumber": 156,
+    "lot": "PLOT NO. 156",
     "size": "2618m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 13382907
   },
   {
     "id": "node_1_157",
-    "lotNumber": 157,
+    "lot": "PLOT NO. 157",
     "size": "914m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 4464943
   },
   {
     "id": "node_1_158",
-    "lotNumber": 158,
+    "lot": "PLOT NO. 158",
     "size": "977m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 4237896
   },
   {
     "id": "node_1_159",
-    "lotNumber": 159,
+    "lot": "PLOT NO. 159",
     "size": "2809m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 17648824
   },
   {
     "id": "node_1_160",
-    "lotNumber": 160,
+    "lot": "PLOT NO. 160",
     "size": "903m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 6178970
   },
   {
     "id": "node_1_161",
-    "lotNumber": 161,
+    "lot": "PLOT NO. 161",
     "size": "1493m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 9809677
   },
   {
     "id": "node_1_162",
-    "lotNumber": 162,
+    "lot": "PLOT NO. 162",
     "size": "1266m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 7949678
   },
   {
     "id": "node_1_163",
-    "lotNumber": 163,
+    "lot": "PLOT NO. 163",
     "size": "8432m²",
     "label": "P.O.S",
     "developmentType": null,
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 52247232
   },
   {
     "id": "node_1_166",
-    "lotNumber": 166,
+    "lot": "PLOT NO. 166",
     "size": "2906m²",
     "label": "Private Conservation Reserve",
     "developmentType": null,
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 10386793
   },
   {
     "id": "node_1_167",
-    "lotNumber": 167,
+    "lot": "PLOT NO. 167",
     "size": "2092m²",
     "label": "P.U.B",
     "developmentType": null,
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 11197602
   },
   {
     "id": "node_1_168",
-    "lotNumber": 168,
+    "lot": "PLOT NO. 168",
     "size": "9638m²",
     "developmentType": "URBAN AGRICULTURE 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 51257998
   },
   {
     "id": "node_1_180",
-    "lotNumber": 180,
+    "lot": "PLOT NO. 180",
     "size": "3802m²",
     "label": "",
     "developmentType": "WORSHIP",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 26457655
   },
   {
     "id": "node_1_181",
-    "lotNumber": 181,
+    "lot": "PLOT NO. 181",
     "size": "5220 m²",
     "label": "Local Residential 1",
     "developmentType": "MEDIUM DENSITY RESIDENTIAL 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 35607679
   },
   {
     "id": "node_1_182",
-    "lotNumber": 182,
+    "lot": "PLOT NO. 182",
     "size": "6060 m²",
     "label": "",
     "developmentType": "MEDIUM DENSITY RESIDENTIAL 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 24654503
   },
   {
     "id": "node_1_183",
-    "lotNumber": 183,
+    "lot": "PLOT NO. 183",
     "size": "21994m²",
     "label": "",
     "developmentType": "URBAN AGRICULTURE 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 69277365
   },
   {
     "id": "node_1_184",
-    "lotNumber": 184,
+    "lot": "PLOT NO. 184",
     "size": "5806 m²",
     "label": "Local Residential 1",
     "developmentType": "MEDIUM DENSITY RESIDENTIAL 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 28609252
   },
   {
     "id": "node_1_185",
-    "lotNumber": 185,
+    "lot": "PLOT NO. 185",
     "size": "4504m²",
     "label": "Local Residential 1",
     "developmentType": "MEDIUM DENSITY RESIDENTIAL 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 27420634
   },
   {
     "id": "node_1_186",
-    "lotNumber": 186,
+    "lot": "PLOT NO. 186",
     "size": "5380 m²",
     "label": "",
     "developmentType": "MULTI-PURPOSE RETAIL",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 36874225
   },
   {
     "id": "node_1_187",
-    "lotNumber": 187,
+    "lot": "PLOT NO. 187",
     "size": "2578 m²",
     "label": "",
     "developmentType": "WORSHIP",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 17893346
   },
   {
     "id": "node_1_188",
-    "lotNumber": 188,
+    "lot": "PLOT NO. 188",
     "size": "14815m²",
     "label": "",
     "developmentType": "MULTI-PURPOSE RETAIL",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 80471935
   },
   {
     "id": "node_1_189",
-    "lotNumber": 189,
+    "lot": "PLOT NO. 189",
     "size": "26538m²",
     "label": "MULTI USE RETAIL 1",
     "developmentType": "MULTI-PURPOSE RETAIL",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 87604372
   },
   {
     "id": "node_1_190",
-    "lotNumber": 190,
+    "lot": "PLOT NO. 190",
     "size": "7203 m²",
     "label": "Private Conservation Reserve",
     "developmentType": null,
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 39896410
   },
   {
     "id": "node_1_192",
-    "lotNumber": 192,
+    "lot": "PLOT NO. 192",
     "size": "85223 m²",
     "label": "Private Conservation Reserve",
     "developmentType": null,
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 503089403
   },
   {
     "id": "node_1_193",
-    "lotNumber": 193,
+    "lot": "PLOT NO. 193",
     "size": "",
     "label": "",
     "developmentType": null,
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1394609
   },
   {
     "id": "node_1_198",
-    "lotNumber": 198,
+    "lot": "PLOT NO. 198",
     "size": "887m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 3675424
   },
   {
     "id": "node_1_199",
-    "lotNumber": 199,
+    "lot": "PLOT NO. 199",
     "size": "1166m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5090417
   },
   {
     "id": "node_1_200",
-    "lotNumber": 200,
+    "lot": "PLOT NO. 200",
     "size": "1207m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5388024
   },
   {
     "id": "node_1_201",
-    "lotNumber": 201,
+    "lot": "PLOT NO. 201",
     "size": "1589m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 9425367
   },
   {
     "id": "node_1_202",
-    "lotNumber": 202,
+    "lot": "PLOT NO. 202",
     "size": "846m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5298874
   },
   {
     "id": "node_1_203",
-    "lotNumber": 203,
+    "lot": "PLOT NO. 203",
     "size": "1560m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5070780
   },
- 
   {
     "id": "node_1_204",
-    "lotNumber": 204,
+    "lot": "PLOT NO. 204",
     "size": "8244m²",
     "developmentType": "MEDIUM DENSITY RESIDENTIAL 1",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 35603822
   },
   {
     "id": "node_1_205",
-    "lotNumber": 205,
+    "lot": "PLOT NO. 205",
     "size": "505m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 3451514
   },
   {
     "id": "node_1_206",
-    "lotNumber": 206,
+    "lot": "PLOT NO. 206",
     "size": "499m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2930168
   },
   {
     "id": "node_1_207",
-    "lotNumber": 207,
+    "lot": "PLOT NO. 207",
     "size": "503m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2928652
   },
   {
     "id": "node_1_208",
-    "lotNumber": 208,
+    "lot": "PLOT NO. 208",
     "size": "472m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1429383
   },
   {
     "id": "node_1_209",
-    "lotNumber": 209,
+    "lot": "PLOT NO. 209",
     "size": "543m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2134288
   },
   {
     "id": "node_1_210",
-    "lotNumber": 210,
+    "lot": "PLOT NO. 210",
     "size": "523m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2793352
   },
   {
     "id": "node_1_211",
-    "lotNumber": 211,
+    "lot": "PLOT NO. 211",
     "size": "540m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 3492308
   },
   {
     "id": "node_1_212",
-    "lotNumber": 212,
+    "lot": "PLOT NO. 212",
     "size": "520m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2770181
   },
   {
     "id": "node_1_213",
-    "lotNumber": 213,
+    "lot": "PLOT NO. 213",
     "size": "533m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2761193
   },
   {
     "id": "node_1_214",
-    "lotNumber": 214,
+    "lot": "PLOT NO. 214",
     "size": "676m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2820842
   },
   {
     "id": "node_1_215",
-    "lotNumber": 215,
+    "lot": "PLOT NO. 215",
     "size": "546m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 3197715
   },
   {
     "id": "node_1_216",
-    "lotNumber": 216,
+    "lot": "PLOT NO. 216",
     "size": "531m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2441928
   },
   {
     "id": "node_1_217",
-    "lotNumber": 217,
+    "lot": "PLOT NO. 217",
     "size": "507m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2061873
   },
   {
     "id": "node_1_218",
-    "lotNumber": 218,
+    "lot": "PLOT NO. 218",
     "size": "597m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2834608
   },
   {
     "id": "node_1_219",
-    "lotNumber": 219,
+    "lot": "PLOT NO. 219",
     "size": "684m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2772422
   },
   {
     "id": "node_1_220",
-    "lotNumber": 220,
+    "lot": "PLOT NO. 220",
     "size": "745m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 3887874
   },
   {
     "id": "node_1_221",
-    "lotNumber": 221,
+    "lot": "PLOT NO. 221",
     "size": "518m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1593348
   },
   {
     "id": "node_1_225",
-    "lotNumber": 225,
+    "lot": "PLOT NO. 225",
     "size": "112285m²",
     "developmentType": "MEDIUM DENSITY RESIDENTIAL 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 587820645
   },
   {
     "id": "node_1_226",
-    "lotNumber": 226,
+    "lot": "PLOT NO. 226",
     "size": "5083m²",
     "developmentType": "MUNICIPAL AND GOVERNMENT",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 28782595
   },
   {
     "id": "node_1_227",
-    "lotNumber": 227,
+    "lot": "PLOT NO. 227",
     "size": "7552m²",
     "developmentType": "MEDIUM DENSITY RESIDENTIAL 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 49082294
   },
   {
     "id": "node_1_228",
-    "lotNumber": 228,
+    "lot": "PLOT NO. 228",
     "size": "1765m²",
     "developmentType": "MUNICIPAL AND GOVERNMENT",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 7908322
   },
   {
     "id": "node_1_229",
-    "lotNumber": 229,
+    "lot": "PLOT NO. 229",
     "size": "68318m²",
     "developmentType": "MEDIUM DENSITY RESIDENTIAL 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 432170122
   },
   {
     "id": "node_1_230",
-    "lotNumber": 230,
+    "lot": "PLOT NO. 230",
     "size": "6905m²",
     "developmentType": "MEDIUM DENSITY RESIDENTIAL 1",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 41573539
   },
   {
     "id": "node_1_231",
-    "lotNumber": 231,
+    "lot": "PLOT NO. 231",
     "size": "649m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 3464401
   },
   {
     "id": "node_1_232",
-    "lotNumber": 232,
+    "lot": "PLOT NO. 232",
     "size": "735m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 4054643
   },
   {
     "id": "node_1_233",
-    "lotNumber": 233,
+    "lot": "PLOT NO. 233",
     "size": "805m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 4632025
   },
   {
     "id": "node_1_234",
-    "lotNumber": 234,
+    "lot": "PLOT NO. 234",
     "size": "821m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 4672257
   },
   {
     "id": "node_1_235",
-    "lotNumber": 235,
+    "lot": "PLOT NO. 235",
     "size": "698m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 3748119
   },
   {
     "id": "node_1_236",
-    "lotNumber": 236,
+    "lot": "PLOT NO. 236",
     "size": "579m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1927442
   },
   {
     "id": "node_1_237",
-    "lotNumber": 237,
+    "lot": "PLOT NO. 237",
     "size": "1178m²",
     "developmentType": "RESIDENTIAL ONLY 3",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 7111798
   },
   {
     "id": "node_1_238",
-    "lotNumber": 238,
+    "lot": "PLOT NO. 238",
     "size": "1115m²",
     "developmentType": "RESIDENTIAL ONLY 3",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5688330
   },
   {
     "id": "node_1_239",
-    "lotNumber": 239,
+    "lot": "PLOT NO. 239",
     "size": "960m²",
     "developmentType": "RESIDENTIAL ONLY 3",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 3293459
   },
   {
     "id": "node_1_240",
-    "lotNumber": 240,
+    "lot": "PLOT NO. 240",
     "size": "1105m²",
     "developmentType": "RESIDENTIAL ONLY 3",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5857396
   },
   {
     "id": "node_1_241",
-    "lotNumber": 241,
+    "lot": "PLOT NO. 241",
     "size": "1147m²",
     "developmentType": "RESIDENTIAL ONLY 3",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5808505
   },
   {
     "id": "node_1_242",
-    "lotNumber": 242,
+    "lot": "PLOT NO. 242",
     "size": "1415m²",
     "developmentType": "RESIDENTIAL ONLY 3",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 7970960
   },
-
   {
     "id": "node_1_243",
-    "lotNumber": 243,
+    "lot": "PLOT NO. 243",
     "size": "996m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 3130800
   },
- 
   {
     "id": "node_1_244",
-    "lotNumber": 244,
+    "lot": "PLOT NO. 244",
     "size": "2509m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 9955187
   },
- 
   {
     "id": "node_1_245",
-    "lotNumber": 245,
+    "lot": "PLOT NO. 245",
     "size": "2099m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 14255150
   },
   {
     "id": "node_1_246",
-    "lotNumber": 246,
+    "lot": "PLOT NO. 246",
     "size": "1178m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 6426537
   },
   {
     "id": "node_1_247",
-    "lotNumber": 247,
+    "lot": "PLOT NO. 247",
     "size": "1454m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 7327490
   },
   {
     "id": "node_1_248",
-    "lotNumber": 248,
+    "lot": "PLOT NO. 248",
     "size": "976m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 6740227
   },
   {
     "id": "node_1_249",
-    "lotNumber": 249,
+    "lot": "PLOT NO. 249",
     "size": "1169m²",
     "developmentType": "RESIDENTIAL ONLY 2",
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 5385462
   },
   {
     "id": "node_1_252",
-    "lotNumber": 252,
+    "lot": "PLOT NO. 252",
     "size": "2003m²",
     "landUse": "P.O.S",
     "developmentType": null,
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 9961867
   },
   {
     "id": "node_1_253",
-    "lotNumber": 253,
+    "lot": "PLOT NO. 253",
     "size": "5631m²",
     "landUse": "PRIVATE O.S",
     "developmentType": null,
     "status": "sold",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 37517554
   },
   {
     "id": "node_1_254",
-    "lotNumber": 254,
+    "lot": "PLOT NO. 254",
     "size": "4609m²",
     "landUse": "P.O.S",
     "developmentType": null,
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 29289977
   },
   {
     "id": "node_1_257",
-    "lotNumber": 257,
+    "lot": "PLOT NO. 257",
     "size": "12947m²",
     "landUse": "Conservation Reserve",
     "developmentType": null,
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 87578218
   },
   {
     "id": "node_1_259",
-    "lotNumber": 259,
+    "lot": "PLOT NO. 259",
     "size": null,
     "landUse": "Private Conservation Reserve",
     "developmentType": null,
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 1857171
   },
   {
     "id": "node_1_260",
-    "lotNumber": 260,
+    "lot": "PLOT NO. 260",
     "size": null,
     "landUse": "Private Conservation Reserve",
     "developmentType": null,
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 2648390
   },
   {
     "id": "node_1_261",
-    "lotNumber": 261,
+    "lot": "PLOT NO. 261",
     "size": "55583m²",
     "landUse": "Private Conservation Reserve",
     "developmentType": null,
     "status": "available",
-    'link':'node-details.html',
+    "link": "node-details.html",
     "price": 338407940
   },
-  {
-    "id": null,
-    "lotNumber": null,
-    "size": null,
-    "landUse": "Private Conservation Reserve",
-    "developmentType": null,
-    "status": "available",
-    'link':'node-details.html',
-    "price": 1257908
-  },
-  {
-    "id": null,
-    "lotNumber": null,
-    "size": null,
-    "landUse": "Private Conservation Reserve",
-    "developmentType": null,
-    "status": "available",
-    'link':'node-details.html',
-    "price": 2590909
-  },
-  {
-    "id": null,
-    "lotNumber": null,
-    "size": "1939m²",
-    "label": "PUBLIC BUILDINGS & SERVICES",
-    "developmentType": "MUNICIPAL AND GOVERNMENT",
-    "status": "sold",
-    'link':'node-details.html',
-    "price": 8422756
-  }
-]
+  
+];
 
 // your original data:
 
 
-// add id and sort by lotNumber ascending
+// add id and sort by lot ascending
 // const node_1_data_with_ids = node_1_data
 //   .map((lot) => ({
-//     // id is based on lotNumber when it exists, otherwise null
-//     id: typeof lot.lotNumber === "number" ? `node_1_${lot.lotNumber}` : null,
+//     // id is based on lot when it exists, otherwise null
+//     id: typeof lot.lot === "number" ? `node_1_${lot.lot}` : null,
 //     ...lot,
 //   }))
 //   .sort((a, b) => {
-//     const aNum = typeof a.lotNumber === "number" ? a.lotNumber : Number.POSITIVE_INFINITY;
-//     const bNum = typeof b.lotNumber === "number" ? b.lotNumber : Number.POSITIVE_INFINITY;
+//     const aNum = typeof a.lot === "number" ? a.lot : Number.POSITIVE_INFINITY;
+//     const bNum = typeof b.lot === "number" ? b.lot : Number.POSITIVE_INFINITY;
 //     return aNum - bNum;
 //   });
 
@@ -2242,6 +2204,18 @@ node1_id.forEach(add_animation_class => {
   const node_1_id = document.querySelector(`#${add_animation_class}`);
   node_1_id.classList.add('anim-path');
 });
+
+// // add every lot tex lot number and return the full modify lot data
+// let l = []
+// node_1_data.forEach(lot => {
+// const o = {
+//   ...lot,
+//   lot: `PLOT NO. ${lot.lot}`,
+// };
+// l.push(o);
+// }
+// )
+// console.log(l)
 
 
 
@@ -2260,7 +2234,7 @@ function renderTooltipContent(mapD) {
   return `
    <div class="rcost-plot-tooltip">
     <div class="ploat-tooltip-container">
-          <div class="plot-label">PLOT NO. ${mapD.lotNumber}</div>
+          <div class="plot-label">PLOT NO. ${mapD.lot}</div>
       <div class="development_type">${mapD.developmentType}</div>
       <div class="plot-size">Plot Size: ${mapD.size}</div>
     </div>
@@ -2281,7 +2255,7 @@ function renderTooltipContent(mapD) {
 //     <div  class="all_node_tooltip_style">
 //       <p><strong> ${mapD.node_number ?? ""} </strong></p>
 //       <p><strong>Development type:</strong> ${mapD.use ?? ""}</p>
-//       <p><strong>Sites:</strong> ${String(mapD.lotNumber || "").replace(
+//       <p><strong>Sites:</strong> ${String(mapD.lot || "").replace(
 //         /_/g,
 //         ""
 //     )} Sites</p>
@@ -2303,7 +2277,7 @@ if (isMobile_devices) {
     mapId: node1_id,
     mapData: node_1_data,
     ploat_btn_class: "plot-btn all-nodes-btn",
-    data_proprty_to_create_button:'lotNumber',
+    data_proprty_to_create_button:'lot',
     animation_class: 'node_lot_highlight',
 
   });
@@ -2404,3 +2378,4 @@ else {
     }
   });
 }
+
