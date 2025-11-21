@@ -4,7 +4,7 @@ const sold_color = "red";
 const mapData = [
   {
     id: "node_1",
-    node_number: "Node 1 ",
+    node: "Node 1 ",
     lotNumber: "210",
     nodeSubtitle: 'RENSHAW CENTRAL',
     imageUrl: 'assets/images/node-tooltip-images/node-1.png',
@@ -19,7 +19,7 @@ const mapData = [
 
   {
     id: "node_2",
-    node_number: "Node 2 ",
+    node: "Node 2 ",
     lotNumber: "143",
     nodeSubtitle: 'CLANSTHAL',
     imageUrl: 'assets/images/node-tooltip-images/node-2.png',
@@ -32,7 +32,7 @@ const mapData = [
 
   {
     id: "node_3",
-    node_number: "Node 3 ",
+    node: "Node 3 ",
     lotNumber: "85",
     nodeSubtitle: 'INTERCHANGE',
     imageUrl: 'assets/images/node-tooltip-images/node-3-01.png',
@@ -44,7 +44,7 @@ const mapData = [
 
   {
     id: "node_4",
-    node_number: "Node 4 ",
+    node: "Node 4 ",
     lotNumber: "7",
     nodeSubtitle: 'RENSHAW NORTH',
     imageUrl: 'assets/images/node-tooltip-images/node-4.png',
@@ -56,7 +56,7 @@ const mapData = [
 
   {
     id: "node_5",
-    node_number: "Node 5 ",
+    node: "Node 5 ",
     lotNumber: "111",
     nodeSubtitle: 'RENSHAW SOUTH',
     imageUrl: 'assets/images/node-tooltip-images/node-5.png',
@@ -86,7 +86,7 @@ function renderTooltipContent(mapD) {
   // mapD.nodeName, mapD.nodeSubtitle, mapD.imageUrl,
   // mapD.area, mapD.sites, mapD.desc1, mapD.desc2, mapD.desc3
 
-  const nodeName = mapD.node_number;
+  const nodeName = mapD.node;
   const nodeSubtitle = mapD.nodeSubtitle || (mapD.developmentType || "");
   const area = mapD.area || mapD.size || "";
   const sites = mapD.lotNumber || "";
@@ -141,7 +141,7 @@ function renderTooltipContent(mapD) {
 
 // create the node buttons for mobile view
 
-  //  createNodeButtons(mapData, "node_number", "buttonsContainer");
+  //  createNodeButtons(mapData, "node", "buttonsContainer");
 
   const shapeButtonsContainer = document.getElementById('shapeButtons');
 
@@ -163,7 +163,7 @@ if (isMobile_devices) {
     mapId,
     mapData,
     ploat_btn_class:"plot-btn all-nodes-btn",
-    data_proprty_to_create_button:"node_number",
+    data_proprty_to_create_button:"node",
     animation_class:'highlight'
 
       
