@@ -71,8 +71,8 @@ function setupStrokeAnimation(svgId) {
 }
 
 function applyStrokeHover(el,hover_class='highlight') {
+  console.log('h')
   if (!el.classList.contains("anim-path")) return;
-
   if (typeof el.getTotalLength === "function") {
     const len = el.getTotalLength();
     el.style.setProperty("--len", len);
