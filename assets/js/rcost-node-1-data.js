@@ -2375,7 +2375,8 @@ else {
 
       // Remove animation
       el.classList.remove("draw", "highlight");
-    }
+    },
+    max_zoom:7
   });
 }
 
