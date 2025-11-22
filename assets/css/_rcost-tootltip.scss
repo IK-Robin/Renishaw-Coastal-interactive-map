@@ -124,23 +124,38 @@
     padding: 16px 18px 0;
 
     .plot-label {
-      font-size: 11px;
-      letter-spacing: 0.22em;
-      color: #a0a0a0;
-      margin-bottom: 6px;
+  
+
+	// letter-spacing: .5px;
+	color: #000;
+	 margin-bottom: 6px; 
+	// font-family: "Rajdhani", Sans-serif;
+  font-family: "Cairo", Sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 16px;
+
     }
 
     .development_type {
       font-size: 16px;
       font-weight: 600;
       color: #b28b39; // gold-ish
-      margin-bottom: 8px;
+      margin-bottom: 6px;
+      font-family: "Cairo", Sans-serif;
+      letter-spacing: 1.9px;
     }
 
     .plot-size {
-      font-size: 11px;
-      color: #999999;
-      margin-bottom: 12px;
+   
+
+	margin-bottom: 12px;
+	
+  font-family: "Cairo", Sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 16px;
+
     }
   }
 
@@ -148,13 +163,16 @@
     width: 100%;
     border: none;
     outline: none;
-    background: #44484c;
+    background: #222222;
     color: #ffffff;
     text-transform: uppercase;
-    font-size: 11px;
+    font-size: 15px;
     letter-spacing: 0.15em;
     padding: 10px 0;
     cursor: pointer;
+    font-family: 'cairo', sans-serif;
+    letter-spacing: 1.9px;
+    font-weight: 400;
 
     &:hover {
       opacity: 0.9;

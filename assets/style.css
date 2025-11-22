@@ -430,7 +430,6 @@ create the mobile view layout and  button
   padding: 0.75rem;
   font-size: 0.9rem;
   font-weight: bold;
-  border-radius: 4px;
   cursor: pointer;
   transition: background 0.2s;
   -webkit-transition: background 0.2s;
@@ -524,7 +523,7 @@ add animation to the  svg path
   top: 0;
   left: 0;
   width: 100%;
-  background-color: #282727;
+  background-color: #222222;
   backdrop-filter: blur(7px);
   -webkit-backdrop-filter: blur(7px);
   z-index: 1000;
@@ -803,33 +802,42 @@ add animation to the  svg path
   padding: 16px 18px 0;
 }
 .rcost-plot-tooltip .ploat-tooltip-container .plot-label {
-  font-size: 11px;
-  letter-spacing: 0.22em;
-  color: #a0a0a0;
+  color: #000;
   margin-bottom: 6px;
+  font-family: "Cairo", Sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 16px;
 }
 .rcost-plot-tooltip .ploat-tooltip-container .development_type {
   font-size: 16px;
   font-weight: 600;
   color: #b28b39;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  font-family: "Cairo", Sans-serif;
+  letter-spacing: 1.9px;
 }
 .rcost-plot-tooltip .ploat-tooltip-container .plot-size {
-  font-size: 11px;
-  color: #999999;
   margin-bottom: 12px;
+  font-family: "Cairo", Sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 16px;
 }
 .rcost-plot-tooltip .plot-btn {
   width: 100%;
   border: none;
   outline: none;
-  background: #44484c;
+  background: #222222;
   color: #ffffff;
   text-transform: uppercase;
-  font-size: 11px;
+  font-size: 15px;
   letter-spacing: 0.15em;
   padding: 10px 0;
   cursor: pointer;
+  font-family: "cairo", sans-serif;
+  letter-spacing: 1.9px;
+  font-weight: 400;
 }
 .rcost-plot-tooltip .plot-btn:hover {
   opacity: 0.9;
