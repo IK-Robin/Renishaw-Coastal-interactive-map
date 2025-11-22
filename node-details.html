@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Unit 14 — One on Seaton (Clone)</title>
+  <title>Unit 14 — One on Seaton (Clone) — Flexbox mobile thumbs</title>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,7 +37,6 @@
       line-height:1.35;
     }
 
-    /* ---------- Header ---------- */
     header{
       display:flex;
       align-items:center;
@@ -55,7 +54,8 @@
       max-width: 1140px;
       margin: 0 auto;
     }
-    /* ---------- Layout ---------- */
+
+    /* ---------- Layout (FLEXBOX) ---------- */
     .wrap{
       max-width:1360px;
       margin:28px auto;
@@ -63,79 +63,89 @@
     }
 
     .main {
-      display:grid;
-      grid-template-columns:120px 1fr 420px;
-      gap:32px;
-      min-height: calc(100vh - 160px); /* header + footer note area */
+      display:flex;
+      gap:15px;
+      min-height: calc(100vh - 160px);
       align-items:stretch;
+      flex-wrap: nowrap;
     }
 
-    /* ---------- Left Thumbs ---------- */
-    .thumbnails{
-      background:var(--panel);
-      padding:28px 12px;
-      border-radius:12px;
-      display:flex;
-      flex-direction:column;
-      gap:18px;
-      align-items:center;
-      overflow-y:auto;
+    /* left column (desktop) */
+    .thumbnails {
+      flex: 0 0 120px;
+      background: var(--panel);
+      padding: 10px 12px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-items: center;
+      overflow-y: auto;
       box-shadow: 0 10px 30px var(--shadow);
     }
+
+    /* thumbnail card wrapper used on mobile to show rounded bg and border */
+    .thumb-wrap {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(255,255,255,0.03);
+      padding:6px;
+      border-radius:10px;
+      border: 1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.45);
+    }
+
     .thumb{
-      width:90px;
-      height:90px;
-      border-radius:12px;
+      width:118px;
+      height:114px;
+      border-radius:6px;
       object-fit:cover;
       display:block;
       cursor:pointer;
-      transition: transform .28s cubic-bezier(.2,.9,.2,1), box-shadow .25s, border-color .25s;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.6);
-      border:3px solid transparent;
+      transition: transform .22s cubic-bezier(.2,.9,.2,1), box-shadow .18s, border-color .18s, opacity .18s;
+      box-shadow: none;
+      border:2px solid transparent;
       flex:0 0 auto;
+      display:block;
+      -webkit-user-drag: none;
     }
-    .thumb:hover{ transform:scale(1.06); border-color:rgba(197,164,126,0.25) }
+    .thumb:hover{ transform:scale(1.04); opacity:0.98 }
     .thumb.active{
-      transform:scale(1.08);
-      border-color: var(--accent);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.75);
+      transform:scale(1.00);
+      border-color: rgba(197,164,126,0.25);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.6);
     }
 
     /* ---------- Center Area ---------- */
     .center-image{
+      flex: 1 1 auto;
       background: #000;
-      border-radius: var(--radius-lg);
-      padding:36px;
+      padding:0;
       position:relative;
       display:flex;
       align-items:center;
       justify-content:center;
       overflow:hidden;
       box-shadow: 0 24px 50px rgba(0,0,0,0.65);
-      min-height:520px;
+      max-height:520px;
     }
 
-    /* main single image */
     .single-image{
       width:100%;
       height:100%;
       max-height:720px;
-      border-radius:16px;
       object-fit:cover;
       display:block;
       box-shadow: 0 20px 40px rgba(0,0,0,0.6);
       transition: transform .45s cubic-bezier(.2,.9,.2,1), filter .45s;
       user-select:none;
     }
-
-    /* small subtle zoom-in on hover for desktop */
     .single-image:hover{ transform: scale(1.01); filter:brightness(1.02) }
 
-    /* Swiper area (hidden by default) */
     .swiper-wrap{
       width:100%;
       height:100%;
-      border-radius:16px;
       overflow:hidden;
       display:none;
       position:relative;
@@ -149,7 +159,6 @@
       user-select:none;
     }
 
-    /* Swiper controls styling */
     .swiper-button-next, .swiper-button-prev{
       width:52px; height:52px;
       border-radius:50%;
@@ -168,6 +177,7 @@
 
     /* ---------- Right Panel ---------- */
     .rightUnitSide{
+      flex: 0 0 420px;
       background: var(--panel);
       border-radius: 20px;
       padding:56px 44px;
@@ -212,7 +222,6 @@
     }
     .reserveUnit:hover{ transform: translateY(-3px); box-shadow: 0 18px 40px rgba(0,0,0,0.35) }
 
-    /* accordion */
     .unitAccordian{ margin-top:18px }
     .card{
       background:#383838;
@@ -232,7 +241,7 @@
       cursor:pointer;
     }
     .card-link::after{
-      content:"\2193"; /* down arrow */
+      content:"\2193";
       position:absolute;
       right:18px;
       top:50%;
@@ -269,7 +278,6 @@
     .cardIcon-bath::before{ content:"🛁" }
     .cardIcon-area::before{ content:"📐" }
 
-    /* footer note (outside the main grid, anchored bottom-left on big screens) */
     .footer-note{
       color:#a0a0a0;
       font-size:0.9rem;
@@ -277,53 +285,160 @@
       text-align:left;
     }
 
-    /* ---------- Responsive ---------- */
+    /* Hide native scrollbar but keep functionality (non-invasive) */
+    .thumbnails::-webkit-scrollbar { height:9px; width:0; display:none; }
+    .thumbnails { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* ---------- Mobile layout: center first, thumbnails second, right panel last ---------- */
+@media (max-width:1100px) {
+
+  /* stack vertically */
+  .main {
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* Center container goes FIRST */
+  .center-image {
+    order: 1;                /* TOP on mobile */
+    width: 100%;
+    padding: 10px;
+    min-height: 42vw;
+    max-height: 62vh;
+    border-radius: 16px;
+  }
+
+  /* Thumbnails go SECOND */
+  .thumbnails {
+    order: 2;                /* MIDDLE on mobile */
+    width: 100%;
+    max-width: 880px;
+    margin: 0 auto;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    padding: 12px 12px;
+    gap: 14px;
+
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    background: transparent;
+    border-radius: 12px;
+
+    scroll-snap-type: x mandatory;
+    box-sizing: border-box;
+  }
+
+  .thumb {
+    flex: 0 0 auto;
+    width: clamp(72px, 18vw, 120px);
+    height: clamp(72px, 18vw, 120px);
+    border-radius: 8px;
+    scroll-snap-align: center;
+  }
+
+  /* Right info panel last */
+  .rightUnitSide {
+    order: 3;                /* BOTTOM on mobile */
+    width: 100%;
+    padding: 28px 20px;
+    border-radius: 16px;
+  }
+
+  /* optional soft fade on edges */
+  .thumbnails {
+    position: relative;
+  }
+  .thumbnails::before,
+  .thumbnails::after {
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 42px;
+    pointer-events:none;
+  }
+  .thumbnails::before {
+    left: 0;
+    background: linear-gradient(90deg, var(--bg) 0%, rgba(0,0,0,0) 60%);
+  }
+  .thumbnails::after {
+    right: 0;
+    background: linear-gradient(-90deg, var(--bg) 0%, rgba(0,0,0,0) 60%);
+  }
+}
+
+
+    /* scroll-snap to make thumbnails snap into position on mobile */
     @media (max-width:1100px){
-      .main{ grid-template-columns: 1fr; grid-template-rows: auto 520px auto; gap:18px }
-      .thumbnails{ flex-direction:row; padding:16px; border-radius:12px; order:1; justify-content:center }
-      .thumb{ width:120px; height:120px; border-radius:14px }
-      .center-image{ padding:18px; order:2; min-height:420px; border-radius:16px }
-      .rightUnitSide{ order:3; border-radius:16px; padding:28px 20px }
-      .wrap{ padding:0 14px }
-      .footer-note{ margin:20px 14px 36px; text-align:center }
+      .thumbnails{
+        scroll-snap-type: x mandatory;
+      }
+      .thumb-wrap{
+        scroll-snap-align: center;
+        scroll-snap-stop: always;
+      }
     }
 
-    @media (max-width:640px){
-      header{ padding:16px }
-      .logo{ height:44px }
-      .rightUnitSide{ padding:20px }
-      h1.title{ font-size:32px }
-      .price{ font-size:28px }
-      .center-image{ min-height:360px }
+    /* visual fade edges to hint scroll (pseudo elements on container) */
+    @media (max-width:1100px){
+      .thumbnails {
+        position: relative;
+      }
+      .thumbnails::before,
+      .thumbnails::after{
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 42px;
+        pointer-events:none;
+      }
+      .thumbnails::before{
+        left: 0;
+        background: linear-gradient(90deg, var(--bg) 0%, rgba(17,17,17,0.00) 60%);
+      }
+      .thumbnails::after{
+        right: 0;
+        background: linear-gradient(-90deg, var(--bg) 0%, rgba(17,17,17,0.00) 60%);
+      }
     }
 
-    /* tiny helpers */
+    /* tiny screens */
+    @media (max-width:420px){
+      .thumb { width: clamp(64px, 24vw, 96px); height: clamp(64px, 24vw, 96px); }
+      .thumbnails::before, .thumbnails::after { width: 28px; }
+      .center-image{ min-height:48vw; }
+    }
+
     .visually-hidden{ position:absolute!important; height:1px; width:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap }
   </style>
 </head>
 <body>
 
-
-
  <div class="container">
    <div class="wrap">
     <div class="main">
       <!-- LEFT: Thumbnails -->
+      <!-- Note: each thumb is wrapped in .thumb-wrap for the card look on mobile -->
       <aside class="thumbnails" aria-label="Gallery thumbnails">
-        <img class="thumb active" src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/view/view-14.webp"
+        <span class="thumb-wrap"><img class="thumb active" src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/view/view-14.webp"
              data-type="image" data-src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/view/view-14.webp"
-             alt="Exterior view — Unit 14" loading="lazy">
+             alt="Exterior view — Unit 14" loading="lazy"></span>
 
-        <img class="thumb" src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/unit-page/render-thumb1.webp"
-             data-type="slider" alt="Interior renders — gallery" loading="lazy">
+        <span class="thumb-wrap"><img class="thumb" src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/unit-page/render-thumb1.webp"
+             data-type="slider" alt="Interior renders — gallery" loading="lazy"></span>
 
-        <img class="thumb" src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/unit-page/type-C.webp"
+        <span class="thumb-wrap"><img class="thumb" src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/unit-page/type-C.webp"
              data-type="image" data-src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/unit-page/type-C.webp"
-             alt="Unit type C" loading="lazy">
+             alt="Unit type C" loading="lazy"></span>
 
-        <img class="thumb" src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/BB-floor.webp"
+        <span class="thumb-wrap"><img class="thumb" src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/BB-floor.webp"
              data-type="image" data-src="https://oneonseaton.co.za/wp-content/themes/One_On_Seaton/assets/BB-floor.webp"
-             alt="Floor Plan" loading="lazy">
+             alt="Floor Plan" loading="lazy"></span>
       </aside>
 
       <!-- CENTER: Main visual -->
@@ -407,14 +522,15 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
     // Elements
+    // Note: since thumbs are wrapped in .thumb-wrap, adapt selection to get the actual .thumb elements
     const thumbs = Array.from(document.querySelectorAll('.thumb'));
+    const thumbWraps = Array.from(document.querySelectorAll('.thumb-wrap'));
     const singleImage = document.getElementById('singleImage');
     const swiperWrapper = document.getElementById('swiperWrapper');
     const swiperContainerEl = document.querySelector('#thumbSwiper');
     let swiperInstance = null;
     let activeThumb = document.querySelector('.thumb.active');
 
-    // Initialize a minimal Swiper but keep it inactive until needed
     function createSwiper(){
       if(swiperInstance) return;
       swiperInstance = new Swiper('#thumbSwiper', {
@@ -434,40 +550,50 @@
       });
     }
 
-    // Thumbnails click handler
+    // helper to set active classes on thumb and its wrapper
+    function setActiveThumb(newThumb){
+      if(!newThumb) return;
+      if(activeThumb){
+        activeThumb.classList.remove('active');
+        const prevWrap = activeThumb.closest('.thumb-wrap');
+        if(prevWrap) prevWrap.classList.remove('active');
+      }
+      newThumb.classList.add('active');
+      const newWrap = newThumb.closest('.thumb-wrap');
+      if(newWrap) newWrap.classList.add('active');
+      activeThumb = newThumb;
+    }
+
     thumbs.forEach(t => {
       t.addEventListener('click', function(){
-        // update active state
-        if(activeThumb) activeThumb.classList.remove('active');
-        t.classList.add('active');
-        activeThumb = t;
+        setActiveThumb(t);
 
         const type = t.dataset.type;
         if(type === 'slider'){
-          // show swiper, hide single image
           singleImage.style.display = 'none';
           swiperWrapper.style.display = 'block';
           swiperWrapper.setAttribute('aria-hidden','false');
-
-          // init swiper if needed and force update
           createSwiper();
           setTimeout(()=> { swiperInstance.update(); swiperInstance.slideToLoop(0, 200); }, 30);
         } else {
-          // show single image, hide swiper
           const src = t.dataset.src || t.src;
           singleImage.src = src;
           singleImage.alt = t.alt || "Unit image";
           singleImage.style.display = 'block';
-          // hide swiper
-          if(swiperInstance) {
-            // pause autoplay if any (none), leave instance
-          }
           swiperWrapper.style.display = 'none';
           swiperWrapper.setAttribute('aria-hidden','true');
         }
+
+        // on mobile, scroll the clicked thumb into center for better UX
+        try {
+          const wrap = t.closest('.thumb-wrap');
+          if(wrap && wrap.scrollIntoView){
+            wrap.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+          }
+        } catch(e){}
       });
 
-      // keyboard accessibility for thumbs
+      // keyboard accessibility
       t.setAttribute('tabindex','0');
       t.addEventListener('keydown', (ev) => {
         if(ev.key === 'Enter' || ev.key === ' ') {
@@ -477,9 +603,8 @@
       });
     });
 
-    // Make first slide remain visible in case JS loads after render
+    // set initial active states on DOM load
     document.addEventListener('DOMContentLoaded', () => {
-      // ensure active thumb is set
       activeThumb = document.querySelector('.thumb.active') || thumbs[0];
       if(activeThumb){
         const type = activeThumb.dataset.type;
@@ -491,13 +616,16 @@
           swiperWrapper.style.display = 'none';
           singleImage.style.display = 'block';
         }
+
+        // mark wrapper active
+        const wrap = activeThumb.closest('.thumb-wrap');
+        if(wrap) wrap.classList.add('active');
       }
     });
 
-    // Simple accordion toggle (no bootstrap)
+    // accordion
     const cardLink = document.querySelector('.card-link');
     const cardBody = document.querySelector('.card-body');
-
     cardLink.addEventListener('click', (e) => {
       e.preventDefault();
       const expanded = cardLink.getAttribute('aria-expanded') === 'true';
@@ -505,16 +633,13 @@
       cardBody.classList.toggle('show');
     });
 
-    // Optional: make clicking main image open slider if available
+    // clicking main image opens slider if available
     singleImage.addEventListener('click', () => {
-      // If a slider thumb exists, open it
       const sliderThumb = thumbs.find(t => t.dataset.type === 'slider');
-      if(sliderThumb){
-        sliderThumb.click();
-      }
+      if(sliderThumb) sliderThumb.click();
     });
 
-    // Accessibility: allow left/right arrow to navigate when swiper visible
+    // keyboard nav for swiper
     document.addEventListener('keydown', (ev) => {
       if(!swiperInstance) return;
       if(swiperWrapper.style.display === 'block'){
