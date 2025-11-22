@@ -2234,7 +2234,7 @@ function renderTooltipContent(mapD) {
   return `
    <div class="rcost-plot-tooltip">
     <div class="ploat-tooltip-container">
-          <div class="plot-label">PLOT NO. ${mapD.lot}</div>
+          <div class="plot-label"> ${mapD.lot}</div>
       <div class="development_type">${mapD.developmentType}</div>
       <div class="plot-size">Plot Size: ${mapD.size}</div>
     </div>

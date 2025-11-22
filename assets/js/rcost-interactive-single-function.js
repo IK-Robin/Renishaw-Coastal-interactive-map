@@ -226,7 +226,7 @@ function restoreOriginalPosition(el) {
           if (typeof onLotHoverOut === "function") {
             onLotHoverOut(el, mapD, ev);
           }
-          handleHide(el);
+           handleHide(el);
           restoreOriginalPosition(el);
         });
 
