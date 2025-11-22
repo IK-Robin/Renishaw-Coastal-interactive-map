@@ -875,9 +875,9 @@ add animation to the  svg path
   box-sizing: border-box;
 }
 .node-tooltip__badge-title {
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 1.3px;
+  font-size: 23px;
+  font-weight: 500;
+  letter-spacing: 1.9px;
   font-family: "Rajdhani", Sans-serif;
 }
 .node-tooltip__badge-subtitle {
