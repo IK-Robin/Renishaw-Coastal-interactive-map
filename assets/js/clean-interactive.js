@@ -102,7 +102,7 @@ function renderTooltipContent(mapD) {
             class="node-tooltip__image"
           />
           <div class="node-tooltip__badge">
-            <div class="node-tooltip__badge-title"> Node ${nodeName}</div>
+            <div class="node-tooltip__badge-title"> ${nodeName}</div>
             <div class="node-tooltip__badge-subtitle">
               ${nodeSubtitle}
             </div>
