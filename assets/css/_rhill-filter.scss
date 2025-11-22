@@ -3,7 +3,8 @@
   top: 0;
   left: 0;
   width: 100%;
-  background: #828282;
+  // background: #828282;
+  background-color: #282727;
   backdrop-filter: blur(7px);
   -webkit-backdrop-filter: blur(7px);
   z-index: 1000;
@@ -73,6 +74,7 @@
   gap: 10px;
   padding: 15px 10px;
   transition: all 0.4s ease;
+  font-family: "Rajdhani", Sans-serif;;
 }
 @media (max-width: 767px) {
   .searchandfilter ul {
@@ -115,13 +117,17 @@
   padding: 10px 40px 10px 12px;
   border: none;
   background: transparent;
-  font-size: 14px;
+
   color: #000;
   appearance: none;
   -webkit-appearance: none;
   cursor: pointer;
   outline: none;
   border-radius: 8px;
+  font-family: "Rajdhani", Sans-serif;
+  letter-spacing: .5px;
+  font-weight: 500;
+  font: 15px;
 }
 
 /* dropdown arrow – only for selects */
@@ -144,8 +150,8 @@
 /* active state */
 .searchandfilter li.active,
 .searchandfilter li.active select {
-  background: #000 !important;
-  color: #fff !important;
+  background: #fff !important;
+  color: #000 !important;
 }
 
 /* ────────────────────────────────────────
@@ -166,7 +172,7 @@
 	display: block;
 	width: 100%;
 	padding: 10px 20px;
-	color: #fff;
+	color: #000;
 	text-decoration: none;
 	font-weight: 500;
 	font-size: 14px;

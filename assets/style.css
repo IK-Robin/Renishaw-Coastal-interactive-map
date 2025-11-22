@@ -524,7 +524,7 @@ add animation to the  svg path
   top: 0;
   left: 0;
   width: 100%;
-  background: #828282;
+  background-color: #282727;
   backdrop-filter: blur(7px);
   -webkit-backdrop-filter: blur(7px);
   z-index: 1000;
@@ -597,6 +597,7 @@ add animation to the  svg path
   gap: 10px;
   padding: 15px 10px;
   transition: all 0.4s ease;
+  font-family: "Rajdhani", Sans-serif;
 }
 
 @media (max-width: 767px) {
@@ -640,7 +641,6 @@ add animation to the  svg path
   padding: 10px 40px 10px 12px;
   border: none;
   background: transparent;
-  font-size: 14px;
   color: #000;
   -moz-appearance: none;
        appearance: none;
@@ -648,6 +648,10 @@ add animation to the  svg path
   cursor: pointer;
   outline: none;
   border-radius: 8px;
+  font-family: "Rajdhani", Sans-serif;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+  font: 15px;
 }
 
 /* dropdown arrow – only for selects */
@@ -670,8 +674,8 @@ add animation to the  svg path
 /* active state */
 .searchandfilter li.active,
 .searchandfilter li.active select {
-  background: #000 !important;
-  color: #fff !important;
+  background: #fff !important;
+  color: #000 !important;
 }
 
 /* ────────────────────────────────────────
@@ -694,7 +698,7 @@ add animation to the  svg path
   display: block;
   width: 100%;
   padding: 10px 20px;
-  color: #fff;
+  color: #000;
   text-decoration: none;
   font-weight: 500;
   font-size: 14px;
@@ -736,14 +740,17 @@ add animation to the  svg path
   text-align: center;
   line-height: 22px;
   z-index: 55;
-  pointer-events: none;
   border-radius: 6px;
 }
 
 /* Paragraph styles */
 #ikr_toltipMove p {
   margin: 4px 0;
-  font-size: 16px;
+  font-size: 15px;
+  font-family: "Rajdhani", Sans-serif;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+  color: #0F0F0F;
 }
 
 /* Responsive adjustments */
@@ -790,7 +797,6 @@ add animation to the  svg path
   background: #ffffff;
   box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
   text-align: center;
-  pointer-events: none;
   z-index: 10;
 }
 .rcost-plot-tooltip .ploat-tooltip-container {
@@ -881,9 +887,11 @@ add animation to the  svg path
   font-family: "Rajdhani", Sans-serif;
 }
 .node-tooltip__badge-subtitle {
-  font-size: 0.65rem;
-  letter-spacing: 0.12em;
-  margin-top: 2px;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  font-weight: 400;
+  color: #fff;
+  font-family: "Rajdhani", Sans-serif;
 }
 .node-tooltip__body {
   display: flex;
@@ -895,7 +903,10 @@ add animation to the  svg path
   flex: 0 0 auto;
   text-align: left;
   margin-right: 16px;
-  white-space: normal;
+  font-size: 15px;
+  font-family: "Rajdhani", Sans-serif;
+  letter-spacing: 0.5px;
+  font-weight: 500;
 }
 .node-tooltip__metrics-main {
   display: flex;
