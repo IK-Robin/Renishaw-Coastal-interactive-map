@@ -1,0 +1,963 @@
+/* ==========================
+     ORIGINAL STYLE PRESERVED
+     (I restored your original rules and only added minor responsive variables)
+     ========================== */
+:root {
+  --bg: #111111;
+  --panel: #2b2b2b;
+  --card: #222;
+  --muted: #8a8a8a;
+  --accent: #c5a47e;
+  --white: #ffffff;
+  --shadow: rgba(0, 0, 0, 0.55);
+  --radius-lg: 20px;
+  --radius-md: 12px;
+
+  /* Center area height (override per breakpoint below) */
+  --center-h: 520px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  background: var(--bg);
+  color: var(--white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  font-family: Inter, Arial, sans-serif;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 22px 40px;
+  background: #000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+.logo {
+  height: 52px;
+  width: auto;
+  display: block;
+  user-select: none;
+}
+.breadcrumbs {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.breadcrumbs a {
+  color: var(--muted);
+  text-decoration: none;
+  opacity: 0.95;
+}
+.breadcrumbs span {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.container {
+  max-width: 1140px;
+  margin: 0 auto;
+}
+.wrap {
+  max-width: 1360px;
+  margin: 28px auto;
+  padding: 0 20px;
+}
+
+/* ---------- Layout (FLEXBOX) ---------- */
+.main {
+  display: flex;
+  gap: 15px;
+  min-height: calc(100vh - 160px);
+  align-items: stretch;
+  flex-wrap: nowrap;
+}
+
+/* ---------- THUMBNAILS (kept original look) ---------- */
+.thumbnails {
+  flex: 0 0 120px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: center;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px var(--shadow);
+  padding: 12px 8px;
+  background: transparent;
+}
+
+.thumb-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+  width: 24%;
+  height: auto;
+}
+
+.thumb {
+  /*! width: 118px; */
+  /*! height: 114px; */
+  border-radius: 6px;
+  object-fit: cover;
+  display: block;
+  cursor: pointer;
+  transition: transform 0.22s cubic-bezier(0.2, 0.9, 0.2, 1), box-shadow 0.18s,
+    border-color 0.18s, opacity 0.18s;
+  box-shadow: none;
+  border: 2px solid transparent;
+  -webkit-user-drag: none;
+}
+.thumb:hover {
+  transform: scale(1.04);
+  opacity: 0.98;
+}
+.thumb.active {
+  transform: scale(1);
+  border-color: rgba(197, 164, 126, 0.25);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
+}
+
+/* ---------- Center Area (fixed height via variable) ---------- */
+.center-image {
+  flex: 1 1 auto;
+  background: #000;
+  padding: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.65);
+  border-radius: 12px;
+  /* fixed height prevents jump on image/slider change */
+  height: var(--center-h);
+  min-height: 240px;
+}
+
+/* inner wrapper set to fill the center area */
+.center-inner {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.single-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.2, 1), filter 0.45s;
+  user-select: none;
+}
+.single-image:hover {
+  transform: scale(1.01);
+  filter: brightness(1.02);
+}
+
+.swiper-wrap {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: none;
+  position: relative;
+}
+
+.swiper-slide,
+.swiper-slide img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  user-select: none;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+.swiper-pagination-bullet {
+  background: rgba(255, 255, 255, 0.35);
+}
+.swiper-pagination-bullet-active {
+  background: var(--accent);
+}
+
+/* ---------- Right Panel (kept original look) ---------- */
+.rightUnitSide {
+  flex: 0 0 420px;
+  border-radius: 20px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-shadow: -14px 10px 40px rgba(0, 0, 0, 0.45);
+  position: relative;
+  letter-spacing: 1.9px;
+  font-weight: 500;
+}
+
+.unitRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-weight: 500;
+  font-size: 15px;
+  font-family: "Rajdhani", Sans-serif;
+}
+h1.title {
+  font-size: 26px;
+  margin: 0;
+  font-weight: 500;
+  color: #fff;
+  font-family: "Rajdhani", Sans-serif;
+  letter-spacing: 1.9px;
+}
+.price {
+  font-size: 23px;
+  font-weight: 500;
+  color: var(--accent);
+  text-align: right;
+  line-height: 1;
+  font-family: "Rajdhani", Sans-serif;
+  letter-spacing: 1.9px;
+}
+.small-meta {
+  color: #fff;
+  font-weight: 500;
+}
+.unitType {
+  color: #fff;
+  font-weight: 500;
+  font-size: 15px;
+  font-family: "Rajdhani", Sans-serif;
+  margin-bottom: 5px;
+}
+
+.ue-link-wrap {
+  display: inline-block;
+  max-width: max-content;
+  margin: 11px 0 16px;
+  font-family: "Rajdhani", Sans-serif;
+}
+.ue-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #fff;
+  font-weight: 400;
+  position: relative;
+}
+.ue-link-hover-effect-text {
+  font-size: 22px;
+  letter-spacing: 1px;
+}
+.ue-link-hover-effect-spacing {
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background: #fff;
+  transition: width 0.35s ease;
+}
+.ue-link:hover .ue-link-hover-effect-spacing {
+  width: 0%;
+}
+
+/* accordion */
+.unitAccordian {
+  margin-top: 18px;
+}
+.card {
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  font-family: "Rajdhani", Sans-serif;
+}
+.card-link {
+  display: block;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 18px;
+  position: relative;
+  cursor: pointer;
+  padding: 14px 18px;
+}
+.card-link::after {
+  content: "\2193";
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform 0.24s;
+  font-size: 20px;
+  opacity: 0.95;
+}
+.card-link[aria-expanded="true"]::after {
+  transform: translateY(-50%) rotate(180deg);
+}
+.card-body {
+  padding: 20px;
+  color: #fff;
+  display: none;
+}
+.card-body.show {
+  display: block;
+}
+.unitSheduleAreInfo {
+  display: flex;
+  gap: 18px;
+  justify-content: flex-start;
+  align-items: center;
+}
+.cardIcon {
+  background: transparent;
+  padding: 6px 12px;
+  border-radius: 8px;
+  text-align: center;
+  color: #fff;
+  font-family: "Rajdhani", Sans-serif;
+  font-weight: 500;
+}
+.cardIcon::before {
+  display: block;
+  font-size: 26px;
+  margin-bottom: 6px;
+}
+.cardIcon-bed::before {
+  content: "🛏️";
+}
+.cardIcon-bath::before {
+  content: "🛁";
+}
+.cardIcon-area::before {
+  content: "📐";
+}
+
+.footer-note {
+  color: #a0a0a0;
+  font-size: 0.9rem;
+  margin: 22px 40px 48px;
+  text-align: left;
+}
+
+/* Keep mobile thumbnails visually identical to desktop:
+     - They become a horizontal scrolling row on mobile, but keep same border, radius, shadow, sizes
+  */
+@media (max-width: 1100px) {
+}
+
+/* Small screens - tune center height only (no change to thumb visual style) */
+@media (max-width: 768px) {
+  :root {
+    --center-h: 56vh;
+  }
+  .main {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .center-image {
+    order: 1;
+    width: 100%;
+    padding: 0;
+    border-radius: 0px;
+    /* use viewport relative height for mobile but still fixed by variable */
+    --center-h: 60vh;
+    height: var(--center-h);
+    min-height: 240px;
+  }
+
+  .thumbnails {
+    order: 2;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row; /* horizontal row on mobile (as original site) */
+    align-items: center;
+    justify-content: center;
+    padding: 12px 0;
+    gap: 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    background: transparent;
+    border-radius: 12px;
+    scroll-snap-type: x mandatory;
+  }
+
+  /* preserve original thumb look and exact sizes */
+  .thumb {
+    flex: 0 0 auto;
+    width: 100%;
+    border-radius: 6px;
+    scroll-snap-align: center;
+    /*! height: 121px; */
+  }
+
+  .rightUnitSide {
+    order: 3;
+    width: 100%;
+    padding: 0px;
+    border-radius: 0px;
+  }
+}
+@media (max-width: 640px) {
+    
+  :root {
+    --center-h: 40vw;
+  }
+  .center-image {
+    order: 1;
+    width: 100%;
+    padding: 0;
+    border-radius: 0px;
+    /* use viewport relative height for mobile but still fixed by variable */
+    --center-h: 40vh;
+    height: var(--center-h);
+    /* min-height: 240px; */
+  }
+  .thumb {
+	/*! width: 116px; */
+	height: 100px;
+}
+  .thumbnails {
+    gap: 0;
+    flex: 0 0 auto;
+    justify-content: space-between;
+  }
+  .swiper-button-next::after,
+  .swiper-button-prev::after {
+    font-size: 20px;
+  }
+  .swiper-button-next,
+  .swiper-button-prev {
+    width: 40px;
+    height: 40px;
+  }
+  .price {
+    /*! font-size: 16px; */
+  }
+  h1.title {
+    /*! font-size: 16px; */
+  }
+  .unitRow {
+    /*! font-size: 13px; */
+  }
+  .unitType {
+    font-size: 13px;
+  }
+  .ue-link-hover-effect-text {
+    /*! font-size: 16px; */
+  }
+  .card-link {
+    font-weight: 500;
+    /*! font-size: 14px; */
+
+    padding: 0;
+  }
+  .unitSheduleAreInfo {
+    gap: 0px;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: center;
+  }
+  .cardIcon::before {
+    font-size: 21px;
+  }
+  .cardIcon {
+    padding: 1px 15px;
+
+    font-size: 15px;
+  }
+  .cardIcon:nth-child(1) {
+    padding-left: 0;
+  }
+  
+  .card-body {
+    padding: 10px 0;
+    color: #fff;
+  }
+  .card-link::after {
+    /*! font-size: 15px; */
+  }
+  .ue-link-hover-effect-spacing {
+
+	height: .5px;
+	
+}
+ 
+}
+@media (max-width: 520px) {
+    
+  :root {
+    --center-h: 40vw;
+  }
+  .center-image {
+    order: 1;
+    width: 100%;
+    padding: 0;
+    border-radius: 0px;
+    /* use viewport relative height for mobile but still fixed by variable */
+    --center-h: 40vh;
+    height: var(--center-h);
+    /* min-height: 240px; */
+  }
+  .thumb {
+	/*! width: 108px; */
+	height: 100px;
+}
+  .thumbnails {
+    gap: 0;
+    flex: 0 0 auto;
+    justify-content: space-between;
+  }
+  .swiper-button-next::after,
+  .swiper-button-prev::after {
+    font-size: 20px;
+  }
+  .swiper-button-next,
+  .swiper-button-prev {
+    width: 40px;
+    height: 40px;
+  }
+  .price {
+    /*! font-size: 16px; */
+  }
+  h1.title {
+    /*! font-size: 16px; */
+  }
+  .unitRow {
+    /*! font-size: 13px; */
+  }
+  .unitType {
+    font-size: 13px;
+  }
+  .ue-link-hover-effect-text {
+    /*! font-size: 16px; */
+  }
+  .card-link {
+    font-weight: 500;
+    /*! font-size: 14px; */
+
+    padding: 0;
+  }
+  .unitSheduleAreInfo {
+    gap: 0px;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: center;
+  }
+  .cardIcon::before {
+    font-size: 21px;
+  }
+  .cardIcon {
+    padding: 1px 15px;
+
+    font-size: 15px;
+  }
+  .cardIcon:nth-child(1) {
+    padding-left: 0;
+  }
+  
+  .card-body {
+    padding: 10px 0;
+    color: #fff;
+  }
+  .card-link::after {
+    /*! font-size: 15px; */
+  }
+  .ue-link-hover-effect-spacing {
+
+	height: .5px;
+	
+}
+ 
+}
+@media (max-width: 480px) {
+ 
+  :root {
+    --center-h: 40vw;
+  }
+  .center-image {
+    order: 1;
+    width: 100%;
+    padding: 0;
+    border-radius: 0px;
+    /* use viewport relative height for mobile but still fixed by variable */
+    --center-h: 40vh;
+    height: var(--center-h);
+    /* min-height: 240px; */
+  }
+  .thumb {
+	/*! width: 90px; */
+	height: 90px;
+}
+  .thumbnails {
+    gap: 0;
+    flex: 0 0 auto;
+    justify-content: space-between;
+  }
+  .swiper-button-next::after,
+  .swiper-button-prev::after {
+    font-size: 20px;
+  }
+  .swiper-button-next,
+  .swiper-button-prev {
+    width: 40px;
+    height: 40px;
+  }
+  .price {
+    /*! font-size: 16px; */
+  }
+  h1.title {
+    /*! font-size: 16px; */
+  }
+  .unitRow {
+    /*! font-size: 13px; */
+  }
+  .unitType {
+    font-size: 13px;
+  }
+  .ue-link-hover-effect-text {
+    /*! font-size: 16px; */
+  }
+  .card-link {
+    font-weight: 500;
+    /*! font-size: 14px; */
+
+    padding: 0;
+  }
+  .unitSheduleAreInfo {
+    gap: 0px;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: center;
+  }
+  .cardIcon::before {
+    font-size: 21px;
+  }
+  .cardIcon {
+    padding: 1px 15px;
+
+    font-size: 15px;
+  }
+  .cardIcon:nth-child(1) {
+    padding-left: 0;
+  }
+  
+  .card-body {
+    padding: 10px 0;
+    color: #fff;
+  }
+  .card-link::after {
+    /*! font-size: 15px; */
+  }
+  .ue-link-hover-effect-spacing {
+
+	height: .5px;
+	
+}
+}
+@media (max-width: 420px) {
+
+  :root {
+    --center-h: 40vw;
+  }
+  .center-image {
+    order: 1;
+    width: 100%;
+    padding: 0;
+    border-radius: 0px;
+    /* use viewport relative height for mobile but still fixed by variable */
+    --center-h: 40vh;
+    height: var(--center-h);
+    /* min-height: 240px; */
+  }
+  .thumb {
+    /*! width: 80px; */
+    height: 70px;
+  }
+  .thumbnails {
+    gap: 0;
+    flex: 0 0 auto;
+    justify-content: space-between;
+  }
+  .swiper-button-next::after,
+  .swiper-button-prev::after {
+    font-size: 20px;
+  }
+  .swiper-button-next,
+  .swiper-button-prev {
+    width: 40px;
+    height: 40px;
+  }
+  .price {
+    /*! font-size: 16px; */
+  }
+  h1.title {
+    /*! font-size: 16px; */
+  }
+  .unitRow {
+    /*! font-size: 13px; */
+  }
+  .unitType {
+    font-size: 13px;
+  }
+  .ue-link-hover-effect-text {
+    /*! font-size: 16px; */
+  }
+  .card-link {
+    font-weight: 500;
+    /*! font-size: 14px; */
+
+    padding: 0;
+  }
+  .unitSheduleAreInfo {
+    gap: 0px;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: center;
+  }
+  .cardIcon::before {
+    font-size: 21px;
+  }
+  .cardIcon {
+    padding: 1px 15px;
+
+    font-size: 15px;
+  }
+  .cardIcon:nth-child(1) {
+    padding-left: 0;
+  }
+  
+  .card-body {
+    padding: 10px 0;
+    color: #fff;
+  }
+  .card-link::after {
+    /*! font-size: 15px; */
+  }
+  .ue-link-hover-effect-spacing {
+
+	height: .5px;
+	
+}
+}
+@media (max-width: 360px) {
+
+  :root {
+    --center-h: 78vw;
+  }
+  .center-image {
+    order: 1;
+    width: 100%;
+    padding: 0;
+    border-radius: 0px;
+    /* use viewport relative height for mobile but still fixed by variable */
+    --center-h: 25vh;
+    height: var(--center-h);
+    /* min-height: 240px; */
+  }
+  .thumb {
+    /*! width: 75px; */
+    height: 75px;
+  }
+  .thumbnails {
+    gap: 0px;
+  }
+  .swiper-button-next::after,
+  .swiper-button-prev::after {
+    font-size: 20px;
+  }
+  .swiper-button-next,
+  .swiper-button-prev {
+    width: 40px;
+    height: 40px;
+  }
+  .price {
+    font-size: 16px;
+  }
+  h1.title {
+    font-size: 16px;
+  }
+  .unitRow {
+    font-size: 13px;
+  }
+  .unitType {
+    font-size: 13px;
+  }
+  .ue-link-hover-effect-text {
+    font-size: 16px;
+  }
+  .card-link {
+    font-weight: 500;
+    font-size: 14px;
+
+    padding: 0;
+  }
+  .unitSheduleAreInfo {
+    gap: 0px;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: center;
+  }
+  .cardIcon::before {
+    font-size: 15px;
+  }
+  .cardIcon {
+    padding: 1px 15px;
+
+    font-size: 14px;
+  }
+  .cardIcon:nth-child(1) {
+    padding-left: 0;
+  }
+  
+  .card-body {
+    padding: 10px 0;
+    color: #fff;
+  }
+  .card-link::after {
+    font-size: 15px;
+  }
+  .ue-link-hover-effect-spacing {
+
+	height: .5px;
+	
+}
+}
+@media (max-width: 280px) {
+  :root {
+    --center-h: 78vw;
+  }
+  .ue-link-hover-effect-spacing {
+	
+	height: .5px;
+	
+}
+  .center-image {
+    order: 1;
+    width: 100%;
+    padding: 0;
+    border-radius: 0px;
+    /* use viewport relative height for mobile but still fixed by variable */
+    --center-h: 25vh;
+    height: var(--center-h);
+    /* min-height: 240px; */
+  }
+  .thumb {
+    width: 60px;
+    height: 60px;
+  }
+  .thumbnails {
+    gap: 0px;
+  }
+  .swiper-button-next::after,
+  .swiper-button-prev::after {
+    font-size: 20px;
+  }
+  .swiper-button-next,
+  .swiper-button-prev {
+    width: 40px;
+    height: 40px;
+  }
+  .price {
+    font-size: 15px;
+  }
+  h1.title {
+    font-size: 15px;
+  }
+  .unitRow {
+    font-size: 12px;
+  }
+  .unitType {
+    font-size: 12px;
+  }
+  .ue-link-hover-effect-text {
+    font-size: 16px;
+  }
+  .card-link {
+    font-weight: 500;
+    font-size: 14px;
+
+    padding: 0;
+  }
+  .unitSheduleAreInfo {
+    gap: 0px;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+  }
+  .cardIcon::before {
+    font-size: 15px;
+  }
+  .cardIcon {
+    padding: 1px 5px;
+
+    font-size: 14px;
+  }
+  .card-body {
+    padding: 10px 0;
+    color: #fff;
+  }
+  .card-link::after {
+    font-size: 15px;
+  }
+}
+
+/* ensure center images and swiper slides always fill the container (prevents jumping) */
+.center-image img,
+.center-image .swiper,
+.center-image .swiper-wrapper,
+.center-image .swiper-slide {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+/* hide native vertical scrollbar on thumbnails but keep horizontal scrolling on mobile */
+.thumbnails::-webkit-scrollbar {
+  height: 9px;
+  width: 0;
+  display: none;
+}
+.thumbnails {
+  -ms-overflow-style: none;
+  /*! scrollbar-width: none; */
+}
+
+/* accessibility helper */
+.visually-hidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
