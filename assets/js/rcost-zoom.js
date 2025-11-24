@@ -889,15 +889,29 @@ function mobileZoom({
       previous_selected_element = select_svg_element;
     }
 
-    // Redirect on touch
-    function redirectHandler(e) {
-      const target_id = e.currentTarget.id;
-      const item = mapData.find(i => i.id === target_id);
-      if (item?.link) {
-        const homeURL = window.location.origin + "/";
-        window.location.href = homeURL + item.link.replace(/^\//, "");
-      }
-    }
+ // Redirect on touch
+function redirectHandler(e) {
+  const target_id = e.currentTarget.id;
+  const item = mapData.find(i => i.id === target_id);
+  if (!item?.link) return;
+
+  // Get the current pathname (e.g. "/Coastal-interactive-map/index.html")
+  const pathname = window.location.pathname || "/";
+
+  // Remove any filename (index.html, page.html, etc.)
+  const basePath = pathname.replace(/\/[^/]*$/, "/");
+
+  // Create correct base URL (keeps repo folder)
+  const baseURL = window.location.origin + basePath;
+
+  // Resolve final link safely
+  const finalURL = new URL(item.link, baseURL).href;
+
+  console.log("Redirecting to:", finalURL);
+
+  window.location.href = finalURL;
+}
+
 
     // Optional: clear selection
     function deselectAll() {
