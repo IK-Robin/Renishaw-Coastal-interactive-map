@@ -146,22 +146,26 @@ function restoreOriginalPosition(el) {
       // could call handleHide(ct) if you want
     }
 
-    function rcostClick_func(ev, ct, mapD) {
-      if (!mapD || !mapD.link) return;
-      // example: just log instead of redirect
-      console.log("Clicked lot:", mapD.id, "->", mapD.link);
-      // window.location.href = mapD.link;
-    //  window.location.href = 'all-nodes/node-1.html';  // No ../ needed
-      // get the home url  
+function rcostClick_func(ev, ct, mapD) {
+  if (!mapD || !mapD.link) return;
 
-       const homeURL = window.location.origin + "/";
-      const finalURL = homeURL + mapD.link.replace(/^\//, "");
+  console.log("Clicked lot:", mapD.id, "->", mapD.link);
 
-      console.log("Redirecting to:", finalURL);
-      window.location.href = finalURL;
-       
+  // Build a base URL that includes the repo/pathname.
+  // If the current URL ends with a file (eg. index.html) we remove it.
+  const pathname = window.location.pathname || '/';
+  const basePath = pathname.replace(/\/[^/]*$/, '/'); // keeps trailing slash
+  const baseUrl = window.location.origin + basePath;
 
-    }
+  // Resolve the relative link against the base URL (handles ../ and leading slashes).
+  const finalURL = new URL(mapD.link, baseUrl).href;
+
+  console.log("Redirecting to:", finalURL);
+
+  // Actually perform redirect:
+  window.location.href = finalURL;
+}
+
 
     // Init default colors if provided
     window.addEventListener("load", () => {
