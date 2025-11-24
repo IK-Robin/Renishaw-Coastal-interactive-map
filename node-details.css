@@ -92,7 +92,7 @@ header {
   align-items: center;
   overflow-y: auto;
   box-shadow: 0 10px 30px var(--shadow);
-  padding: 12px 8px;
+  padding: 0px 0px;
   background: transparent;
 }
 
@@ -110,8 +110,8 @@ header {
 }
 
 .thumb {
-  /*! width: 118px; */
-  /*! height: 114px; */
+  width: 118px; 
+   height: 114px; 
   border-radius: 6px;
   object-fit: cover;
   display: block;
@@ -205,11 +205,12 @@ header {
   background: var(--accent);
 }
 
+
 /* ---------- Right Panel (kept original look) ---------- */
 .rightUnitSide {
-  flex: 0 0 420px;
+  flex: 0 0 360px;
   border-radius: 20px;
-  padding: 10px;
+  padding: 0px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -289,7 +290,8 @@ h1.title {
 
 /* accordion */
 .unitAccordian {
-  margin-top: 18px;
+	margin-top: 18px;
+	min-width: 300px;
 }
 .card {
   border-radius: 12px;
@@ -306,7 +308,7 @@ h1.title {
   font-size: 18px;
   position: relative;
   cursor: pointer;
-  padding: 14px 18px;
+  /* padding: 14px 18px; */
 }
 .card-link::after {
   content: "\2193";
@@ -320,9 +322,13 @@ h1.title {
 }
 .card-link[aria-expanded="true"]::after {
   transform: translateY(-50%) rotate(180deg);
+  -webkit-transform: translateY(-50%) rotate(180deg);
+  -moz-transform: translateY(-50%) rotate(180deg);
+  -ms-transform: translateY(-50%) rotate(180deg);
+  -o-transform: translateY(-50%) rotate(180deg);
 }
 .card-body {
-  padding: 20px;
+ 
   color: #fff;
   display: none;
 }
@@ -336,13 +342,13 @@ h1.title {
   align-items: center;
 }
 .cardIcon {
-  background: transparent;
-  padding: 6px 12px;
-  border-radius: 8px;
-  text-align: center;
-  color: #fff;
-  font-family: "Rajdhani", Sans-serif;
-  font-weight: 500;
+	background: transparent;
+	padding: 6px 0;
+	border-radius: 8px;
+	text-align: center;
+	color: #fff;
+	font-family: "Rajdhani", Sans-serif;
+	font-weight: 500;
 }
 .cardIcon::before {
   display: block;
@@ -372,11 +378,80 @@ h1.title {
 @media (max-width: 1100px) {
 }
 
+@media (max-width: 1100px) {
+  
+.thumbnails {
+
+	width: 11%;
+}
+.center-image {
+
+	width: 50%;
+}
+
+
+
+}
+@media (max-width: 992px) {
+  
+.rightUnitSide {
+	flex: 0 0 270px;
+
+	padding: 0px;
+	
+}
+
+.unitAccordian {
+
+	min-width: 250px;
+}
+
+
+.swiper-button-next::after, .swiper-button-prev::after {
+	font-size: 20px;
+}
+  .swiper-button-next, .swiper-button-prev {
+	width: 40px;
+	height: 40px;
+}
+
+}
+@media (max-width: 867px) {
+  
+.rightUnitSide {
+	flex: 0 0 270px;
+
+	padding: 0px;
+	
+}
+
+.unitAccordian {
+
+	min-width: 250px;
+}
+
+
+.swiper-button-next::after, .swiper-button-prev::after {
+	font-size: 20px;
+}
+  .swiper-button-next, .swiper-button-prev {
+	width: 40px;
+	height: 40px;
+}
+
+
+}
+
 /* Small screens - tune center height only (no change to thumb visual style) */
 @media (max-width: 768px) {
   :root {
-    --center-h: 56vh;
+    /* --center-h: 56vh; */
   }
+  .wrap {
+	max-width: 540px;
+	margin: 28px auto;
+	padding: 0 20px;
+}
   .main {
     flex-direction: column;
     gap: 5px;
@@ -388,11 +463,18 @@ h1.title {
     padding: 0;
     border-radius: 0px;
     /* use viewport relative height for mobile but still fixed by variable */
-    --center-h: 60vh;
+    --center-h: 65vh;
     height: var(--center-h);
     min-height: 240px;
   }
 
+.swiper-button-next::after, .swiper-button-prev::after {
+	font-size: 20px;
+}
+  .swiper-button-next, .swiper-button-prev {
+	width: 40px;
+	height: 40px;
+}
   .thumbnails {
     order: 2;
     width: 100%;
@@ -401,7 +483,7 @@ h1.title {
     flex-direction: row; /* horizontal row on mobile (as original site) */
     align-items: center;
     justify-content: center;
-    padding: 12px 0;
+    padding: 0px 0;
     gap: 10px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -424,6 +506,7 @@ h1.title {
     width: 100%;
     padding: 0px;
     border-radius: 0px;
+    padding: 15px 0 ;
   }
 }
 @media (max-width: 640px) {
@@ -437,7 +520,7 @@ h1.title {
     padding: 0;
     border-radius: 0px;
     /* use viewport relative height for mobile but still fixed by variable */
-    --center-h: 40vh;
+    --center-h: 65vh;
     height: var(--center-h);
     /* min-height: 240px; */
   }
