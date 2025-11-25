@@ -155,14 +155,21 @@ function rcostClick_func(ev, ct, mapD) {
   // If the current URL ends with a file (eg. index.html) we remove it.
   const pathname = window.location.pathname || '/';
   const basePath = pathname.replace(/\/[^/]*$/, '/'); // keeps trailing slash
-  const baseUrl = window.location.origin + basePath;
+  let baseURL = window.location.origin ;
+let finalURL = new URL(mapD.link, baseURL).href;
+if(basePath==='/all-nodes/'){
+   finalURL = new URL(mapD.link, baseURL).href;
+    // baseURL +=basePath;
 
-  // Resolve the relative link against the base URL (handles ../ and leading slashes).
-  const finalURL = new URL(mapD.link, baseUrl).href;
+}else{
+    baseURL += basePath;
+}
+  // Create correct base URL (keeps repo folder)
+// console.log(baseURL)
+  // Resolve final link safely
 
   console.log("Redirecting to:", finalURL);
 
-  // Actually perform redirect:
   window.location.href = finalURL;
 }
 

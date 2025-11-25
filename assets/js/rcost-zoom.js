@@ -526,14 +526,21 @@ function ikrZoom({
   // If the current URL ends with a file (eg. index.html) we remove it.
   const pathname = window.location.pathname || '/';
   const basePath = pathname.replace(/\/[^/]*$/, '/'); // keeps trailing slash
-  const baseUrl = window.location.origin + basePath;
+let baseURL = window.location.origin ;
+let finalURL = new URL(mapD.link, baseURL).href;
+if(basePath==='/all-nodes/'){
+   finalURL = new URL(mapD.link, baseURL).href;
+    // baseURL +=basePath;
 
-  // Resolve the relative link against the base URL (handles ../ and leading slashes).
-  const finalURL = new URL(mapD.link, baseUrl).href;
+}else{
+    baseURL += basePath;
+}
+  // Create correct base URL (keeps repo folder)
+// console.log(baseURL)
+  // Resolve final link safely
 
   console.log("Redirecting to:", finalURL);
 
-  // Actually perform redirect:
   window.location.href = finalURL;
 }
 
@@ -900,12 +907,19 @@ function redirectHandler(e) {
 
   // Remove any filename (index.html, page.html, etc.)
   const basePath = pathname.replace(/\/[^/]*$/, "/");
+// console.log(basePath)
+let baseURL = window.location.origin ;
+let finalURL = new URL(item.link, baseURL).href;
+if(basePath==='/all-nodes/'){
+   finalURL = new URL(item.link, baseURL).href;
+    // baseURL +=basePath;
 
+}else{
+    baseURL += basePath;
+}
   // Create correct base URL (keeps repo folder)
-  const baseURL = window.location.origin + basePath;
-
+// console.log(baseURL)
   // Resolve final link safely
-  const finalURL = new URL(item.link, baseURL).href;
 
   console.log("Redirecting to:", finalURL);
 
