@@ -901,32 +901,37 @@ function mobileZoom({
  // Redirect on touch
 function redirectHandler(e) {
   const target_id = e.currentTarget.id;
+
   const item = mapData.find(i => i.id === target_id);
   if (!item?.link) return;
 
-  // Get the current pathname (e.g. "/Coastal-interactive-map/index.html")
+  // --- sanitize ID to avoid injection ---
+  const unit = encodeURIComponent(item.id.trim());
+
+  // Current path (ex: "/Coastal-interactive-map/index.html")
   const pathname = window.location.pathname || "/";
 
-  // Remove any filename (index.html, page.html, etc.)
+  // Remove filename at end
   const basePath = pathname.replace(/\/[^/]*$/, "/");
-// console.log(basePath)
-let baseURL = window.location.origin ;
-let finalURL = new URL(item.link, baseURL).href;
-if(basePath==='/all-nodes/'){
-   finalURL = new URL(item.link, baseURL).href;
-    // baseURL +=basePath;
 
-}else{
-    baseURL += basePath;
+  let baseURL = window.location.origin;
+
+  // Base URL for the final link
+  let finalURL = new URL(item.link, baseURL + basePath);
+
+  // Special case for /all-nodes/
+  if (basePath === "/all-nodes/") {
+    finalURL = new URL(item.link, baseURL);
+  }
+
+  // --- Append the secure param: ?unit=NODE_ID ---
+  finalURL.searchParams.set("unit", unit);
+
+  console.log("Redirecting to:", finalURL.href);
+
+  window.location.href = finalURL.href;
 }
-  // Create correct base URL (keeps repo folder)
-// console.log(baseURL)
-  // Resolve final link safely
 
-  console.log("Redirecting to:", finalURL);
-
-  window.location.href = finalURL;
-}
 
 
     // Optional: clear selection
