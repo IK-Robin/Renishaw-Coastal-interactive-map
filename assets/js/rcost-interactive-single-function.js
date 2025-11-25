@@ -147,31 +147,33 @@ function restoreOriginalPosition(el) {
     }
 
 function rcostClick_func(ev, ct, mapD) {
-  if (!mapD || !mapD.link) return;
+  if (!mapD || !mapD.id || !mapD.link) return;
 
   console.log("Clicked lot:", mapD.id, "->", mapD.link);
 
-  // Build a base URL that includes the repo/pathname.
-  // If the current URL ends with a file (eg. index.html) we remove it.
+  // --- sanitize input, prevents injection ---
+  const unit = encodeURIComponent(mapD.id.trim());
+
   const pathname = window.location.pathname || '/';
-  const basePath = pathname.replace(/\/[^/]*$/, '/'); // keeps trailing slash
-  let baseURL = window.location.origin ;
-let finalURL = new URL(mapD.link, baseURL).href;
-if(basePath==='/all-nodes/'){
-   finalURL = new URL(mapD.link, baseURL).href;
-    // baseURL +=basePath;
+  const basePath = pathname.replace(/\/[^/]*$/, '/');
+  let baseURL = window.location.origin;
 
-}else{
-    baseURL += basePath;
+  // Construct base URL
+  let finalURL = new URL(mapD.link, baseURL + basePath);
+
+  // Special path rule for /all-nodes/
+  if (basePath === '/all-nodes/') {
+    finalURL = new URL(mapD.link, baseURL);
+  }
+
+  // --- append ?unit=...  ---
+  finalURL.searchParams.set("unit", unit);
+
+  console.log("Redirecting to:", finalURL.href);
+
+  window.location.href = finalURL.href;
 }
-  // Create correct base URL (keeps repo folder)
-// console.log(baseURL)
-  // Resolve final link safely
 
-  console.log("Redirecting to:", finalURL);
-
-  window.location.href = finalURL;
-}
 
 
     // Init default colors if provided
