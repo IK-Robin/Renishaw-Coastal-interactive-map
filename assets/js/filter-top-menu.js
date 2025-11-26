@@ -247,6 +247,9 @@ lot_select_message.innerText = `CHOOSE A ${data_proprty_to_create_button.toUpper
       select_svg_element.originalNextSibling = select_svg_element.nextSibling;
       select_svg_element.parentNode.appendChild(select_svg_element);
       select_svg_element.classList.add("selected-node");
+  //       select_svg_element.style.fill = "#ffffff";
+  // select_svg_element.style.fillOpacity = "1";
+  // select_svg_element.style.opacity = "1";
       try { select_svg_element.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" }); } catch (err) {}
       if (typeof applyStrokeHover === 'function') applyStrokeHover(select_svg_element, animation_class);
       flyToShape(select_svg_element);
@@ -628,7 +631,7 @@ function applyFilters() {
       const color = getColorForKey(key);
       el.classList.add('highlight');
       el.style.fill = color;
-      el.style.stroke = '#000000';
+      el.style.stroke = '#fff';
       el.style.strokeWidth = 3;
       el.style.opacity = '1';
     }
@@ -708,7 +711,7 @@ function initAll() {
       mapData: node_1_data,
       ploat_btn_class: 'plot-btn',
       data_proprty_to_create_button: 'lot',
-      animation_class: 'highlight'
+      animation_class: 'node_lot_highlight'
     });
   } else {
     // not fatal — but user won't get flyTo unless mobileZoom is present
