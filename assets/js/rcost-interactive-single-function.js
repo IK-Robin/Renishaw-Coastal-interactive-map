@@ -163,9 +163,9 @@ function rcostClick_func(ev, ct, mapD) {
       let finalURL = baseURL;
       
       if (basePath === "/all-nodes/"){
-         finalURL = new URL(item.link, baseURL);
+         finalURL = new URL(mapD.link, baseURL);
       } else{ 
-            finalURL = new URL(item.link, baseURL + basePath);
+            finalURL = new URL(mapD.link, baseURL + basePath);
       }
       finalURL.searchParams.set("unit", unit);
      

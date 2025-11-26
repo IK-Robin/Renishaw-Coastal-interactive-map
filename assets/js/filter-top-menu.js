@@ -265,9 +265,9 @@ function mobileZoom({
       let finalURL = baseURL;
       
       if (basePath === "/all-nodes/"){
-         finalURL = new URL(item.link, baseURL);
+         finalURL = new URL(node.link, baseURL);
       } else{ 
-            finalURL = new URL(item.link, baseURL + basePath);
+            finalURL = new URL(node.link, baseURL + basePath);
       }
       finalURL.searchParams.set("unit", unit);
      
