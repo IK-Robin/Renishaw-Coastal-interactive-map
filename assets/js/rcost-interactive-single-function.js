@@ -149,14 +149,17 @@ function restoreOriginalPosition(el) {
 function rcostClick_func(ev, ct, mapD) {
   if (!mapD || !mapD.id || !mapD.link) return;
 
-  console.log("Clicked lot:", mapD.id, "->", mapD.link);
+  // console.log("Clicked lot:", mapD.id, "->", mapD.link);
 
   // --- sanitize input, prevents injection ---
   const unit = encodeURIComponent(mapD.id.trim());
 
   const pathname = window.location.pathname || '/';
+  // console.log('pathname',pathname)
   const basePath = pathname.replace(/\/[^/]*$/, '/');
+  // console.log('base path', basePath)
   let baseURL = window.location.origin;
+
 
   // Construct base URL
   let finalURL = new URL(mapD.link, baseURL + basePath);
@@ -167,11 +170,11 @@ function rcostClick_func(ev, ct, mapD) {
   }
 
   // --- append ?unit=...  ---
-  finalURL.searchParams.set("unit", unit);
+  // finalURL.searchParams.set("unit", unit);
 
-  console.log("Redirecting to:", finalURL.href);
+  // console.log("Redirecting to:", finalURL.href);
 
-  window.location.href = finalURL.href;
+  // window.location.href = finalURL.href;
 }
 
 

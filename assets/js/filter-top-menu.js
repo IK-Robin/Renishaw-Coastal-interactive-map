@@ -190,8 +190,8 @@ function mobileZoom({
         button_container.appendChild(btn);
       });
     }
-const lot_select_message = document.getElementById('lot_select_message');
-lot_select_message.innerText = `CHOOSE A ${data_proprty_to_create_button.toUpperCase()}`;
+    const lot_select_message = document.getElementById('lot_select_message');
+    lot_select_message.innerText = `CHOOSE A ${data_proprty_to_create_button.toUpperCase()}`;
 
     function createNodeSelect(data, containerId, selectClass = "node-select") {
       const container = document.getElementById(containerId);
@@ -247,10 +247,10 @@ lot_select_message.innerText = `CHOOSE A ${data_proprty_to_create_button.toUpper
       select_svg_element.originalNextSibling = select_svg_element.nextSibling;
       select_svg_element.parentNode.appendChild(select_svg_element);
       select_svg_element.classList.add("selected-node");
-  //       select_svg_element.style.fill = "#ffffff";
-  // select_svg_element.style.fillOpacity = "1";
-  // select_svg_element.style.opacity = "1";
-      try { select_svg_element.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" }); } catch (err) {}
+      //       select_svg_element.style.fill = "#ffffff";
+      // select_svg_element.style.fillOpacity = "1";
+      // select_svg_element.style.opacity = "1";
+      try { select_svg_element.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" }); } catch (err) { }
       if (typeof applyStrokeHover === 'function') applyStrokeHover(select_svg_element, animation_class);
       flyToShape(select_svg_element);
 
@@ -264,7 +264,7 @@ lot_select_message.innerText = `CHOOSE A ${data_proprty_to_create_button.toUpper
           let finalURL = new URL(node.link, baseURL + basePath);
           if (basePath === "/all-nodes/") finalURL = new URL(node.link, baseURL);
           finalURL.searchParams.set("unit", unit);
-          window.location.href = finalURL.href;
+          // window.location.href = finalURL.href;
         };
         // remove previous if present then add new
         if (select_svg_element._sf_touch_redirect) {
@@ -304,7 +304,7 @@ lot_select_message.innerText = `CHOOSE A ${data_proprty_to_create_button.toUpper
         let finalURL = new URL(item.link, baseURL + basePath);
         if (basePath === "/all-nodes/") finalURL = new URL(item.link, baseURL);
         finalURL.searchParams.set("unit", unit);
-        window.location.href = finalURL.href;
+        // window.location.href = finalURL.href;
       };
     }
 
@@ -342,14 +342,14 @@ lot_select_message.innerText = `CHOOSE A ${data_proprty_to_create_button.toUpper
    =========================================================================== */
 
 /* DOM elements (single declarations) */
-const blockSelect  = document.getElementById('blockSelect');
-const priceSelect  = document.getElementById('priceSelect');
+const blockSelect = document.getElementById('blockSelect');
+const priceSelect = document.getElementById('priceSelect');
 const statusSelect = document.getElementById('statusSelect');
-const resetBtn     = document.getElementById('resetBtn');
-const resetLi      = document.getElementById('resetLi');
-const selects      = document.querySelectorAll('.sf-input-select');
+const resetBtn = document.getElementById('resetBtn');
+const resetLi = document.getElementById('resetLi');
+const selects = document.querySelectorAll('.sf-input-select');
 const mobileToggle = document.getElementById('mobileToggle');
-const searchForm   = document.getElementById('searchForm');
+const searchForm = document.getElementById('searchForm');
 
 const NODE_SELECT_CONTAINER_ID = 'buttonsContainer';
 const IS_MOBILE_DEVICE = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -400,7 +400,7 @@ function populatePriceDropdown() {
 }
 
 /* Color map */
-const colorPalette = ['#f94144','#f3722c','#f8961e','#f9844a','#f9c74f','#90be6d','#43aa8b','#577590','#277da1','#8e44ad'];
+const colorPalette = ['#f94144', '#f3722c', '#f8961e', '#f9844a', '#f9c74f', '#90be6d', '#43aa8b', '#577590', '#277da1', '#8e44ad'];
 const colorMap = {};
 function getKeyForLot(lot) { return lot.developmentType || lot.landUse || 'default'; }
 function getColorForKey(key) { if (!colorMap[key]) { const index = Object.keys(colorMap).length % colorPalette.length; colorMap[key] = colorPalette[index]; } return colorMap[key]; }
@@ -409,7 +409,7 @@ function getColorForKey(key) { if (!colorMap[key]) { const index = Object.keys(c
 function parsePriceRange(value) {
   if (!value) return null;
   const parts = value.split('-'); if (parts.length !== 2) return null;
-  const min = parseInt(parts[0],10), max = parseInt(parts[1],10);
+  const min = parseInt(parts[0], 10), max = parseInt(parts[1], 10);
   if (isNaN(min) || isNaN(max)) return null;
   return { min, max };
 }
@@ -433,7 +433,7 @@ function matchesFilters(lot) {
 /* Restore appearance */
 function restoreOriginalAppearance(el) {
   if (!el) return;
-  el.classList.remove('highlight','dimmed','selected-node');
+  el.classList.remove('highlight', 'dimmed', 'selected-node');
   el.style.fill = ''; el.style.stroke = ''; el.style.opacity = '';
   // remove mobile-only redirect handler if present
   if (el._sf_touch_redirect) {
@@ -461,6 +461,8 @@ function attachDesktopRedirects() {
       let finalURL = new URL(item.link, baseURL + basePath);
       if (basePath === "/all-nodes/") finalURL = new URL(item.link, baseURL);
       finalURL.searchParams.set("unit", unit);
+      console.log(basePath)
+      console.log(finalURL.href)
       window.location.href = finalURL.href;
     };
     el.addEventListener('click', fn);
@@ -508,10 +510,12 @@ function attachMobileRedirectToId(nodeId) {
     const pathname = window.location.pathname || "/";
     const basePath = pathname.replace(/\/[^/]*$/, "/");
     const baseURL = window.location.origin;
+
     let finalURL = new URL(item.link, baseURL + basePath);
     if (basePath === "/all-nodes/") finalURL = new URL(item.link, baseURL);
     finalURL.searchParams.set("unit", unit);
-    window.location.href = finalURL.href;
+    // console.log(finalURL)
+    // window.location.href = finalURL.href;
   };
   el._sf_touch_redirect = fn;
   el.addEventListener('touchstart', fn, { passive: true });
@@ -560,7 +564,7 @@ function createNodeSelect(dataArray) {
     } else {
       // fallback bring-to-front
       const el = document.getElementById(node.id);
-      if (el) { el.originalNextSibling = el.nextSibling; el.parentNode.appendChild(el); el.classList.add('selected-node'); try{ el.scrollIntoView({behavior:'smooth', block:'center', inline:'center'}); }catch(e){} }
+      if (el) { el.originalNextSibling = el.nextSibling; el.parentNode.appendChild(el); el.classList.add('selected-node'); try { el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' }); } catch (e) { } }
     }
 
     if (IS_MOBILE_DEVICE) {
@@ -580,7 +584,7 @@ function createNodeSelect(dataArray) {
     let finalURL = new URL(link, baseURL + basePath);
     if (basePath === "/all-nodes/") finalURL = new URL(link, baseURL);
     finalURL.searchParams.set("unit", unit);
-    window.location.href = finalURL.href;
+    // window.location.href = finalURL.href;
   });
 
   container.appendChild(select);
@@ -631,8 +635,8 @@ function applyFilters() {
       const color = getColorForKey(key);
       el.classList.add('highlight');
       el.style.fill = color;
-      el.style.stroke = '#fff';
-      el.style.strokeWidth = 3;
+      el.style.stroke = '#000';
+      el.style.strokeWidth = .5;
       el.style.opacity = '1';
     }
   });
