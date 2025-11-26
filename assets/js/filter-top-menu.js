@@ -10,7 +10,7 @@
 /* ----------------------------
    MOBILE ZOOM (your code, adapted)
    ---------------------------- */
-   console.log('load successfull "6:33pm"')
+   console.log('load successfull "6:42pm"')
 function mobileZoom({
   ikrsvg_id, stage_id, mapId, mapData, ploat_btn_class = "plot-btn",
   data_proprty_to_create_button = "lot", animation_class = 'highlight'
@@ -264,16 +264,20 @@ function mobileZoom({
           const baseURL = window.location.origin;
          
       let finalURL = baseURL;
-      
+      console.log(finalURL)
       if (basePath === "/all-nodes/"){
          finalURL = new URL(node.link, baseURL);
-      } else{ 
-            finalURL = new URL(node.link, baseURL + basePath);
+         console.log('all-node true',finalURL)
+        } else{ 
+          finalURL = new URL(node.link, baseURL + basePath);
+          console.log('when add basepath ',finalURL)
       }
       finalURL.searchParams.set("unit", unit);
      
   
-      window.location.href = finalURL.href;
+      // window.location.href = finalURL.href;
+
+
         };
         // remove previous if present then add new
         if (select_svg_element._sf_touch_redirect) {
@@ -303,7 +307,7 @@ function mobileZoom({
     };
 
     /* redirect handler used by other attach functions */
-    function redirectHandlerFromElement(item) {
+    function redirectHandlerFromElement    (item) {
       return function () {
         if (!item.link) return;
         const unit = encodeURIComponent(item.id.trim());
@@ -536,16 +540,19 @@ function attachMobileRedirectToId(nodeId) {
 
    
       let finalURL = baseURL;
-      
+      console.log(baseURL)
+
       if (basePath === "/all-nodes/"){
          finalURL = new URL(item.link, baseURL);
+         console.log(finalURL,'onmobile')
       } else{ 
             finalURL = new URL(item.link, baseURL + basePath);
+            console.log(finalURL,'for desktop ')
       }
       finalURL.searchParams.set("unit", unit);
      
   
-      window.location.href = finalURL.href;
+      // window.location.href = finalURL.href;
   };
   el._sf_touch_redirect = fn;
   el.addEventListener('touchstart', fn, { passive: true });
