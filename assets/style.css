@@ -1310,7 +1310,6 @@ h1.title {
   font-weight: 500;
   color: var(--accent);
   text-align: right;
-  line-height: 1;
   font-family: "Rajdhani", Sans-serif;
   letter-spacing: 1.9px;
 }
@@ -1838,7 +1837,7 @@ h1.title {
     /*! font-size: 16px; */
   }
   h1.title {
-    /*! font-size: 16px; */
+    font-size: 16px !important;
   }
   .unitRow {
     /*! font-size: 13px; */
