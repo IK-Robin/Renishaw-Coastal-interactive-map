@@ -463,7 +463,7 @@ function attachDesktopRedirects() {
       finalURL.searchParams.set("unit", unit);
       console.log(basePath)
       console.log(finalURL.href)
-      window.location.href = finalURL.href;
+      // window.location.href = finalURL.href;
     };
     el.addEventListener('click', fn);
     el._sf_desktop_redirect_attached = fn;
