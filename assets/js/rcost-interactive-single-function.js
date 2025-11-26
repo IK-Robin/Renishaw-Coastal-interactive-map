@@ -160,21 +160,17 @@ function rcostClick_func(ev, ct, mapD) {
   console.log('base path', basePath)
   let baseURL = window.location.origin;
 
-
-  // Construct base URL
-  let finalURL = new URL(mapD.link, baseURL + basePath);
-
-  // Special path rule for /all-nodes/
-  if (basePath === '/all-nodes/') {
-    finalURL = new URL(mapD.link, baseURL);
-  }
-
-  // --- append ?unit=...  ---
-  // finalURL.searchParams.set("unit", unit);
-
-  console.log("Redirecting to:", finalURL.href);
-
-  window.location.href = finalURL.href;
+      let finalURL = baseURL;
+      
+      if (basePath === "/all-nodes/"){
+         finalURL = new URL(item.link, baseURL);
+      } else{ 
+            finalURL = new URL(item.link, baseURL + basePath);
+      }
+      finalURL.searchParams.set("unit", unit);
+     
+  
+      window.location.href = finalURL.href;
 }
 
 

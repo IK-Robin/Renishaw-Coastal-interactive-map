@@ -529,20 +529,17 @@ function rcostClick_func(ev, ct, mapD) {
   const basePath = pathname.replace(/\/[^/]*$/, '/');
   let baseURL = window.location.origin;
 
-  // Construct base URL
-  let finalURL = new URL(mapD.link, baseURL + basePath);
-
-  // Special path rule for /all-nodes/
-  if (basePath === '/all-nodes/') {
-    finalURL = new URL(mapD.link, baseURL);
-  }
-
-  // --- append ?unit=...  ---
-  finalURL.searchParams.set("unit", unit);
-
-  console.log("Redirecting to:", finalURL.href);
-
-  window.location.href = finalURL.href;
+      let finalURL = baseURL;
+      
+      if (basePath === "/all-nodes/"){
+         finalURL = new URL(item.link, baseURL);
+      } else{ 
+            finalURL = new URL(item.link, baseURL + basePath);
+      }
+      finalURL.searchParams.set("unit", unit);
+     
+  
+      window.location.href = finalURL.href;
 }
 
 
@@ -918,20 +915,17 @@ function redirectHandler(e) {
 
   let baseURL = window.location.origin;
 
-  // Base URL for the final link
-  let finalURL = new URL(item.link, baseURL + basePath);
-
-  // Special case for /all-nodes/
-  if (basePath === "/all-nodes/") {
-    finalURL = new URL(item.link, baseURL);
-  }
-
-  // --- Append the secure param: ?unit=NODE_ID ---
-  finalURL.searchParams.set("unit", unit);
-
-  console.log("Redirecting to:", finalURL.href);
-
-  window.location.href = finalURL.href;
+      let finalURL = baseURL;
+      
+      if (basePath === "/all-nodes/"){
+         finalURL = new URL(item.link, baseURL);
+      } else{ 
+            finalURL = new URL(item.link, baseURL + basePath);
+      }
+      finalURL.searchParams.set("unit", unit);
+     
+  
+      window.location.href = finalURL.href;
 }
 
 

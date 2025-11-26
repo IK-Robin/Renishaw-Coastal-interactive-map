@@ -261,10 +261,18 @@ function mobileZoom({
           const pathname = window.location.pathname || "/";
           const basePath = pathname.replace(/\/[^/]*$/, "/");
           const baseURL = window.location.origin;
-          let finalURL = new URL(node.link, baseURL + basePath);
-          if (basePath === "/all-nodes/") finalURL = new URL(node.link, baseURL);
-          finalURL.searchParams.set("unit", unit);
-          // window.location.href = finalURL.href;
+         
+      let finalURL = baseURL;
+      
+      if (basePath === "/all-nodes/"){
+         finalURL = new URL(item.link, baseURL);
+      } else{ 
+            finalURL = new URL(item.link, baseURL + basePath);
+      }
+      finalURL.searchParams.set("unit", unit);
+     
+  
+      window.location.href = finalURL.href;
         };
         // remove previous if present then add new
         if (select_svg_element._sf_touch_redirect) {
@@ -301,10 +309,18 @@ function mobileZoom({
         const pathname = window.location.pathname || "/";
         const basePath = pathname.replace(/\/[^/]*$/, "/");
         const baseURL = window.location.origin;
-        let finalURL = new URL(item.link, baseURL + basePath);
-        if (basePath === "/all-nodes/") finalURL = new URL(item.link, baseURL);
-        finalURL.searchParams.set("unit", unit);
-        // window.location.href = finalURL.href;
+        
+      let finalURL = baseURL;
+      
+      if (basePath === "/all-nodes/"){
+         finalURL = new URL(item.link, baseURL);
+      } else{ 
+            finalURL = new URL(item.link, baseURL + basePath);
+      }
+      finalURL.searchParams.set("unit", unit);
+     
+  
+      window.location.href = finalURL.href;
       };
     }
 
@@ -517,11 +533,18 @@ function attachMobileRedirectToId(nodeId) {
     const basePath = pathname.replace(/\/[^/]*$/, "/");
     const baseURL = window.location.origin;
 
-    let finalURL = new URL(item.link, baseURL + basePath);
-    if (basePath === "/all-nodes/") finalURL = new URL(item.link, baseURL);
-    finalURL.searchParams.set("unit", unit);
-    // console.log(finalURL)
-    // window.location.href = finalURL.href;
+   
+      let finalURL = baseURL;
+      
+      if (basePath === "/all-nodes/"){
+         finalURL = new URL(item.link, baseURL);
+      } else{ 
+            finalURL = new URL(item.link, baseURL + basePath);
+      }
+      finalURL.searchParams.set("unit", unit);
+     
+  
+      window.location.href = finalURL.href;
   };
   el._sf_touch_redirect = fn;
   el.addEventListener('touchstart', fn, { passive: true });
@@ -587,10 +610,18 @@ function createNodeSelect(dataArray) {
     const pathname = window.location.pathname || "/";
     const basePath = pathname.replace(/\/[^/]*$/, "/");
     const baseURL = window.location.origin;
-    let finalURL = new URL(link, baseURL + basePath);
-    if (basePath === "/all-nodes/") finalURL = new URL(link, baseURL);
-    finalURL.searchParams.set("unit", unit);
-    // window.location.href = finalURL.href;
+    
+      let finalURL = baseURL;
+      
+      if (basePath === "/all-nodes/"){
+         finalURL = new URL(item.link, baseURL);
+      } else{ 
+            finalURL = new URL(item.link, baseURL + basePath);
+      }
+      finalURL.searchParams.set("unit", unit);
+     
+  
+      window.location.href = finalURL.href;
   });
 
   container.appendChild(select);
