@@ -458,12 +458,17 @@ function attachDesktopRedirects() {
       const pathname = window.location.pathname || "/";
       const basePath = pathname.replace(/\/[^/]*$/, "/");
       const baseURL = window.location.origin;
-      let finalURL = new URL(item.link, baseURL + basePath);
-      if (basePath === "/all-nodes/") finalURL = new URL(item.link, baseURL);
+
+      let finalURL = baseURL;
+      
+      if (basePath === "/all-nodes/"){
+         finalURL = new URL(item.link, baseURL);
+      } else{
+            finalURL = new URL(item.link, baseURL + basePath);
+      }
       finalURL.searchParams.set("unit", unit);
-      console.log(basePath)
-      console.log(finalURL.href)
-      // window.location.href = finalURL.href;
+  
+      window.location.href = finalURL.href;
     };
     el.addEventListener('click', fn);
     el._sf_desktop_redirect_attached = fn;
