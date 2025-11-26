@@ -288,7 +288,7 @@ create the mobile view layout and  button
   font-size: 14px;
   text-align: center;
   border-radius: 30px;
-  max-width: 150px;
+  // max-width: 150px;
   margin: 0 auto;
 }
 @media (max-width: 768px) {
@@ -402,6 +402,9 @@ create the mobile view layout and  button
   border: 1px solid #ccc;
   background: white;
   cursor: pointer;
+  font-family: "Rajdhani", Sans-serif;
+  font-weight: 500;
+  letter-spacing: .5px;
   &:focus {
 outline: none;
 border: 2px solid #000;
@@ -429,11 +432,14 @@ border: 2px solid #000;
 }
 
 .panel-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  color: #d4a017;
-  text-align: center;
+	font-size: 26px;
+  letter-spacing: 1.9px;
+  font-weight: 500 !important;
+
+	color: #000;
+	text-align: center;
+	margin: 20px 0 10px;
+  font-family: "Rajdhani", Sans-serif;
 }
 .plot-buttons {
   display: flex;

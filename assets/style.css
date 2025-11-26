@@ -269,7 +269,6 @@ create the mobile view layout and  button
   font-size: 14px;
   text-align: center;
   border-radius: 30px;
-  max-width: 150px;
   margin: 0 auto;
 }
 
@@ -388,6 +387,9 @@ create the mobile view layout and  button
     border: 1px solid #ccc;
     background: white;
     cursor: pointer;
+    font-family: "Rajdhani", Sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.5px;
   }
   .node-select:focus {
     outline: none;
@@ -409,11 +411,13 @@ create the mobile view layout and  button
   }
 }
 .panel-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  color: #d4a017;
+  font-size: 26px;
+  letter-spacing: 1.9px;
+  font-weight: 500 !important;
+  color: #000;
   text-align: center;
+  margin: 20px 0 10px;
+  font-family: "Rajdhani", Sans-serif;
 }
 
 .plot-buttons {
@@ -533,7 +537,7 @@ add animation to the  svg path
 
 @media (max-width: 768px) {
   .rhill-serchMenu {
-    background: #969fa7;
+    background: #222222;
   }
 }
 .menuInner {
@@ -558,6 +562,9 @@ add animation to the  svg path
   position: relative;
   cursor: pointer;
   outline: none;
+  /* font-family: ; */
+  font-family: "Rajdhani", Sans-serif;
+  letter-spacing: 0.5px;
 }
 
 @media (max-width: 767px) {
@@ -606,9 +613,13 @@ add animation to the  svg path
     padding: 0 10px;
     overflow: hidden;
     opacity: 0;
-    background: #fff;
+    background: #222222;
     border-radius: 0 0 10px 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    -webkit-border-radius: 0 0 10px 10px;
+    -moz-border-radius: 0 0 10px 10px;
+    -ms-border-radius: 0 0 10px 10px;
+    -o-border-radius: 0 0 10px 10px;
   }
   .searchandfilter.active ul {
     max-height: 600px;
@@ -621,7 +632,7 @@ add animation to the  svg path
    ──────────────────────────────────────── */
 .searchandfilter li {
   position: relative;
-  background: rgba(255, 255, 255, 0.9);
+  background: #fff;
   border-radius: 8px;
   margin: 0;
   min-width: 140px;
@@ -650,7 +661,18 @@ add animation to the  svg path
   font-family: "Rajdhani", Sans-serif;
   letter-spacing: 0.5px;
   font-weight: 500;
-  font: 15px;
+  font-size: 15px;
+  /* iOS Safari fix — forces white option window */
+  background-color: #ffffff;
+  /* OPTION STYLING */
+  /* Chrome/Android dropdown background (non-standard) */
+}
+.searchandfilter select option {
+  background: #ffffff !important;
+  color: #000 !important;
+}
+.searchandfilter select::-internal-list-box {
+  background: #ffffff !important;
 }
 
 /* dropdown arrow – only for selects */
@@ -696,14 +718,13 @@ add animation to the  svg path
 .search-filter-reset {
   display: block;
   width: 100%;
-  padding: 10px 20px;
+  padding: 10px 0;
   color: #000;
   text-decoration: none;
   font-weight: 500;
   font-size: 14px;
   text-align: center;
   border-radius: 30px;
-  max-width: 150px;
   margin: 0 auto;
 }
 
