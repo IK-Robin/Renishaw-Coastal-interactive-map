@@ -10,6 +10,7 @@
 /* ----------------------------
    MOBILE ZOOM (your code, adapted)
    ---------------------------- */
+   console.log('load successfull "6:33pm"')
 function mobileZoom({
   ikrsvg_id, stage_id, mapId, mapData, ploat_btn_class = "plot-btn",
   data_proprty_to_create_button = "lot", animation_class = 'highlight'
