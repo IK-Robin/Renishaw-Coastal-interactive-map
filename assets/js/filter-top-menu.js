@@ -455,7 +455,7 @@ function attachDesktopRedirects() {
     const fn = function () {
       if (!item.link) return;
       const unit = encodeURIComponent(item.id.trim());
-      const pathname = window.location.pathname || "/";
+     const pathname = window.location.pathname || "/";
       const basePath = pathname.replace(/\/[^/]*$/, "/");
       const baseURL = window.location.origin;
 
@@ -463,10 +463,11 @@ function attachDesktopRedirects() {
       
       if (basePath === "/all-nodes/"){
          finalURL = new URL(item.link, baseURL);
-      } else{
+      } else{ 
             finalURL = new URL(item.link, baseURL + basePath);
       }
       finalURL.searchParams.set("unit", unit);
+     
   
       window.location.href = finalURL.href;
     };

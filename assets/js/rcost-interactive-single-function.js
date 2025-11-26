@@ -155,9 +155,9 @@ function rcostClick_func(ev, ct, mapD) {
   const unit = encodeURIComponent(mapD.id.trim());
 
   const pathname = window.location.pathname || '/';
-  // console.log('pathname',pathname)
+  console.log('pathname',pathname)
   const basePath = pathname.replace(/\/[^/]*$/, '/');
-  // console.log('base path', basePath)
+  console.log('base path', basePath)
   let baseURL = window.location.origin;
 
 
@@ -172,9 +172,9 @@ function rcostClick_func(ev, ct, mapD) {
   // --- append ?unit=...  ---
   // finalURL.searchParams.set("unit", unit);
 
-  // console.log("Redirecting to:", finalURL.href);
+  console.log("Redirecting to:", finalURL.href);
 
-  // window.location.href = finalURL.href;
+  window.location.href = finalURL.href;
 }
 
 
