@@ -823,6 +823,8 @@ function mobileZoom({
       });
     }
 
+    const lot_select_message = document.getElementById('lot_select_message');
+lot_select_message.innerText = `CHOOSE A ${data_proprty_to_create_button.toUpperCase()}`;
     // SELECT DROPDOWN (fully synced)
     function createNodeSelect(data, containerId, selectClass = "node-select") {
       const container = document.getElementById(containerId);
